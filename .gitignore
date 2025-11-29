@@ -1,0 +1,60 @@
+# Real survey data - NEVER COMMIT
+data/*.csv
+data/**/*.csv
+*.xlsx
+*.xls
+
+# Sensitive files
+.env
+.env.local
+credentials.json
+service-account*.json
+*-credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments (except the bundled one for MCP)
+venv/
+!mcp_server/venv/
+ENV/
+env/
+lib/
+!mcp_server/lib/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Logs
+*.log
+
+# Keep synthetic data and structure
+!synthetic_data/*.csv
+!synthetic_data/*.py
+!data/readme.md

@@ -1,0 +1,62 @@
+# Ignore build artifacts and temporary files
+.mcpb_build/
+*.mcpb
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.dylib
+*.egg-info/
+dist/
+build/
+
+# Ignore virtual environments and dependencies
+venv/
+env/
+ENV/
+mcp_server/venv/
+mcp_server/lib/
+node_modules/
+
+# Ignore data files (users will upload their own)
+data/
+*.csv
+
+# Ignore test files and scripts
+test_*.py
+*_test.py
+tests/
+upload_to_bigquery.py
+import_chip_data_add_question_vars.py
+
+# Ignore documentation that's not essential for the bundle
+BIGQUERY_CROSSTAB_GUIDE.md
+FIX_SUMMARY.md
+INSTALLATION.md
+QUICKSTART.md
+SOLUTION.md
+
+# Ignore build and packaging scripts
+build.sh
+pack_mcpb.sh
+requirements.txt
+
+# Ignore git files
+.git/
+.gitignore
+.gitattributes
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Ignore old manifest and config files
+mcp_server/mcpb.json
+
+# Ignore synthetic data (users can generate their own if needed)
+synthetic_data/

@@ -1,0 +1,62 @@
+{
+  "manifest_version": "0.3",
+  "name": "chip50-survey-mcp",
+  "display_name": "CHIP50 Survey Analysis",
+  "version": "1.0.0",
+  "description": "MCP server for analyzing CHIP50 survey data using BigQuery with weighted cross-tabulations and demographic analysis",
+  "long_description": "A comprehensive Model Context Protocol server that enables AI assistants to perform sophisticated survey analysis on CHIP50 data. Features include:\n\n- **BigQuery Upload**: Seamlessly upload CSV files (demographics and survey responses) to BigQuery tables with configurable write modes\n- **Weighted Cross-Tabulations**: Generate statistically-weighted cross-tabs of survey responses across demographic categories directly in BigQuery\n- **Flexible Analysis**: Support for wave filtering, custom SQL conditions, and multiple demographic breakdowns\n- **Production-Ready**: Designed for large-scale survey data analysis with proper error handling and validation\n\nIdeal for researchers, data analysts, and survey professionals working with CHIP50 panel data.",
+  "author": {
+    "name": "Stefan Wojcik",
+    "email": "hey@nanocentury-ai.com",
+    "url": "https://www.nanocentury-ai.com"
+  },
+  "icon": "chip50.png",
+  "server": {
+    "type": "python",
+    "entry_point": "mcp_server/server.py",
+    "mcp_config": {
+      "command": "/Users/electron/.local/bin/uv",
+      "args": [
+        "run",
+        "--no-project",
+        "${__dirname}/mcp_server/server.py"
+      ]
+    }
+  },
+  "tools": [
+    {
+      "name": "upload_csv_to_bigquery",
+      "description": "Upload CSV files (demographic or survey data) to BigQuery tables. Creates tables if they don't exist, with configurable write modes (truncate, append, or fail if exists)."
+    },
+    {
+      "name": "generate_bigquery_crosstab",
+      "description": "Generate weighted cross-tabulations using BigQuery. Joins demographics and survey response tables to calculate weighted proportions of survey responses across demographic categories. Returns both counts and percentages."
+    }
+  ],
+  "keywords": [
+    "survey",
+    "bigquery",
+    "cross-tabulation",
+    "demographics",
+    "data-analysis",
+    "statistics",
+    "weighted-analysis",
+    "chip50"
+  ],
+  "license": "MIT",
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ]
+  },
+  "privacy_policies": [
+    "https://cloud.google.com/terms/cloud-privacy-notice"
+  ],
+  "documentation": "https://github.com/nanocentury-ai/chip50MCP/blob/main/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nanocentury-ai/chip50MCP"
+  }
+}

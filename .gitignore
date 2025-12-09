@@ -32,13 +32,11 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual environments (except the bundled one for MCP)
+# Virtual environments
 venv/
-!mcp_server/venv/
 ENV/
 env/
 lib/
-!mcp_server/lib/
 
 # IDEs
 .vscode/

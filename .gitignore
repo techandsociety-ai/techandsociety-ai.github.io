@@ -57,3 +57,4 @@ lib/
 !synthetic_data/*.py
 !data/readme.md
 chip50MCP.mcpb
+*.mcpb

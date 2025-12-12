@@ -63,3 +63,4 @@ uv.lock
 !data/readme.md
 chip50MCP.mcpb
 *.mcpb
+site/

@@ -1,0 +1,32 @@
+{
+  "name": "chip50-survey-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for CHIP50 survey data analysis with BigQuery integration and cross-tabulation tools",
+  "author": "CHIP50 Team",
+  "license": "MIT",
+  "server": {
+    "command": "uv",
+    "args": [
+      "run",
+      "server.py"
+    ]
+  },
+  "files": [
+    "server.py",
+    "pyproject.toml"
+  ],
+  "capabilities": {
+    "tools": true
+  },
+  "requirements": {
+    "python": ">=3.8",
+    "uv": ">=0.1.0"
+  },
+  "keywords": [
+    "survey",
+    "bigquery",
+    "data-analysis",
+    "cross-tabulation",
+    "demographics"
+  ]
+}

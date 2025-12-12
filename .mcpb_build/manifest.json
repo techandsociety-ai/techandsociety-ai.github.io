@@ -1,0 +1,98 @@
+{
+  "manifest_version": "0.1",
+  "name": "chip50-survey-mcp",
+  "display_name": "CHIP50 Survey Analysis (Privacy-Protected)",
+  "version": "2.0.0",
+  "description": "Privacy-preserving MCP server for CHIP50 survey data analysis with automatic cell suppression and protected BigQuery views",
+  "long_description": "A privacy-first Model Context Protocol server for analyzing CHIP50 survey data. Access public opinion data with automatic privacy protections built-in.\n\n**Privacy Features:**\n- **Automatic Cell Suppression**: Cells with n<10 automatically suppressed for k-anonymity\n- **Geographic Aggregation**: State-level data aggregated to 5 regions\n- **Protected Views**: No access to user IDs or personally identifiable information\n- **Weighted Analysis**: Survey-weighted cross-tabulations for accurate population estimates\n\n**Key Features:**\n- **Variable Discovery**: Browse available demographic and survey variables\n- **Flexible Crosstabs**: Generate cross-tabulations across demographics with wave filtering\n- **Research-Ready**: Designed for journalists, academics, and independent researchers\n- **Direct BigQuery**: Queries privacy-protected views in chip50.public dataset\n\n**Perfect for:**\nJournalists covering public opinion, academic researchers, policy analysts, and anyone studying American political attitudes.",
+  "author": {
+    "name": "Stefan Wojcik",
+    "email": "hey@nanocentury-ai.com",
+    "url": "https://www.nanocentury-ai.com"
+  },
+  "icon": "chip50.png",
+  "server": {
+    "type": "python",
+    "entry_point": "mcp_server/server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--no-project",
+        "${__dirname}/mcp_server/server.py"
+      ],
+      "env": {
+        "CHIP50_API_KEY": "${user_config.apiKey}",
+        "CHIP50_PROJECT_ID": "${user_config.projectId}",
+        "CHIP50_DATASET_PUBLIC": "${user_config.datasetPublic}",
+        "CHIP50_MIN_CELL_SIZE": "${user_config.minCellSize}"
+      }
+    }
+  },
+  "user_config": {
+    "apiKey": {
+      "type": "string",
+      "title": "API Key",
+      "description": "CHIP50 API key for authentication. For testing with synthetic data, use: chip50_test_synthetic_data_only",
+      "default": "chip50_test_synthetic_data_only",
+      "required": true
+    },
+    "projectId": {
+      "type": "string",
+      "title": "Google Cloud Project ID",
+      "description": "Your Google Cloud project ID where the BigQuery data is stored",
+      "default": "chip50",
+      "required": true
+    },
+    "datasetPublic": {
+      "type": "string",
+      "title": "Public Dataset Name",
+      "description": "BigQuery dataset containing protected views",
+      "default": "public",
+      "required": false
+    },
+    "minCellSize": {
+      "type": "number",
+      "title": "Minimum Cell Size",
+      "description": "Minimum cell size for privacy protection (cells below this are suppressed, range: 1-100)",
+      "default": 10,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "get_available_variables",
+      "description": "Discover available demographic and survey variables in the CHIP50 dataset. Returns variable names, descriptions, scales, and privacy protection details. Use this first to explore what data is available."
+    },
+    {
+      "name": "generate_crosstab",
+      "description": "Generate privacy-protected cross-tabulation of CHIP50 survey data. Analyzes survey responses across demographic categories with automatic cell suppression (n≥10). Supports wave filtering and weighted analysis. Returns counts, percentages, and suppression metadata."
+    }
+  ],
+  "keywords": [
+    "survey",
+    "bigquery",
+    "cross-tabulation",
+    "demographics",
+    "data-analysis",
+    "statistics",
+    "weighted-analysis",
+    "chip50",
+    "privacy",
+    "cell-suppression",
+    "public-opinion",
+    "political-science"
+  ],
+  "license": "MIT",
+  "compatibility": {
+    "platforms": ["darwin", "linux", "win32"],
+    "runtimes": {
+      "python": ">=3.10.0 <4"
+    }
+  },
+  "documentation": "https://github.com/nanocentury-ai/chip50MCP/blob/main/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nanocentury-ai/chip50MCP"
+  }
+}

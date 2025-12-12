@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chip50-survey-mcp"
+version = "0.1.0"
+description = "MCP server for CHIP50 survey data analysis with BigQuery integration"
+authors = [{name = "CHIP50 Team"}]
+license = {text = "MIT"}
+requires-python = ">=3.8"
+dependencies = [
+    "pandas>=2.0.0",
+    "google-cloud-bigquery>=3.11.0",
+    "db-dtypes>=1.1.0",
+    "mcp>=0.9.0",
+]
+keywords = ["survey", "bigquery", "data-analysis", "cross-tabulation", "demographics"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]

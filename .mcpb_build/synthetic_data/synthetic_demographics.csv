@@ -1,0 +1,1501 @@
+id,age_cat_8,education_cat,income_cat_10,gender,party_7,race,urban_type,state_code,wave,weight
+4f243f2a-5ab2-457d-9a57-3ce27a7ba3d9,31 to 40,College Degree,6,Male,2,White,Urban,TX,7,2.0188254779218817
+5afe7ba3-bbc6-4edf-b1b8-c7ff0420501d,71 to 80,Some College,7,Female,6,White,Urban,PA,7,1.0522810996378338
+96c99405-a329-4e9c-8367-73949682783e,51 to 60,High School Graduate,3,Female,7,White,Rural,MO,7,0.5707311734305464
+4d9be0b2-0793-437a-88a5-038c3e059e80,41 to 50,College Degree,6,Female,1,White,Urban,WA,7,0.4605751937577546
+16f38265-504b-48ad-8017-eea8621a6302,26 to 30,College Degree,5,Female,6,White,Urban,CA,7,0.6061283506846156
+6c2bb561-078c-423f-98d6-e2b31115f9f9,26 to 30,High School Graduate,7,Female,4,White,Suburban,CA,7,0.9395765428614097
+86362c6a-464a-49c2-a3be-746eb4ab867e,18 to 25,Graduate Degree,8,Female,7,White,Suburban,TX,7,0.3597954362364272
+8b6462f8-6cee-4662-b69f-b72b032c7fb3,61 to 70,College Degree,1,Female,3,White,Suburban,KS,7,1.2908430333316645
+9df8f803-a470-47c9-8cc4-86aa9bae2b04,51 to 60,Graduate Degree,6,Male,6,Black or African American,Urban,TX,7,0.33937152183327485
+d9319b42-607c-48d2-9aa2-2bdac7737a3c,51 to 60,College Degree,1,Female,1,Hispanic or Latino,Suburban,TX,7,0.4358875980418976
+a1bc54bd-810b-40ec-a79b-15775ab4b5b2,18 to 25,Some College,5,Male,2,Hispanic or Latino,Urban,CA,7,1.6347418953614719
+933cbb50-7fab-40d8-bb34-766b0772ec01,71 to 80,Some College,3,Non-binary,1,Black or African American,Urban,TX,7,1.2124483767014198
+368f303b-d7a0-4846-b9fd-fc73f28760d5,61 to 70,Graduate Degree,4,Female,7,Other,Rural,KY,7,0.3046479374152546
+c5b1cb5b-5ee5-4c71-97e8-8edafa28d726,26 to 30,College Degree,4,Male,6,White,Urban,MI,7,0.6375275241820401
+37307c55-cc42-45e2-b214-bfa9230b6b33,26 to 30,Less than High School,6,Female,6,White,Suburban,NY,7,0.27493813609089135
+55952981-ecd2-45a9-89cf-fa35ce441266,26 to 30,Less than High School,4,Female,7,White,Suburban,VA,7,1.5535675489904783
+69fbb73a-4503-430d-a24d-d135bbd7f1df,31 to 40,Some College,6,Male,1,Black or African American,Suburban,AL,7,1.5528403806473974
+94c54ffc-784c-4b54-91fd-fefb354fa4ec,41 to 50,College Degree,4,Female,2,Asian,Rural,MA,7,2.660121082785871
+f13bb98b-81b6-4af6-a2bf-716daaeece6c,41 to 50,Graduate Degree,1,Female,1,White,Urban,NY,7,3.0
+b0e0b302-cc19-4a81-bc9e-b3f5ef25ea1e,31 to 40,High School Graduate,7,Male,1,Native American,Suburban,OH,7,0.4948477470540654
+937c2b6e-fabf-4aed-be2a-d1105a2c9b1c,51 to 60,Some College,3,Female,1,White,Rural,NY,7,1.3832397785433712
+59618bde-8d17-4599-84cc-0d066b3fc9a0,26 to 30,Some College,4,Male,3,Native American,Suburban,CA,7,0.2
+08ec628a-c109-47d4-af34-ecd6ace12dbc,31 to 40,Graduate Degree,6,Female,2,White,Rural,FL,7,0.9586697069814664
+d03b398c-870c-4dad-ab3c-c7f036b93237,31 to 40,College Degree,4,Female,1,White,Urban,IL,7,1.1392286513595182
+53969b18-1021-4af9-bd1e-7df4b4b51a8d,41 to 50,College Degree,1,Female,1,White,Suburban,TX,7,0.3573781374022503
+296ad6f6-e788-483b-bf6e-2f8244204174,51 to 60,Some College,4,Male,1,White,Urban,FL,7,0.46827111566225565
+2423ef3d-884d-4d0a-bdd8-09ca7396319f,26 to 30,Some College,9,Female,7,White,Suburban,CO,7,1.5601286806891552
+1f657f57-fbec-4117-9425-53ad22e80606,41 to 50,High School Graduate,6,Female,5,White,Rural,WA,7,1.1598499113236214
+c0195e07-fe9b-4a26-a325-bdca8ba1d71e,41 to 50,Less than High School,6,Male,7,Hispanic or Latino,Urban,AL,7,2.4392704128697664
+357b7b73-c957-47d6-b2d2-282199a7e4fb,18 to 25,College Degree,6,Female,3,White,Suburban,WI,7,2.2539863528759887
+7e8fbb42-cb09-44af-a659-15698603fa2e,51 to 60,College Degree,3,Male,2,White,Urban,NY,7,0.2
+a755be8c-d515-4229-baef-b727c03f6b34,26 to 30,Graduate Degree,4,Female,5,Black or African American,Suburban,TX,7,0.5385753534276061
+2a27795e-fa3d-4f82-9a4b-c62f1b7de7ed,18 to 25,Graduate Degree,7,Male,2,Black or African American,Suburban,FL,7,0.32265756863844997
+edfb3b12-f056-4520-90ba-b53600f4297a,71 to 80,Some College,2,Male,2,White,Rural,AL,7,1.4241622842246133
+901549cd-7582-4b03-959e-d07db2cbcb9b,71 to 80,College Degree,3,Male,1,White,Suburban,OH,7,1.0302406521388003
+220d8757-a218-4f1f-8d0e-3ec4d8db9dc0,61 to 70,Graduate Degree,3,Female,1,White,Suburban,TX,7,0.34448395289109934
+7eeaa13e-a790-48ef-affe-738e0c509696,31 to 40,College Degree,4,Male,2,White,Urban,OH,7,0.3975077800709811
+81e64662-a50a-4cc2-868a-14cbc419e450,18 to 25,High School Graduate,10,Female,2,Black or African American,Urban,CA,7,1.9282075254905038
+e73c20ac-3dc2-4602-865b-2256ec25d6f8,51 to 60,Some College,1,Male,5,White,Urban,PA,7,0.5916349894998877
+501bef48-4d34-4721-9dc8-f0afdb760ca0,41 to 50,High School Graduate,5,Male,1,White,Urban,PA,7,0.2
+0d723ee2-1318-48d4-8681-45faee37e5c7,26 to 30,Graduate Degree,2,Female,1,Black or African American,Rural,NY,7,0.315607369785818
+080156de-2c9e-4ba3-86f4-f42f932cc56e,41 to 50,Some College,9,Female,6,White,Suburban,PA,7,2.776242292095999
+114ab10d-ba3d-4270-951f-f015dc84d03a,18 to 25,High School Graduate,2,Male,1,White,Suburban,TX,7,1.6674599591257964
+ac40803a-7d22-44c7-a537-1ddf480dff6a,61 to 70,College Degree,4,Female,2,White,Urban,NC,7,0.25740737692428683
+7e21e132-4388-4230-a331-4eb9ffdfedca,31 to 40,Some College,6,Female,6,Two or more races,Rural,CA,7,0.9583401562025248
+446e61e7-a60d-46b7-a687-af19c31feb7f,51 to 60,Some College,6,Female,1,White,Suburban,MA,7,1.5972045993928483
+c3997498-fe46-4628-93cc-c998eb3c804f,31 to 40,High School Graduate,4,Male,1,Hispanic or Latino,Urban,CA,7,0.2
+f8454ba5-c9ae-48fe-be6c-2bc7183d840f,41 to 50,College Degree,4,Male,3,White,Suburban,IL,7,1.7205803289786903
+c99cca39-4e4a-4934-b8fe-da7fd76764f2,41 to 50,Some College,4,Female,2,White,Suburban,IL,7,1.1518873763233872
+b55b0800-cf70-4490-a338-a02be08796f8,26 to 30,College Degree,3,Male,4,Black or African American,Urban,CA,7,0.4440164767652492
+0e7ec13f-99cc-4f51-bf86-818507328781,71 to 80,Some College,3,Female,6,Other,Suburban,GA,7,1.286528147917342
+2d1a462f-7647-4ff4-9913-0daea4636f93,51 to 60,College Degree,5,Female,1,Black or African American,Suburban,CA,7,1.0409904171542854
+d335e017-cc9c-42ca-bd3e-2c861d765286,71 to 80,Some College,3,Female,4,Hispanic or Latino,Urban,TX,7,1.0938676315716704
+54833a1b-466c-43b8-89ff-9dd0da67845d,61 to 70,Some College,3,Female,3,Asian,Rural,WA,7,0.9326263079905597
+a4a21c24-ef3a-4381-991d-e2afbfb85094,41 to 50,Graduate Degree,6,Prefer not to say,1,White,Rural,CA,7,0.3841754625541701
+f2f9dac2-4e2b-4b8c-8aaf-4cd26a3c2367,61 to 70,Some College,9,Male,4,White,Suburban,WA,7,0.45295753835454655
+5f6939e6-7bbb-4c3d-a524-c392a6d3342b,18 to 25,High School Graduate,6,Female,2,Black or African American,Suburban,MI,7,0.6888894877341478
+3e8b0654-2789-4422-9f7e-c518d5dea256,26 to 30,Less than High School,1,Male,3,White,Suburban,FL,7,0.86338208426611
+20687948-2968-4eb7-b676-5051edc10e9d,18 to 25,College Degree,1,Male,1,Hispanic or Latino,Suburban,CA,7,1.340880965587202
+1afc7dcf-b84d-4889-89ee-0c1461f0d352,31 to 40,Some College,9,Female,3,Asian,Suburban,MI,7,2.819369135770569
+52ad1df5-b6e3-4e37-a4c2-686bb9df25fc,31 to 40,College Degree,3,Female,2,White,Urban,PA,7,0.9918367435072686
+52e6386e-72b5-4f8a-bf01-732ee39e3dd3,31 to 40,High School Graduate,2,Non-binary,6,White,Suburban,OH,7,1.3241745006273944
+b2618aa9-e3b9-439a-a2ae-e2b547647504,61 to 70,High School Graduate,5,Female,1,Hispanic or Latino,Suburban,AZ,7,1.5415815947909193
+47457d65-2c80-47c1-a93c-58ac1d78cda3,31 to 40,Less than High School,6,Male,3,White,Suburban,CA,7,1.3908762903445546
+6fd2f80f-00cf-4c56-bae6-ea091a2fa4da,31 to 40,Some College,6,Male,3,Hispanic or Latino,Urban,IL,7,0.37077267768644423
+0202a51d-2260-454c-bc92-889110d7bfc3,41 to 50,Some College,3,Female,5,White,Suburban,FL,7,2.0501932486703742
+d63300d9-eeba-49cc-99d4-0f1691839910,26 to 30,Some College,1,Male,4,Black or African American,Urban,FL,7,1.8399067127223228
+513cde50-d9c4-438a-9522-ba67af8c94a3,61 to 70,Some College,9,Male,4,White,Urban,FL,7,0.9230620180997123
+fda90cd4-21d2-4b3d-a5b6-9df31956119b,18 to 25,Graduate Degree,3,Male,5,Black or African American,Urban,TX,7,0.3916836145104817
+7fe9523b-57a5-42fd-9fe0-93d50c4869fe,71 to 80,High School Graduate,6,Male,6,White,Suburban,VA,7,0.8528692732530054
+5d8c40f2-69c0-487c-a2d7-652e65448547,51 to 60,Some College,6,Male,2,White,Suburban,IL,7,0.2
+40ca9e85-f971-4658-bb2d-5d93b2840826,26 to 30,College Degree,6,Male,4,White,Suburban,TX,7,2.2292426938515737
+2bd6263e-9237-44b2-9109-f5fcc3d949fc,18 to 25,Some College,4,Male,6,Hispanic or Latino,Urban,GA,7,0.4902596110852253
+9debe371-5d88-426d-a968-58498df38c3e,61 to 70,Some College,3,Male,7,Asian,Rural,MA,7,0.6608899763025493
+d3a4cd29-f099-41ef-a885-12e4d5973886,51 to 60,College Degree,5,Non-binary,6,White,Rural,CO,7,2.1253080347827074
+9f81900f-49f1-43e7-b234-f105bce5b97a,51 to 60,Graduate Degree,8,Male,2,White,Rural,NY,7,1.9592532793914852
+9ef7b9cc-35c6-461c-8e12-6d1bd8f495f4,51 to 60,High School Graduate,9,Male,1,White,Urban,WI,7,1.071123880665936
+097111db-c6a4-41a7-8269-6e1b49197edd,18 to 25,Graduate Degree,2,Female,3,Black or African American,Suburban,NC,7,2.4514012759822386
+c0010ecf-8be3-4194-843e-ed82d3c898fc,31 to 40,Some College,2,Male,5,Black or African American,Rural,GA,7,0.3598836386953422
+2086e42f-c5fd-44db-a1be-dfefd67e1d32,26 to 30,High School Graduate,9,Female,3,White,Suburban,NY,7,1.0715279069270518
+7f0b56a3-ed8a-4548-8e5c-f447451c7709,61 to 70,Some College,6,Female,3,White,Urban,CA,7,0.36268686417693674
+69b0e204-450f-422f-8f02-224387f8725b,51 to 60,Graduate Degree,8,Male,6,White,Urban,TX,7,1.765013624787356
+e001911c-ef0a-4f75-855f-d2de04c69b72,31 to 40,Some College,3,Male,2,White,Suburban,MI,7,1.7233474968064393
+1addaf79-275f-4f2d-936e-44b6a93af26e,18 to 25,High School Graduate,5,Female,6,White,Rural,KY,7,2.5655001597732543
+7807996f-b5f6-4bf4-8689-4e0d1b6c7f2f,31 to 40,Some College,6,Female,3,Two or more races,Suburban,NC,7,0.8331308749310478
+df1e77d0-56d4-459d-b99c-0b9f5476089b,31 to 40,High School Graduate,6,Male,2,White,Suburban,NY,7,3.0
+1392eace-592a-4c38-893f-2a14a63fadd0,51 to 60,Less than High School,4,Female,3,Black or African American,Urban,CA,7,0.33494275111799415
+1c679a5a-6ac5-4f73-82d2-ed5aec11bb51,51 to 60,High School Graduate,1,Male,5,White,Suburban,NY,7,0.7990199449062891
+3182da0b-f3ca-40da-8ec0-5ea8916eb10a,61 to 70,High School Graduate,5,Non-binary,1,White,Suburban,FL,7,0.34648290569627666
+80281044-42d0-42da-a0e2-4ffbb3f6221c,41 to 50,High School Graduate,3,Male,1,Black or African American,Suburban,OH,7,0.9664551279628314
+98e1f81f-9b4f-4c95-8cd1-8f2bcd98d9b9,26 to 30,High School Graduate,5,Female,7,Black or African American,Suburban,TX,7,0.37538350230446876
+8d90401a-73e5-4aa4-bfa4-c9ed8fcde86a,51 to 60,Some College,9,Female,1,Two or more races,Rural,TX,7,1.7682689389663824
+7028b86f-c9d2-4155-8dbb-aab96ac905f7,51 to 60,High School Graduate,4,Female,4,White,Urban,MN,7,1.1792224697053773
+7958f11b-cb9f-41e8-b276-41107647daf9,41 to 50,High School Graduate,7,Female,4,White,Suburban,MI,7,0.30846107370804715
+0f27ccd1-08fe-4368-ad58-bf4b4c27d47a,51 to 60,Graduate Degree,3,Male,3,Black or African American,Urban,CA,7,1.4966415553810222
+54836810-5bff-4784-bba7-eb0fe5f676bc,41 to 50,Some College,6,Male,4,White,Suburban,PA,7,2.3384769417330826
+41ddec93-efbf-4aaa-a44e-e0d8e52d7b76,41 to 50,College Degree,9,Male,1,White,Suburban,FL,7,1.2615348159129414
+398d2897-9fcb-45ce-8409-a62f64bf2fbc,41 to 50,High School Graduate,2,Male,4,White,Suburban,MI,7,0.22606201574434687
+058b5e04-af6d-474f-a837-aaccdb4e6a9d,18 to 25,High School Graduate,1,Female,2,White,Suburban,FL,7,0.7408252787327754
+cf83494f-53a6-4de2-ac86-c4986ddcf576,26 to 30,Less than High School,4,Male,4,Asian,Suburban,CA,7,1.3772459722520454
+5845ffa3-5839-40ca-ba54-cb5968ada47c,18 to 25,High School Graduate,2,Male,1,White,Rural,NY,7,0.6862939257177058
+1527b29e-f0b6-42eb-8618-f8842fe1b238,51 to 60,High School Graduate,7,Female,4,White,Suburban,CA,7,0.3308778320920241
+42d1e3f9-354b-4a5e-9aa2-305c3cb050f8,31 to 40,High School Graduate,8,Female,1,White,Urban,PA,7,1.9061385496165895
+d768d119-730f-4bb1-911e-bdc554cba377,41 to 50,High School Graduate,4,Female,2,White,Suburban,GA,7,0.6629130225068995
+c44ba6a3-2e86-41c8-91bc-81009b93bb1f,61 to 70,High School Graduate,3,Non-binary,1,White,Suburban,AL,7,2.339431363545135
+40ea4fcb-e102-423b-b613-4506cfddf610,31 to 40,Some College,4,Male,1,White,Suburban,MI,7,0.541016596277822
+8afd68dd-6f40-4bbe-a04e-f53157ba0206,41 to 50,High School Graduate,6,Male,6,White,Rural,AZ,7,0.6320796215011647
+974663b2-e7b7-41be-a1ee-088ef3b9fcc5,51 to 60,Some College,1,Female,2,Hispanic or Latino,Rural,FL,7,0.5057948834618127
+6797e43f-7ebb-4d6d-8087-5696100f598f,31 to 40,Some College,5,Female,7,White,Urban,OH,7,0.7309258323781896
+47d58549-9467-486f-a414-38086c89dcee,18 to 25,College Degree,6,Male,7,White,Rural,CA,7,1.1654455269999588
+064f93ec-6337-4889-9653-4dc3b8fbfbbf,31 to 40,Less than High School,6,Female,4,Asian,Urban,TX,7,0.3474123150853742
+76b260a9-7a60-4af6-9534-80de19e8f457,26 to 30,College Degree,3,Male,1,Black or African American,Urban,AL,7,0.2885501922494755
+94934e37-552c-4be8-a910-08c004c98e89,61 to 70,Some College,6,Male,2,White,Urban,FL,7,0.2
+404adfa4-e36b-425d-aeeb-861d58707ea6,61 to 70,High School Graduate,2,Female,5,White,Rural,OH,7,0.2
+39910353-4c3a-48bf-896b-ecb98907fab8,51 to 60,Graduate Degree,3,Female,2,White,Suburban,GA,7,0.2288805312415727
+74df9f38-0ac5-4faa-801b-f6d259572825,61 to 70,Graduate Degree,8,Female,1,Black or African American,Urban,CA,7,0.5378849060943094
+9ce684e9-d6e5-4e8c-a0c5-bb1f68fd9313,61 to 70,Less than High School,6,Male,4,Two or more races,Suburban,IL,7,0.9534169421256485
+4571fd8d-e23d-4a96-850d-0d0d4969fccb,26 to 30,High School Graduate,1,Female,6,Black or African American,Suburban,FL,7,1.119495205870181
+aee94e35-7208-4c76-a879-851c69d09be8,61 to 70,College Degree,3,Male,5,White,Urban,TX,7,0.9208308567277983
+182fc85f-d126-4fdf-86a8-008f1d527bb0,41 to 50,College Degree,3,Male,1,Hispanic or Latino,Rural,FL,7,2.1645827831300504
+81e66365-cb54-4d53-9732-2daa55a7b45f,61 to 70,High School Graduate,3,Female,5,White,Suburban,PA,7,2.6288642355232734
+cb45d55c-2f00-4f9b-b2df-398ab886b5ce,61 to 70,High School Graduate,3,Female,1,White,Suburban,TX,7,0.6654512568059877
+00551739-36bf-4205-92dd-54903bcef4bf,31 to 40,Some College,1,Female,1,White,Rural,IN,7,0.3529105803834237
+d5beaba6-c465-4188-9e6e-54df3cba3bcf,26 to 30,Some College,5,Female,6,Other,Suburban,TX,7,3.0
+aebca894-9dbf-4f5a-9e01-0db58fe4807c,31 to 40,Some College,6,Female,1,White,Rural,IL,7,1.862269484423788
+cff0d6a7-6270-4571-8839-1592dd6ceb33,41 to 50,Some College,6,Female,2,Black or African American,Suburban,WA,7,1.7704262059487101
+618560f2-82ee-4adf-824e-2782907d4b26,61 to 70,Some College,6,Male,1,White,Suburban,CA,7,0.5197401716691592
+1a64d391-0db4-46dd-99b5-02f517b601fb,61 to 70,College Degree,2,Male,6,White,Urban,NY,7,1.522429198591561
+2defe1db-4277-4833-b582-50530e54d9c4,18 to 25,Less than High School,9,Male,5,White,Rural,MI,7,0.9263579742159994
+c819f1e5-ac11-440a-88ad-6dcddd6f0697,41 to 50,High School Graduate,7,Male,4,White,Suburban,IL,7,0.7864902463335176
+2746e5eb-4cd3-4f5c-9a93-f839f47eb472,41 to 50,College Degree,7,Female,5,Hispanic or Latino,Urban,NY,7,0.7854393956194893
+cbee5385-12ac-404a-880a-d74747fe1c0b,31 to 40,Graduate Degree,7,Female,1,White,Urban,OH,7,1.2041470523733195
+ee67a111-d48f-444e-b107-c3d71c341497,26 to 30,Some College,8,Male,3,Black or African American,Suburban,AL,7,2.211493825044141
+8a2e51a9-8161-4bac-8002-9213e96f6358,31 to 40,Some College,5,Male,2,Hispanic or Latino,Suburban,CA,7,3.0
+f1e3acd7-8fd5-4855-a18c-e1b0dcec3ec5,71 to 80,High School Graduate,3,Female,1,Native American,Suburban,OH,7,0.5986034796034906
+87b2c309-8cdd-4df4-8d2f-2da2d44fee1f,31 to 40,Some College,6,Male,3,White,Rural,NY,7,0.9659922517226671
+d74afb38-ed60-4bf6-9775-603cb13f4c7b,41 to 50,Some College,7,Female,7,White,Urban,WA,7,0.7711435727728082
+cae7b581-4830-41e4-8c92-44300d36de5b,51 to 60,High School Graduate,6,Female,1,White,Suburban,PA,7,1.147622014943488
+84033301-b4e7-44ef-998c-6abb6b60b138,31 to 40,High School Graduate,5,Female,2,Two or more races,Urban,WA,7,0.6978176330016387
+be03b5f3-25aa-45aa-b1b8-3150b002ef42,71 to 80,Some College,1,Female,1,Native American,Rural,OH,7,0.4691776759989099
+f81377c6-e2bc-491f-81f4-166751324830,71 to 80,Less than High School,4,Female,1,White,Suburban,FL,7,0.59928789377579
+ac8f81c4-788d-41ed-be56-531f1a379e6d,31 to 40,High School Graduate,8,Male,7,Hispanic or Latino,Suburban,CA,7,0.5262852015064862
+61d3eaf3-ec56-46ac-8492-aa28a09c4097,41 to 50,High School Graduate,5,Female,3,White,Suburban,PA,7,0.74198598754585
+5740e675-613c-4ee8-b8da-2409d113f2c5,31 to 40,High School Graduate,5,Female,3,Black or African American,Suburban,NY,7,0.24644599109862772
+c6a40f24-f3cb-4fcb-be44-97ca9d5ed9a5,31 to 40,High School Graduate,3,Male,5,White,Suburban,AZ,7,0.5348586965112695
+dc51fec8-7c03-4c0c-84b1-de7b93f8302e,18 to 25,Graduate Degree,4,Female,1,Hispanic or Latino,Suburban,IL,7,1.139545762769368
+4851c413-d0ec-4ad7-8a08-ff194a2e5cc6,51 to 60,Some College,8,Female,3,White,Suburban,WA,7,1.1334825148909144
+46dc8fcc-899f-45de-86b2-4b46ddbc237b,41 to 50,College Degree,6,Female,3,Hispanic or Latino,Suburban,MI,7,1.0072287706937617
+33385b49-0911-41b6-bef5-84fd7f8dec55,18 to 25,College Degree,7,Female,4,Hispanic or Latino,Suburban,IN,7,2.0846037958732677
+8271a08e-c7b1-43ff-808e-3fd152bce98e,31 to 40,Some College,5,Female,7,Black or African American,Suburban,KY,7,1.1722211354919596
+1144949b-b148-4c7a-a5f3-2ebbd16f681e,61 to 70,High School Graduate,6,Female,5,White,Suburban,CO,7,2.039369668241421
+fc094740-af32-4409-93d7-5d8f4a6fcd78,31 to 40,Some College,3,Female,2,White,Urban,IL,7,3.0
+630ec1a3-e184-48c6-850e-a1266fb70985,26 to 30,Some College,6,Female,6,White,Suburban,IL,7,1.5490150550727668
+c1767bf7-8474-4262-8323-693cfce8445d,41 to 50,College Degree,4,Female,1,White,Suburban,CA,7,0.24768520136699423
+2a5f0738-145d-415e-87e6-1f75049eef40,71 to 80,Some College,5,Female,1,White,Urban,PA,7,1.0369205218623745
+2b6a8559-474e-4306-903a-4516356d5337,31 to 40,High School Graduate,6,Female,1,Native American,Urban,IN,7,0.927690157224065
+0803f809-cfbb-4ebb-871f-57f8828e1880,51 to 60,High School Graduate,8,Male,2,White,Urban,TX,7,2.3369207557665312
+cbd5994f-7cea-4f12-a064-d49e42208225,51 to 60,Some College,1,Female,3,White,Suburban,TX,7,0.7634071758280737
+d845ceb6-6063-4578-bc11-5d78f39262e9,31 to 40,Some College,7,Female,4,White,Suburban,CO,7,0.4142429189722493
+c2b28716-1ee0-42cd-8a58-e0e63984c993,51 to 60,Some College,3,Male,7,White,Suburban,NY,7,0.5614755080003643
+b6708d64-24e3-4116-81b3-e408e5a0eb0f,31 to 40,Some College,5,Female,3,Black or African American,Suburban,MA,7,0.257344642943113
+3916d9de-09c7-4f3a-a6ce-4a69bf03ac71,51 to 60,Graduate Degree,1,Male,3,White,Suburban,TX,7,2.985087010379691
+d2a72d35-3973-4978-9c0c-d20f1fd5f73a,51 to 60,Some College,4,Male,1,Asian,Suburban,CO,7,0.8455400994154065
+251865ea-b4a5-4627-8241-f7da53450d6b,41 to 50,High School Graduate,5,Female,1,White,Rural,NY,7,0.2827576136264788
+d7738b21-92fc-4fe2-965f-c399f79b2808,18 to 25,High School Graduate,1,Male,4,Two or more races,Suburban,NC,7,2.477107119297623
+a4e3a83a-5978-4ad1-8389-0cf3bd6dc857,61 to 70,High School Graduate,5,Female,3,Hispanic or Latino,Rural,FL,7,2.7559461733046153
+4bd720e6-4d48-4b32-84d2-8144d1741b29,31 to 40,High School Graduate,8,Female,6,White,Suburban,CA,7,0.9516786272376087
+d2edf003-ad1c-4ded-8c37-5d735273ada0,26 to 30,High School Graduate,2,Female,1,Native American,Urban,NY,7,0.23402492111319587
+4b97394e-3236-4732-96dd-e8d7f13c6e36,18 to 25,High School Graduate,7,Male,1,White,Suburban,OH,7,0.5730124837943834
+e9bcbf6f-dc54-4ad0-b338-5707608d9cb8,41 to 50,High School Graduate,4,Male,3,Hispanic or Latino,Suburban,FL,7,0.7000115077754753
+3e3b26f5-bea4-48c4-947f-455f33470bf6,51 to 60,High School Graduate,6,Female,1,White,Suburban,NY,7,0.8675232493670758
+6a40c2d7-e7dd-4e7b-90d5-642951f0f7c6,18 to 25,Graduate Degree,3,Non-binary,1,Asian,Urban,IL,7,0.31908256235207366
+1699ab15-8b22-451c-aeab-db82169361af,41 to 50,High School Graduate,2,Female,5,Asian,Urban,OH,7,1.637275169635026
+40eda7ab-13eb-42b4-ab4c-ecdf67f7d402,31 to 40,Some College,2,Male,1,Hispanic or Latino,Rural,CA,7,0.2
+fe7ab66e-be74-4932-83da-aa235fdb6075,51 to 60,Some College,1,Female,4,Hispanic or Latino,Urban,TX,7,1.8217887943414672
+f9968437-0099-40fd-80cf-45c0099846d9,26 to 30,Graduate Degree,3,Female,2,White,Rural,FL,7,2.086766279534613
+6f5fb2ee-8598-42a2-a713-8875c65d4fe9,51 to 60,High School Graduate,6,Female,1,White,Urban,IL,7,0.6211893348538619
+ad007e47-d44b-4e4a-9b12-d1f5a926d4d0,31 to 40,Some College,8,Male,2,White,Suburban,CA,7,0.7925854436180744
+aa9ce69b-a163-484a-a786-c097227a0423,71 to 80,Graduate Degree,7,Female,6,White,Suburban,CA,7,2.2627148222166853
+ac12c551-82c3-40ea-b934-3b3210c0746b,26 to 30,College Degree,6,Female,2,Black or African American,Suburban,MI,7,1.3404469975971465
+6aae84d8-18de-405f-9451-a43869224a42,31 to 40,College Degree,2,Female,5,White,Urban,FL,7,0.6395663078993974
+67ae492e-6d69-410f-84f9-e398efaef654,26 to 30,High School Graduate,3,Male,1,Two or more races,Urban,TX,7,0.7030020287977596
+5389f241-4112-4315-9d7c-6c2f26cb5999,61 to 70,High School Graduate,4,Female,5,Black or African American,Urban,AL,7,1.2090298228428131
+6a6a8e15-c465-4fcf-a029-e14067cc4d20,61 to 70,College Degree,3,Female,1,Hispanic or Latino,Urban,IL,7,2.8105577108434336
+48238ea3-808d-4794-860b-7a0effef68f2,31 to 40,Graduate Degree,5,Male,5,White,Suburban,GA,7,0.7206127687435375
+9fb4af24-2066-4624-bf76-7906630f8e34,51 to 60,Some College,5,Female,4,Asian,Rural,AL,7,0.6236535677787108
+3887ae8a-8c92-4268-9abf-f07cd1376506,61 to 70,Some College,4,Female,7,Native American,Rural,CA,7,0.8628666420081912
+0f90b604-1efe-4098-8fd0-2a268452c970,41 to 50,High School Graduate,4,Male,2,White,Suburban,IN,7,0.8668202327843257
+959b38f7-209c-4b39-a71c-89323d0e8528,41 to 50,College Degree,7,Male,1,Black or African American,Suburban,MI,7,1.059681167005317
+0728c354-328f-4970-9029-87af07429bec,31 to 40,High School Graduate,7,Female,1,Hispanic or Latino,Suburban,IL,7,0.7945724297172367
+b1646579-3ec9-4cf2-adfb-194771d79426,18 to 25,High School Graduate,4,Male,6,White,Urban,MI,7,1.895870725910318
+6b92e6f0-4a70-4825-b134-595932f1bc59,61 to 70,Some College,8,Female,4,White,Rural,NC,7,0.38583215949790683
+f3f51f93-6535-4f31-ba6f-19c337430f51,61 to 70,Some College,9,Male,5,White,Suburban,AL,7,1.1466592274381993
+c27a7fa7-c902-488d-b2a3-eeb5308e2b10,51 to 60,High School Graduate,4,Female,1,White,Suburban,KY,7,1.1794364081031978
+a2b5e523-66df-404b-a0ba-0d0cab3b8c87,31 to 40,High School Graduate,4,Male,2,White,Urban,WA,7,0.4180659903387301
+941530cd-9281-4053-b402-03d58bb15fe5,31 to 40,Some College,5,Female,1,White,Suburban,MI,7,1.1383932627284516
+b485c728-7df7-4fda-a159-34a2565f8525,51 to 60,High School Graduate,9,Female,7,White,Suburban,NY,7,1.2018018410514213
+20ad0cc6-0ab1-43cf-86ad-cd0445000795,61 to 70,Some College,8,Female,4,White,Rural,FL,7,0.2
+5b582db6-75cd-416f-a50b-fbfd5bc63e66,61 to 70,High School Graduate,2,Female,7,Two or more races,Suburban,PA,7,0.3525004858945725
+11613f6c-8b2a-4b58-bfa5-9a49ac36932a,51 to 60,Some College,4,Male,2,White,Suburban,PA,7,2.389346168544793
+7299d01a-44b1-4ff8-b0a4-dad03d07d427,51 to 60,Some College,5,Female,4,Two or more races,Rural,MI,7,0.511381730094353
+1526024e-29e8-46ab-bf7c-edfc6ee32647,18 to 25,Less than High School,5,Male,5,White,Urban,WA,7,0.28205929975936705
+b60ba261-f4ce-46e8-b057-4304ea5d6a21,26 to 30,High School Graduate,3,Male,2,White,Suburban,CA,7,0.2
+60c8aa61-afc3-4690-b7a5-8ebb65bd43b9,61 to 70,High School Graduate,7,Male,6,White,Urban,AL,7,0.3222568173031743
+7f5c41fa-fd0f-4b66-afd0-650fef3e5da0,51 to 60,Less than High School,6,Female,7,White,Suburban,PA,7,0.7683358959770602
+4cabe0d1-b05c-4d3d-a310-f3c8b8088d12,18 to 25,Graduate Degree,7,Female,6,White,Rural,TX,7,0.26211680785837044
+ef0e757b-44c4-440e-ab7d-784cabccb622,26 to 30,High School Graduate,7,Female,5,Black or African American,Urban,CA,7,1.352909310123856
+79302552-fa77-48e5-a589-776b20d5fb42,51 to 60,College Degree,7,Male,2,White,Rural,FL,7,0.4112382455929227
+ec54ae4a-c441-43c5-b4e7-81c476302818,18 to 25,High School Graduate,4,Male,2,Black or African American,Urban,AL,7,1.0656601902966258
+25ec587a-46ac-4713-9a5e-e78fdd8683ce,26 to 30,College Degree,6,Prefer not to say,7,Black or African American,Rural,FL,7,2.164672910251671
+c57fb3a3-d7e7-4e4d-b87d-81c62fc80060,41 to 50,College Degree,2,Male,1,White,Suburban,PA,7,2.0750600589504367
+29ff176f-d217-4ada-9a86-c8d171745b69,51 to 60,Some College,6,Male,5,White,Suburban,MI,7,1.0522416344966448
+a16674d1-ed41-4915-9a11-64de269cb321,51 to 60,Some College,2,Male,5,Hispanic or Latino,Urban,GA,7,0.30204474761154687
+6162380b-9426-4baf-b2f0-d8c98257dc16,31 to 40,Some College,6,Female,4,White,Rural,IL,7,0.810421274160946
+f21439fb-7782-42a8-bbce-8fbf0bd0f0dd,51 to 60,High School Graduate,3,Female,7,White,Suburban,AL,7,1.077766130677788
+3de64c5b-aa5d-46c8-b334-96287178d9af,31 to 40,Graduate Degree,2,Male,2,Two or more races,Urban,FL,7,3.0
+fe4bddeb-2c48-4b2c-b967-7bc80c35abb3,31 to 40,College Degree,2,Male,2,White,Suburban,NY,7,0.2
+c2388671-4601-492e-9e69-0bec4aaf82fa,51 to 60,Graduate Degree,1,Female,1,Black or African American,Urban,WA,7,0.8126694789640797
+fbc271d4-1b45-4ba7-95e7-968439dc55b2,51 to 60,High School Graduate,6,Female,3,Two or more races,Rural,TX,7,1.318954433932947
+83b38f14-b050-4223-9196-d1af9e396c03,61 to 70,College Degree,6,Male,2,White,Urban,AZ,7,0.9153314221037128
+ecda8fa0-360b-4816-9bc9-a5ce118a3946,51 to 60,Graduate Degree,5,Female,2,White,Suburban,TX,7,0.9928090902229858
+c0ed4b1e-065b-4da8-a830-e7379958f923,41 to 50,High School Graduate,2,Male,6,White,Suburban,PA,7,0.434076158801075
+92e091d4-4e34-4e25-bf8a-ba9bc6aff107,18 to 25,Less than High School,2,Male,7,White,Urban,PA,7,1.6176796986020083
+94301052-0863-4455-b50d-35f1c7dbc5ee,31 to 40,College Degree,1,Female,1,White,Urban,KY,7,0.8671271376626966
+bb01c2cd-d59f-4df0-95d7-ccef8500e9a4,31 to 40,Some College,2,Male,2,Black or African American,Urban,IL,7,0.99011870767792
+4ed4fa17-c938-4a16-b40a-5fba5ad47268,31 to 40,College Degree,8,Female,7,White,Suburban,FL,7,1.7369485820781816
+7a7c4d2e-677f-4d52-a903-b853a6181ec8,71 to 80,High School Graduate,3,Male,1,White,Urban,CA,7,0.6556810464581111
+937781f1-8fb9-4e96-9f4a-ddffa2a3eaf5,31 to 40,College Degree,4,Male,1,Two or more races,Suburban,CO,7,1.9994929472696426
+5d2687b2-0783-4978-aa3d-f269cdac6d7d,61 to 70,High School Graduate,2,Non-binary,1,Hispanic or Latino,Urban,FL,7,0.25296792391069933
+b6182eba-23e4-4fce-9b1e-1067bcc861fd,51 to 60,High School Graduate,3,Male,4,Black or African American,Urban,MA,7,1.032625427883348
+b9079ff8-45fa-44d8-8cbf-1938cb0a5172,51 to 60,High School Graduate,5,Female,1,White,Suburban,PA,7,0.4100408859420055
+80b5404f-4440-42f1-84d8-3d17f7a6b214,41 to 50,College Degree,6,Male,7,Black or African American,Urban,MA,7,0.31717016143976823
+95eef27a-694b-4c76-b306-a332b7e003be,41 to 50,College Degree,3,Male,3,White,Rural,CA,7,2.789146694990116
+bba8feef-48da-4a9a-9e3b-b1b21fed2455,41 to 50,Some College,1,Male,3,White,Rural,WA,7,0.26697027731845174
+a64e2d9f-98ef-4e03-8c49-43c597885845,26 to 30,Some College,4,Female,1,White,Suburban,VA,7,0.8801788031946852
+78013395-55b4-4778-be87-4c638072f2de,51 to 60,Graduate Degree,3,Male,3,Asian,Suburban,PA,7,0.24619328249893654
+8aae60c5-2031-401f-ae0b-7ad304c3b830,31 to 40,Some College,3,Female,4,White,Rural,WI,7,1.9168979486765458
+ef4abffe-f4a1-4542-bd2f-b35927451c1a,18 to 25,College Degree,9,Male,5,White,Urban,MN,7,0.6028421775991278
+fec68ecb-0e43-43ab-a731-3bc149cbd5d9,51 to 60,Some College,6,Female,5,White,Urban,WA,7,1.7307010531129912
+7707345a-0945-4202-99a5-6cd973d3d922,26 to 30,Some College,5,Male,4,White,Urban,CA,7,1.2872813656457773
+5b7f348a-9933-4c3b-bb41-553a575a3478,71 to 80,Some College,4,Female,7,Hispanic or Latino,Suburban,IL,7,3.0
+b09db7c2-553a-4418-be2e-1f815fca07f0,71 to 80,High School Graduate,4,Female,6,Hispanic or Latino,Urban,CO,7,0.2
+da39ce4f-0808-4ec9-9b72-b9bea8b8e08d,61 to 70,College Degree,5,Female,5,Hispanic or Latino,Suburban,CA,7,0.3497020387827843
+56a6a536-7137-495d-a29d-f6461bed4a98,31 to 40,Some College,6,Female,1,White,Rural,CA,7,1.667141580450835
+b132a034-5bec-4c4e-96f6-cddf0dd541cf,18 to 25,High School Graduate,6,Female,1,White,Rural,NY,7,1.069691044161453
+3b489ab5-7149-4cab-91bb-818d01f38fff,61 to 70,Graduate Degree,2,Female,1,White,Suburban,PA,7,0.6949534346594348
+05a17139-2bfb-461c-8c26-1bbdfadbc23f,41 to 50,Some College,5,Male,4,White,Urban,NC,7,2.9803142947724854
+6c1df050-3d8d-4129-a700-b0fe2e0eb1f1,71 to 80,Some College,4,Male,3,White,Rural,CA,7,0.8337741687866557
+0ac510e5-7337-4f4a-8260-89cd921ad6c4,71 to 80,Graduate Degree,8,Female,3,Hispanic or Latino,Suburban,TX,7,0.42449888456779367
+8f8db2b3-65e4-4095-b899-558a90d1df8b,61 to 70,Some College,6,Female,6,White,Urban,NY,7,1.7450363119683754
+08a9dda9-0f99-4922-95a0-8cce2a1b88a6,31 to 40,High School Graduate,5,Female,6,White,Urban,IL,7,0.8554914753399178
+ece20c4f-251a-414b-ada2-1789341134e8,31 to 40,Graduate Degree,2,Female,7,White,Rural,NY,7,0.9073111641426823
+77196546-0c83-4ef4-bd55-4c32c25863c1,61 to 70,Some College,6,Male,2,White,Suburban,FL,7,1.365348993948701
+fd39c76f-10c7-486f-ac5e-9971f4c9dec1,31 to 40,High School Graduate,2,Male,5,White,Suburban,GA,7,1.40317578606081
+67de9ffd-2f19-419c-8e6e-f0b4a8fd679b,26 to 30,High School Graduate,4,Female,2,Two or more races,Rural,VA,7,0.3452257951297903
+0b7c1739-9273-4202-a400-0c17d44d2675,41 to 50,College Degree,2,Male,1,Hispanic or Latino,Suburban,FL,7,0.6630402441972547
+d196ef7b-b014-4755-a55a-2c381c09880f,71 to 80,Some College,6,Male,1,Other,Suburban,MA,7,0.22416430471053628
+a75ace86-0882-4b72-847b-da6e4cd8bf25,51 to 60,Some College,3,Female,2,White,Suburban,TX,7,1.0814251699855155
+12e47013-c3fc-40fe-b5e2-b59586e03b36,41 to 50,Graduate Degree,4,Male,3,White,Suburban,OH,7,2.756631585817896
+0aafe9e4-7973-4dbb-8fbc-6e2efddf702e,18 to 25,College Degree,8,Female,6,White,Suburban,CA,7,0.35900446075184433
+e0d3dd1f-6ef8-48b1-b855-8e93fa0f3765,51 to 60,High School Graduate,3,Male,1,White,Suburban,CA,7,0.2
+22f30c23-61a2-4832-b482-1f416a331c6d,81+,High School Graduate,5,Female,5,Hispanic or Latino,Suburban,AL,7,0.4879875076763063
+77b317dc-014b-4da1-9879-5d3b68181348,26 to 30,High School Graduate,4,Male,4,White,Rural,NY,7,0.6901071930507691
+448c6fe2-15c5-40b6-9f7a-392bdd2af6a4,41 to 50,College Degree,1,Male,2,White,Suburban,KY,7,1.411917088859392
+e5c4ee8c-3f92-4a82-84ba-767dd21448e8,61 to 70,Less than High School,7,Male,3,White,Suburban,CA,7,0.633038726848053
+8f3daa1b-e831-417c-ae64-2a72a3540bbd,51 to 60,Some College,1,Male,2,White,Suburban,WA,7,1.095757907049152
+7afbe76e-b050-4794-8f2e-75048df6ca7a,51 to 60,College Degree,5,Male,4,Hispanic or Latino,Suburban,MI,7,0.5519617528839664
+010963df-1516-473b-ab72-7c7256a321cb,51 to 60,Graduate Degree,5,Male,3,White,Suburban,FL,7,0.7209535158584625
+145be1b8-cce9-4c0a-b84c-f19af1c61543,31 to 40,High School Graduate,6,Female,1,White,Urban,MI,7,0.41180344055126034
+a83a7746-2545-4795-a45e-3ef2cdf4bad3,31 to 40,College Degree,6,Male,1,White,Suburban,NY,7,0.30123620443201526
+12030057-eda1-4194-a611-46a6bd1283cd,61 to 70,High School Graduate,3,Female,4,White,Urban,CA,7,1.4477073751308378
+2ca87f9f-b174-45e1-bbeb-fe1bed25f3db,61 to 70,College Degree,1,Female,7,Hispanic or Latino,Suburban,FL,7,0.584871726006697
+fed0c264-9188-4aeb-9da3-1609b6a24d0a,61 to 70,High School Graduate,6,Female,2,Asian,Suburban,TX,7,1.154666331713788
+dd3b8753-1e67-4a31-9c7c-339f8b7aec85,61 to 70,Some College,5,Male,5,Other,Suburban,KY,7,0.4059197505548913
+728cb385-7c92-4e96-b602-47fe7e51354d,41 to 50,College Degree,7,Female,4,Hispanic or Latino,Rural,MN,7,0.8379756075016034
+cef5fe54-bc5f-47d9-b3a9-e9946ead2da4,41 to 50,High School Graduate,7,Male,7,White,Suburban,IN,7,0.2
+9850a7b2-9a66-48a0-9bcd-63e6f1c57a93,51 to 60,High School Graduate,7,Male,6,Black or African American,Suburban,AZ,7,0.6218642266433526
+910040b1-1f78-463b-a842-a48bd28be714,51 to 60,College Degree,5,Non-binary,4,White,Suburban,CA,7,0.4461747361688396
+224f3d31-5519-45f6-87ef-6c1349b86ca7,51 to 60,College Degree,4,Male,4,White,Suburban,KS,7,1.8646830625028488
+9de47609-9ad4-4233-9aa7-8f7ee7ee52e4,51 to 60,Some College,7,Female,6,Hispanic or Latino,Urban,CO,7,0.2565395540788105
+3aa587f3-c384-4970-9918-0a1d8a484b10,61 to 70,College Degree,5,Female,2,White,Urban,AZ,7,0.7449045452286778
+88b8116c-3d6b-40a5-a68f-3f0e364dfe48,31 to 40,Some College,3,Female,2,Asian,Suburban,TX,7,1.0716305268897037
+4ae8a709-8d0c-41cc-90ec-6f2a9181aad8,31 to 40,High School Graduate,7,Female,1,White,Suburban,WI,7,1.6901254707044144
+03b82b55-e34d-4f0f-a985-f45c88f9a12e,18 to 25,High School Graduate,8,Male,6,Black or African American,Urban,PA,7,1.5327542796629092
+decaa828-c7a6-46e1-b07d-14649c3011cb,41 to 50,High School Graduate,5,Male,6,Black or African American,Urban,TX,7,0.7922705712928312
+752489eb-5712-40c3-9b73-46555a12a946,18 to 25,Graduate Degree,1,Female,1,Asian,Urban,FL,7,0.881264018410473
+4376a720-7ded-4abc-b61d-ffcb7dfba9d3,41 to 50,Some College,4,Male,4,Black or African American,Rural,WA,7,1.863548443418119
+8ae424b3-8c6e-4693-8864-9f731ef834fc,41 to 50,Some College,7,Male,3,Black or African American,Suburban,CA,7,0.7804533221334178
+8607b4d1-b833-4efc-9fc7-c108fcc9f2a9,31 to 40,Some College,8,Male,1,White,Suburban,WA,7,0.9540840936962919
+8ebd9659-e189-4ced-ac13-0e1f0c16eea6,41 to 50,Graduate Degree,3,Male,7,White,Urban,WI,7,1.9052581288695245
+8e6e0ddb-1cb5-41c6-a53a-e5cb038cb169,18 to 25,High School Graduate,1,Male,1,White,Suburban,OH,7,3.0
+1ae12803-f749-43ad-a4be-e72ec08eadc2,18 to 25,Some College,8,Male,1,Hispanic or Latino,Urban,WI,7,1.0161956543501351
+21fc7466-31f1-4967-b2cb-f7611d3a4ffe,61 to 70,Some College,4,Female,4,White,Urban,MO,7,1.22720367254432
+7582b2fd-49d7-47f6-8556-a37c8755af52,31 to 40,Some College,5,Female,5,Black or African American,Suburban,FL,7,1.501144996111899
+681221eb-4191-4748-9e05-9f81ea95c09a,26 to 30,Less than High School,9,Female,1,White,Urban,KS,7,1.8929394578888779
+b790546e-5c47-4fd7-a280-51d67349cb18,41 to 50,Graduate Degree,1,Male,4,White,Urban,NC,7,1.7191570523504418
+4515ff80-4c79-4c48-ab4e-4fa9b881b9bd,51 to 60,Graduate Degree,6,Male,4,Black or African American,Urban,CA,7,0.5160741399225726
+9058955c-9f75-4d59-93a7-fc630ce18486,26 to 30,Some College,1,Male,1,White,Urban,NY,7,1.0669963278649472
+e1da103f-f493-4782-adec-2c0178aa0b0c,51 to 60,College Degree,4,Female,1,White,Urban,WI,7,1.727333120090897
+842384d2-142d-489a-8020-59440b5fecb4,18 to 25,Graduate Degree,7,Female,4,White,Suburban,CA,7,2.1666438060378055
+b0793d89-6549-4745-8957-24a0f790043e,18 to 25,College Degree,4,Male,2,Other,Suburban,PA,7,0.7459661371220387
+d5882f68-e4ac-477e-98bf-3672405ae5f3,41 to 50,High School Graduate,10,Female,7,Hispanic or Latino,Suburban,TX,7,1.0480849190014203
+d5d2dece-447c-4c10-8404-89e0abb0d573,41 to 50,Some College,5,Male,6,White,Suburban,VA,7,1.1381333508275113
+5652b304-c03c-45fe-b826-e0fb07d47d04,51 to 60,Some College,4,Female,7,White,Urban,WA,7,0.8590565189100243
+1d08af0c-b35b-4b2b-881a-18eed3dca335,51 to 60,Some College,3,Female,2,White,Rural,MI,7,1.0282033627217577
+fb0be8ed-9e49-434c-b49e-68e5aa95384d,71 to 80,College Degree,4,Female,7,Hispanic or Latino,Suburban,WI,7,3.0
+e7ef5e89-9250-41ff-ab66-f6673fd1b4d2,41 to 50,Graduate Degree,4,Female,3,Black or African American,Urban,PA,7,0.7216100637432191
+b0df7a8b-a166-4f4b-ba95-a39b3df8eff4,31 to 40,Graduate Degree,1,Female,2,White,Suburban,CA,7,0.7665604385140556
+6fb30aa6-5b33-406b-a712-82f42b454f04,51 to 60,Some College,4,Male,1,White,Urban,MA,7,0.2
+f97f6f39-f8f3-4f6f-a4fc-0aa349770516,31 to 40,High School Graduate,5,Female,1,White,Suburban,OH,7,0.2
+3b42de7c-0497-43d6-9053-7386ff6121c1,41 to 50,Graduate Degree,6,Male,5,Black or African American,Suburban,FL,7,1.1969707072670281
+3e425bbd-7813-4587-ab9d-17e14125e60f,18 to 25,College Degree,6,Female,3,Hispanic or Latino,Rural,NY,7,1.7321642272106608
+7e54fe1f-ac81-4380-a2fe-c537c688033b,18 to 25,High School Graduate,6,Female,1,White,Suburban,NY,7,1.518937948475486
+0aca5526-07be-4e96-811a-0aa056db7651,71 to 80,Graduate Degree,1,Female,4,White,Suburban,CA,7,0.4049045404082165
+322b27ad-4ff1-461d-94e0-610e47a914e6,61 to 70,College Degree,3,Male,2,White,Rural,MO,7,1.457338623442271
+240265c7-1956-43a7-a503-07d414d11a66,51 to 60,Some College,6,Female,4,Two or more races,Urban,PA,7,0.7570027000890315
+d92eeab8-8cd2-4979-be45-7b7078fa51fe,41 to 50,Some College,5,Female,2,White,Urban,MI,7,0.6162817614807734
+ec44b375-8d00-4f5c-8fed-5804751aea80,26 to 30,Some College,1,Female,6,Hispanic or Latino,Suburban,AL,7,0.23090487899928164
+df7a66ba-df5d-405d-8476-9b54923616b6,26 to 30,Less than High School,7,Male,6,Black or African American,Suburban,AL,7,0.4519007971578366
+757909b3-6e37-4673-a330-e1650541121d,31 to 40,High School Graduate,7,Male,3,White,Suburban,GA,7,1.2171387198766057
+db9b359a-0760-4c07-8c97-61c8610f3134,41 to 50,College Degree,5,Male,2,White,Rural,VA,7,1.058699591846213
+07922b5b-ad79-445d-9aa1-e845ba60781e,51 to 60,Less than High School,1,Male,2,White,Suburban,CO,7,0.9465909097915742
+54431f5d-701b-4533-bdfe-795490663e51,51 to 60,High School Graduate,7,Female,6,Black or African American,Suburban,NY,7,0.2
+d0524846-f1fe-4994-a169-c3ae64d1171b,31 to 40,Some College,5,Male,2,Hispanic or Latino,Urban,CO,7,0.9539300614942902
+24eaa293-68fc-4f75-bfc0-c19fe77be516,71 to 80,Some College,7,Female,1,Black or African American,Suburban,GA,7,0.5094517339753394
+b8c88fc2-e9dd-441c-9574-50cabcdcc029,51 to 60,Graduate Degree,7,Male,1,White,Rural,TX,7,1.064334043635111
+0abdcec4-588b-410e-8f84-fc0c68bf7aa8,41 to 50,High School Graduate,7,Male,3,White,Suburban,OH,7,1.9318501651788882
+f5f3fd7b-8a51-4b36-8e15-e3ac83a9a9cb,51 to 60,High School Graduate,5,Female,3,Two or more races,Urban,CA,7,0.5761980836282903
+59c23cbb-81ce-4051-bdad-19c2ad0bf3ca,41 to 50,College Degree,2,Female,6,Hispanic or Latino,Suburban,IN,7,0.901901475164008
+39e1d05d-d1c9-414b-9ea7-c8ab3894c4dc,31 to 40,Some College,6,Female,1,White,Urban,AZ,7,2.968651334537346
+0eb78e91-4a07-4cc3-a51b-c5df7e368a63,31 to 40,High School Graduate,6,Female,2,Two or more races,Urban,MA,7,1.0254947964417145
+0e58df19-f5ed-4199-9d41-0cee1a048a57,51 to 60,Some College,7,Female,6,Black or African American,Urban,NY,7,0.819034880970501
+c9118ea0-3beb-4599-bd11-15cef05412f8,18 to 25,High School Graduate,2,Male,6,White,Suburban,CA,7,0.4109915894143434
+5eb5c834-eeed-43c5-9daf-d2bd2c3cdb19,26 to 30,High School Graduate,3,Prefer not to say,2,Hispanic or Latino,Suburban,FL,7,1.4857275234271439
+f43359c7-9409-4409-9650-c1bd3988487b,18 to 25,Some College,8,Female,3,Hispanic or Latino,Urban,IL,7,0.3489835463267028
+16ab5a03-bb59-4246-881c-d89efcf7436b,18 to 25,Some College,7,Female,2,Black or African American,Suburban,VA,7,1.989703322668786
+f1ad3248-6eb5-48d5-b9ac-14a8c7ad55bd,61 to 70,Graduate Degree,8,Male,7,White,Suburban,WI,7,1.3402481367944639
+5c3b7586-caf9-4bde-9137-b0193a89e8ed,51 to 60,Some College,7,Female,1,White,Suburban,AZ,7,0.52495327187606
+82de103b-a008-4d3c-bd16-36b47c20517c,41 to 50,Some College,5,Male,7,Native American,Urban,PA,7,0.42361408197040734
+0a415731-b92b-4856-876b-8b054a2b15ee,18 to 25,Some College,6,Male,5,White,Suburban,IL,7,0.4328490874200624
+99292128-f420-4549-8bd5-a41f4ace0628,41 to 50,Less than High School,8,Male,4,White,Suburban,IL,7,0.2
+014ed751-a808-4d1f-82bf-54b0ea5d98fb,41 to 50,College Degree,5,Male,1,White,Urban,PA,7,1.176275320742789
+afdaba08-5baf-4311-84d2-90381a5e7a15,26 to 30,High School Graduate,6,Female,3,White,Urban,VA,7,0.2
+6ed4d2ee-9de3-4f5c-9102-5f370767b466,41 to 50,Graduate Degree,2,Female,3,Black or African American,Suburban,WA,7,0.7790011048407518
+eab920bf-da51-4acd-8a83-9015bb34282c,31 to 40,High School Graduate,5,Female,1,Other,Rural,MO,7,0.7400192103520098
+9b943448-787d-4e30-8270-d4c2b07c77e7,51 to 60,Some College,6,Male,4,White,Suburban,GA,7,0.6397400711276374
+be069d05-7800-4bab-9b0a-f9aec0cbc71c,51 to 60,High School Graduate,3,Male,7,White,Suburban,PA,7,1.170459081568501
+a888a5d4-559a-4acf-8859-9b3ddbd21fbf,18 to 25,Graduate Degree,3,Male,4,White,Suburban,FL,7,0.5260777557822456
+cccb95ae-c1db-4928-b43d-9d63f5b170d9,31 to 40,Some College,4,Non-binary,5,Asian,Suburban,MO,7,0.9557579309923858
+36991f44-2c50-4100-9396-a563dc223ed3,51 to 60,Some College,3,Male,1,Black or African American,Urban,IL,7,1.989438238610278
+c40076b5-1e4d-4959-a70e-e18bf12361fb,41 to 50,Less than High School,3,Female,3,White,Suburban,NY,7,1.2718557598386149
+b3365421-6fb1-4987-a46b-5d927c0bd7f4,61 to 70,College Degree,4,Female,1,Hispanic or Latino,Rural,FL,7,0.5944626911668099
+d77d037c-bf42-4cfa-8449-5334cb382d81,51 to 60,High School Graduate,8,Male,4,Asian,Suburban,CA,7,0.8384303272523463
+ee9047fc-c969-455c-bfac-f9cc3e46d015,26 to 30,Graduate Degree,5,Female,7,Hispanic or Latino,Rural,VA,7,0.6403275307096494
+f9f69e74-c22b-4ad6-8280-f8dfbccdd51d,18 to 25,High School Graduate,3,Female,4,Asian,Suburban,CA,7,0.7316927630141502
+acb3d649-f8c8-443f-bfb5-1ae82028512f,51 to 60,High School Graduate,1,Female,1,White,Urban,MI,7,0.9778731248663574
+72e5d434-1747-4dd3-a438-6739eb5d0f51,18 to 25,Less than High School,6,Female,2,Hispanic or Latino,Rural,CO,7,0.21997221071942705
+310c65bc-c860-4107-8490-474665a7dda3,41 to 50,Some College,4,Male,4,White,Urban,AZ,7,0.2
+3d1000df-a83b-4a7d-bcc8-dea6dfca6742,71 to 80,Some College,7,Male,3,Hispanic or Latino,Suburban,AZ,7,0.37967873488464854
+8d3af050-46be-4d9f-a150-594a34ffa624,41 to 50,Less than High School,6,Female,6,Black or African American,Urban,CA,7,1.2107802212341243
+0ffccc6a-abd3-4084-b8b9-e9b8f5908cf1,31 to 40,College Degree,7,Female,6,Hispanic or Latino,Urban,TX,7,1.3316475749343648
+9d107609-8463-455b-b944-4ed2cb9d6b6c,51 to 60,Some College,3,Male,4,Black or African American,Suburban,FL,7,1.4739131135585994
+8b31ad42-e408-41fc-bb3c-8956b933937e,41 to 50,Some College,6,Female,2,White,Urban,WA,7,0.3937181379785694
+2a07e915-f86f-4647-ae3b-3a4795eb16c9,41 to 50,Some College,3,Female,2,White,Suburban,NC,7,0.8979825725555992
+2b3e099a-b398-4659-8d00-805ecdd2c57c,71 to 80,Some College,8,Female,1,Two or more races,Suburban,KS,7,0.6098459923881082
+81605b5b-566b-4dcb-922a-240fb9f0b3c5,31 to 40,Some College,6,Male,2,Native American,Urban,NC,7,0.7559909469106755
+b48d5ab8-f1a5-4334-9cbf-e785ba2049b9,71 to 80,High School Graduate,4,Female,3,White,Urban,MI,7,0.6009354629982282
+c9424c45-4dd6-4822-9c2a-73d6242116e4,61 to 70,High School Graduate,3,Female,5,White,Suburban,PA,7,1.019529093105505
+faca1664-b863-4373-86e3-d9a589d50679,26 to 30,College Degree,3,Male,4,White,Suburban,FL,7,0.47130174304350675
+a104ee89-e537-42b4-997c-ee90c60bbc75,18 to 25,Graduate Degree,6,Male,1,Black or African American,Suburban,GA,7,1.8415699712627314
+1bee557f-dffe-4c3a-9a34-83c31e6d97f7,26 to 30,Some College,3,Female,2,Hispanic or Latino,Suburban,TX,7,1.8527336206148393
+e857c60b-dd25-4c8d-8216-220064e64fdf,18 to 25,High School Graduate,5,Male,1,White,Rural,WA,7,1.1838989992721722
+00724356-404a-446c-959c-ff4425ae6f2a,18 to 25,Some College,3,Female,1,White,Suburban,TX,7,1.696992038082776
+c783eb39-13ba-4d99-8bad-f95099cab1e3,51 to 60,Some College,6,Female,6,Hispanic or Latino,Suburban,IN,7,0.2109524611635438
+f72594f6-57ba-4e2c-8d6b-1070d5951d94,18 to 25,Less than High School,7,Male,1,Hispanic or Latino,Suburban,PA,7,1.9147275948215619
+1f4c6f1b-1cc9-42a5-b66e-cc3d11a1a757,31 to 40,High School Graduate,7,Female,3,White,Urban,MA,7,1.1032951931470665
+d74074c0-c5c5-4956-83ad-c0eb51080fd4,61 to 70,College Degree,7,Male,1,White,Urban,MI,7,0.4963626508148415
+a075abfc-3c37-44da-ad58-6b1796e4df0e,18 to 25,College Degree,3,Female,6,White,Suburban,CA,7,0.4540038081963553
+10f7a6ed-2899-46a6-b19a-b0e7946ae773,61 to 70,Less than High School,2,Male,4,White,Suburban,NC,7,2.3628868026787373
+89dd3dc9-7fd8-4508-924c-8119333eed68,31 to 40,High School Graduate,6,Female,1,White,Suburban,CA,7,1.490430264433684
+caaa0956-ca03-4861-8f22-e9e09bf05179,26 to 30,High School Graduate,4,Male,3,Black or African American,Suburban,GA,7,0.7402456969716968
+249a4ca1-74bc-4323-b1bc-31416da9e71f,51 to 60,College Degree,4,Male,5,Asian,Rural,TX,7,0.20833459105668886
+a1bec9ab-6cb8-4770-bcfc-c1923e062de3,51 to 60,Less than High School,1,Female,7,Black or African American,Rural,CA,7,1.981130842966922
+51b634c4-b4da-4472-8dd3-75082325f0ae,61 to 70,High School Graduate,3,Male,1,Hispanic or Latino,Suburban,CA,7,0.3034985911202596
+967bf73f-ab2f-4e13-bda2-da36eefe798e,51 to 60,College Degree,1,Female,6,White,Suburban,CA,7,0.6189655998155937
+f3e381c8-08a7-46d7-9711-34ea18be002b,61 to 70,High School Graduate,8,Male,7,White,Suburban,VA,7,0.7394356677810203
+81322f43-2ff0-4b70-a3ec-74d74cac10b9,31 to 40,College Degree,3,Female,7,White,Suburban,MI,7,0.4479163928431655
+8d651644-ce0e-4a40-b9fd-98c9ea34d086,26 to 30,High School Graduate,5,Male,4,White,Suburban,IN,7,0.7134653003723609
+3bb7a229-8328-4ec2-8a1d-fcdd93caa31c,51 to 60,High School Graduate,1,Female,4,Black or African American,Suburban,TX,7,0.8287940817144016
+0d7f729c-12f9-4807-be7c-6a617b72e20d,61 to 70,High School Graduate,6,Male,3,Two or more races,Suburban,TX,7,0.7017620880078702
+e6b4cc57-0ad4-4d29-9e4e-fd01c749057e,81+,College Degree,4,Male,5,White,Suburban,GA,7,1.0570695692417293
+41db5f4b-6aab-4657-a035-facb2599ff08,41 to 50,College Degree,8,Male,4,White,Urban,NY,7,2.421341849950331
+bbdc17a5-cfdd-45e4-8782-20f6c9d0bf7e,31 to 40,College Degree,8,Male,5,Hispanic or Latino,Suburban,PA,7,0.21952643792620627
+1a58fd9a-9690-4cab-8c16-dd5eedd9067c,51 to 60,Some College,4,Female,3,White,Urban,NY,7,0.9393723392913667
+be281ee6-9d4c-4fca-abab-4764effbb544,31 to 40,College Degree,8,Male,5,White,Rural,CA,7,0.3067323314569485
+49d63d20-b50f-488c-880e-bb177d0e7032,71 to 80,High School Graduate,10,Female,6,Hispanic or Latino,Suburban,TX,7,0.2
+9f9be335-50c4-4bab-ab45-36d3dbbf189f,61 to 70,High School Graduate,7,Male,1,Black or African American,Urban,MN,7,1.6092867228925714
+8a4768e3-46a1-4021-a41e-a8c99402299a,41 to 50,Graduate Degree,7,Male,6,White,Urban,FL,7,1.0002399276313914
+5cb26e47-fb8a-4756-9443-0d7c233ef0c1,51 to 60,Less than High School,3,Female,4,White,Suburban,IN,7,0.2
+928b98c1-52a1-4f45-9ff7-e3a61f7096d1,51 to 60,High School Graduate,5,Female,6,Hispanic or Latino,Suburban,AZ,7,0.7129472621770474
+f19dab2a-5b74-4517-964f-5243ad9c3427,26 to 30,High School Graduate,1,Male,3,White,Suburban,CA,7,0.3806234286615304
+9385a959-3a94-46d5-b785-baf1473c1a74,61 to 70,Less than High School,2,Male,2,White,Urban,PA,7,0.7330023287298321
+a88a0460-d225-4db6-a427-987f568b3853,41 to 50,High School Graduate,10,Male,7,Hispanic or Latino,Suburban,AL,7,1.3653506342377082
+d74c48ef-c3fd-4a7a-a741-c200168987c9,61 to 70,Some College,4,Female,2,White,Suburban,IN,7,1.2687825426604535
+66284907-bd13-4d96-beb4-6854268ff29d,31 to 40,Some College,7,Female,6,Hispanic or Latino,Suburban,MI,7,0.6044962486655835
+1fb30784-614f-443d-9988-c09495334bf4,61 to 70,Graduate Degree,7,Male,3,White,Suburban,CA,7,1.6615096685490038
+5d8ac6ec-bdd8-42e0-a5be-41abaf9e7e39,31 to 40,College Degree,7,Female,3,Other,Suburban,WA,7,2.0952351022597018
+d68bef0b-d650-4d5c-b671-dbe121b9933d,18 to 25,High School Graduate,10,Female,2,White,Urban,CO,7,1.3812834110487129
+1d788301-d606-4ea5-8a12-f8940f63f4f5,61 to 70,High School Graduate,3,Female,4,White,Rural,FL,7,0.5234378155920181
+78cd14cc-2926-4d4b-a68e-35b88fc47e9d,18 to 25,Some College,1,Female,2,White,Suburban,FL,7,0.7521674963588315
+51ce096c-e523-409a-990a-174d9383bed9,31 to 40,Some College,4,Male,1,White,Suburban,FL,7,2.3706514310731936
+b28db933-01af-43c8-9454-dbcf8f319472,71 to 80,High School Graduate,2,Male,2,Asian,Urban,AL,7,0.64226971140222
+bfe103c7-9347-4f0c-a4fa-97580ba3bcd7,71 to 80,Some College,1,Male,1,Two or more races,Suburban,OH,7,1.2716319299404923
+b49349f3-f1cf-4772-bff9-09ff32391fda,41 to 50,Some College,4,Male,7,White,Urban,WA,7,0.4424850528301764
+97bc7a31-185a-441a-987d-a255d2fedffd,51 to 60,Some College,7,Female,7,White,Suburban,CO,7,1.6695393094905606
+c66bc848-701f-49c9-97bd-331a6bb7cb50,41 to 50,Some College,5,Female,2,Black or African American,Rural,NY,7,0.3982607522085824
+91324cf7-7b6e-4973-b06c-9b4ba3f3a1e3,31 to 40,High School Graduate,4,Male,5,Asian,Suburban,OH,7,0.7781586390915478
+7c22986a-27bd-4453-a5b5-ea3c778920ed,31 to 40,Graduate Degree,6,Male,2,White,Urban,TX,7,1.2397459391306012
+ab1a6339-ec1d-4d83-92d6-1d63ae35b73f,51 to 60,College Degree,3,Male,5,White,Urban,IN,7,2.696507197525307
+7e0c4404-ee5a-4b8d-a6eb-ea3fb098c4f7,51 to 60,High School Graduate,1,Female,6,White,Suburban,FL,7,0.986618171979513
+1ee57904-5336-458d-8f17-c3c2bacb854a,51 to 60,College Degree,7,Male,7,Black or African American,Urban,GA,7,0.6750257463521298
+ab40f950-248a-4b32-9cfb-953d8cddb673,51 to 60,Some College,6,Female,3,White,Urban,OH,7,0.6345098482715383
+a254d0d5-f41c-4d09-92ea-1b0653aca6df,18 to 25,Graduate Degree,7,Male,5,Black or African American,Suburban,TX,7,1.619608047863141
+8ab89d11-3679-4481-90fb-07c1c1014bde,41 to 50,College Degree,1,Male,2,White,Suburban,CA,7,1.1689327086569006
+e08879c9-e468-4603-9249-30e337f0cdfb,18 to 25,Some College,7,Non-binary,7,Hispanic or Latino,Urban,IL,7,1.3463077656357734
+cc45c0cf-00e5-4912-9672-4843db6b79fe,41 to 50,Less than High School,6,Female,1,White,Rural,TX,7,2.2599974266573817
+a1e88b0b-a6c0-4c82-9787-5364621d43e7,41 to 50,High School Graduate,5,Male,4,White,Urban,TX,7,0.8727235089336302
+de838721-1665-43f0-b8b0-b00c8322f4d9,61 to 70,Some College,6,Female,4,White,Rural,WI,7,1.1099585843062123
+46b8d982-6e60-405a-926e-7d9c480ea493,31 to 40,Some College,8,Female,5,Black or African American,Suburban,PA,7,0.6275104602415558
+a2f2f2a1-e6b3-427c-920d-098f559d487c,26 to 30,High School Graduate,5,Female,1,White,Rural,IL,7,0.4275049860229507
+136120e3-ee4d-403b-b11f-66908b5409c2,26 to 30,High School Graduate,5,Male,7,White,Suburban,NC,7,0.50433272289294
+dd16fc6a-937b-4d53-b4cc-3f3c969c6e70,51 to 60,College Degree,10,Female,1,White,Suburban,NY,7,0.2
+fa7c6fa4-9aa1-446a-9a71-3b521bd737d7,51 to 60,Graduate Degree,7,Female,4,White,Rural,CA,7,1.230775375332149
+8bf0c50d-20c0-4c30-8cf9-f8c63293d8d9,26 to 30,Some College,5,Female,1,Black or African American,Urban,MN,7,1.1414097195218773
+f3d538ba-4d2f-49d0-ab52-995f12d2f3a6,18 to 25,High School Graduate,6,Male,2,Black or African American,Rural,OH,7,1.2121717669341412
+eb0bf505-db22-4816-a6e2-2c40ed66d42b,51 to 60,High School Graduate,4,Male,4,Hispanic or Latino,Suburban,CA,7,0.40248157293360604
+7a22eace-69b6-4148-aa44-65203bc22781,18 to 25,Less than High School,3,Male,3,White,Suburban,PA,7,0.5119103841512673
+69f1dc3e-e904-4ed6-80de-9bba9cee532c,61 to 70,Graduate Degree,5,Female,1,Hispanic or Latino,Suburban,NC,7,0.4977063723644254
+b70dd23e-7e4a-4008-94ff-5d8058aec235,51 to 60,High School Graduate,8,Male,1,White,Suburban,WA,7,1.782115108315866
+1005d7d2-0545-4b75-b3c3-5f32b268280a,18 to 25,Some College,8,Female,3,White,Urban,AZ,7,0.9595492098786046
+4fbbecb5-eeb7-42c5-80d4-8257c8738a10,18 to 25,High School Graduate,4,Female,5,White,Suburban,FL,7,0.865568662721517
+84e52b19-3b48-42f8-9b12-7b8a875003b3,71 to 80,Some College,5,Male,6,White,Suburban,NC,7,1.4346554084807954
+5dcf6e9d-fc22-4a9f-afa9-e08b8860ad4e,31 to 40,College Degree,3,Female,1,Hispanic or Latino,Suburban,FL,7,0.49915380517694047
+1b0dd482-10cd-48ed-b5a3-2ce6b052cc5d,31 to 40,College Degree,10,Male,2,Black or African American,Rural,OH,7,1.0903857348458663
+7ecb12a8-b083-4205-9b64-34ab604e8e8c,61 to 70,High School Graduate,10,Female,1,Hispanic or Latino,Suburban,PA,7,2.928481324652808
+27802bfb-01f2-4483-952b-3cb8462bb509,71 to 80,Less than High School,6,Male,1,White,Urban,CA,7,1.974907040462538
+003f4e9c-0dec-48df-a5fe-b4f0e1b2a1e3,71 to 80,High School Graduate,7,Female,4,White,Urban,MI,7,1.078418820226423
+8ddf4588-0d68-47e3-ba09-8bc02a8da7ff,51 to 60,Graduate Degree,6,Female,4,White,Urban,MI,7,0.8905585538744798
+0a8eff7f-5c8a-4d6c-b4ed-aeb6bbf0b9ea,31 to 40,Graduate Degree,5,Female,1,White,Urban,IL,7,1.20468484175687
+72f088a1-56e3-4321-8a85-4c891870fcce,18 to 25,Some College,1,Female,1,White,Suburban,VA,7,2.160168100177713
+8c25ef01-8300-47f6-a224-ea7ef3beccac,51 to 60,Some College,5,Female,1,White,Urban,TX,7,2.0585804970375405
+2b88c5d0-8c49-4758-bb07-54a956eb3919,41 to 50,College Degree,6,Female,6,White,Rural,NY,7,2.404291597834716
+264fc9cb-2fc7-4e3c-9795-cd9ea265df6c,41 to 50,High School Graduate,6,Female,7,White,Suburban,OH,7,1.000150470603663
+8822377e-a268-4d3e-bed6-195bd5dee79a,61 to 70,Graduate Degree,4,Female,1,Hispanic or Latino,Suburban,KY,7,0.2
+884e6850-6e1e-4309-a2c6-e449153f9051,26 to 30,Some College,9,Male,1,Two or more races,Suburban,VA,7,2.793595090894223
+4cc18259-604a-4f69-aaba-44a4a130cd87,41 to 50,Some College,2,Female,6,Native American,Urban,NY,7,0.4266591063267971
+23e62523-199f-42b1-b4e3-1f3cb520f100,18 to 25,Some College,5,Female,7,Black or African American,Suburban,OH,7,1.4182692006031792
+628bb1c0-1531-4081-aaf1-13f4ceef3759,41 to 50,Less than High School,6,Female,3,White,Suburban,TX,7,0.2
+b9b14e37-10d5-49ff-a9c3-62186686a96e,18 to 25,High School Graduate,6,Male,1,Black or African American,Suburban,FL,7,0.851837925899841
+d335b397-f680-45ff-8540-280f46225244,26 to 30,College Degree,6,Female,1,Hispanic or Latino,Suburban,TX,7,0.6432090865391022
+cf4469f4-e44b-49ec-a4da-1e90ba1e4ae4,26 to 30,High School Graduate,3,Male,4,White,Rural,CA,7,2.4079087347090806
+5b1d070e-44b2-4047-8be8-79153a010699,51 to 60,Some College,2,Female,2,White,Rural,GA,7,1.088481234543941
+587d44cd-023e-4ae3-8128-7de1b5316b27,51 to 60,High School Graduate,6,Male,1,Hispanic or Latino,Suburban,GA,7,0.8450173594014299
+8b24e658-5782-4340-8f74-9b8ae282bf3e,41 to 50,Some College,5,Female,4,White,Suburban,WI,7,1.177159238203796
+a79c6c2f-fad6-4c7f-a553-1f69dd5048f1,71 to 80,High School Graduate,2,Prefer not to say,1,White,Suburban,TX,7,0.2
+de19fd3c-12ce-4f9f-b433-2028056624f2,31 to 40,Some College,6,Male,5,White,Urban,OH,7,0.48928556291886177
+c8b6c88c-f9bf-4077-9210-b1bc1bcfda60,31 to 40,College Degree,5,Female,2,White,Suburban,OH,7,0.5562193175668635
+371c0b35-fe25-43ae-8d31-9d5c42064049,61 to 70,High School Graduate,6,Male,1,White,Urban,MO,7,1.312638411957875
+585f4655-6ece-4430-9501-a386eb3e8e16,31 to 40,Some College,7,Female,4,White,Suburban,WA,7,0.3455166816704375
+30d647f5-0352-4700-a887-a8b813e280fc,71 to 80,Some College,2,Female,2,White,Suburban,MI,7,0.9682721836238303
+6702e5dd-0207-4ccb-a436-2e867fa9e2f6,18 to 25,College Degree,1,Female,7,White,Urban,IL,7,0.7833304339383172
+5a0f9c54-73e4-4cd2-a166-cff9ab640e41,71 to 80,Graduate Degree,7,Female,4,Hispanic or Latino,Rural,CA,7,0.5126216830737751
+1fb0838f-10eb-4053-84b0-ebcf65efc57d,18 to 25,College Degree,6,Female,2,White,Rural,PA,7,0.5418416101331758
+94618f70-cad9-41b3-9b7d-15e56bc63b70,61 to 70,High School Graduate,6,Male,5,White,Suburban,OH,7,0.7777542186335122
+27749d62-6b91-4ae8-8fff-602b399f7a14,41 to 50,Less than High School,7,Male,2,White,Suburban,IL,7,0.2
+8e3f6624-3ee9-479c-99ed-9db81770d815,81+,High School Graduate,7,Female,7,Other,Rural,AZ,7,1.448375318512538
+0b454737-9312-4d2f-950b-dd553ee3ef56,18 to 25,Some College,9,Female,2,White,Urban,TX,7,0.4239624646380885
+7296838e-8a32-41fb-8acf-4d29b0049d4a,41 to 50,Less than High School,5,Female,4,White,Suburban,AL,7,0.6766308798483943
+92c922e9-5e28-4137-aeba-d2e414753315,71 to 80,Some College,5,Female,1,Asian,Urban,OH,7,2.349666287268596
+746566aa-7fc4-4589-81f0-e17e5e98ceda,41 to 50,Some College,4,Male,3,Hispanic or Latino,Suburban,WA,7,1.465743138058616
+86ce52a1-6bef-4e9c-aa9a-b045875b1256,51 to 60,High School Graduate,2,Female,6,White,Urban,KS,7,0.2892442060408349
+7cd4ff42-2e5b-4687-b83c-51e2fdea4aba,51 to 60,College Degree,5,Male,6,Hispanic or Latino,Rural,FL,7,0.2
+b2532ad7-8afb-48a9-b8d7-bdd1bfc5d541,41 to 50,High School Graduate,3,Female,1,White,Rural,OH,7,1.213541436781632
+704ae86b-e2b3-4c88-abf7-73fd59e1a0a4,51 to 60,Less than High School,8,Male,1,White,Urban,TX,7,0.6983692453331662
+99142635-5449-4401-8080-3c8ec9b12c5f,41 to 50,College Degree,5,Male,6,White,Suburban,MN,7,0.9726154666851907
+ed93dbda-f2f5-4cfc-9a74-1ad995f715da,61 to 70,Some College,5,Male,7,White,Rural,WA,7,1.4319113097542588
+79f893bd-95ec-44b2-ab58-382238126f20,18 to 25,College Degree,4,Male,1,Black or African American,Suburban,CA,7,1.5917521190577444
+031a1ee5-cf75-4c41-bb00-a2445b2235de,31 to 40,Some College,1,Female,3,White,Rural,MI,7,0.5930793057146765
+8ec7bc07-68b4-4ac9-8916-b6d591a32969,71 to 80,High School Graduate,1,Male,2,White,Suburban,OH,7,0.7677786242608298
+0044b487-d3d9-4399-a70a-00a4a11d92cc,61 to 70,College Degree,4,Male,6,Black or African American,Suburban,TX,7,1.1138664059806918
+5e44a9e3-b14b-4154-815f-850f824e662b,41 to 50,College Degree,2,Male,1,Hispanic or Latino,Urban,CA,7,1.1671444175101124
+5beb7e3b-8c9c-486e-957e-366483eb3e35,51 to 60,College Degree,6,Male,1,White,Urban,TX,7,0.9655368834568429
+4aece62f-72ca-4de0-ba77-6984cd7c395d,31 to 40,High School Graduate,8,Male,5,Black or African American,Suburban,MN,7,2.17835631917809
+97440014-2f25-4b95-bd0e-02ff647d603b,26 to 30,Some College,8,Male,1,White,Suburban,IL,7,1.1577674285923105
+7232b095-a16d-425e-8816-84732c9dec3f,41 to 50,Some College,6,Female,3,Hispanic or Latino,Suburban,CA,7,1.4171660399293604
+dd4ff4dc-a25f-4f4f-85fa-f7427922549c,31 to 40,High School Graduate,3,Female,3,Black or African American,Suburban,TX,7,1.0269107928450625
+b48bbb31-653f-4c2f-9cbe-df88adb8fb3b,41 to 50,Graduate Degree,8,Female,2,Other,Suburban,CA,7,0.34311624560485354
+d208d896-253d-4690-9b2d-05e06d20363e,18 to 25,High School Graduate,8,Male,2,White,Rural,FL,7,0.48793092311471997
+88217689-c38b-4c49-8e1e-78fa47ad11ae,71 to 80,Graduate Degree,3,Male,4,White,Rural,FL,7,0.2772735644507022
+4d976279-826d-44a6-b6b0-f04439292260,71 to 80,Some College,6,Female,1,White,Suburban,TX,7,1.7156211267368853
+4f243f2a-5ab2-457d-9a57-3ce27a7ba3d9,31 to 40,College Degree,5,Male,7,White,Urban,TX,8,0.9205720475647005
+5afe7ba3-bbc6-4edf-b1b8-c7ff0420501d,71 to 80,Some College,3,Female,4,White,Urban,PA,8,0.7452764468776883
+96c99405-a329-4e9c-8367-73949682783e,51 to 60,High School Graduate,6,Female,1,White,Rural,MO,8,0.4638810199246612
+4d9be0b2-0793-437a-88a5-038c3e059e80,41 to 50,College Degree,1,Female,1,White,Urban,WA,8,0.23021726064217735
+16f38265-504b-48ad-8017-eea8621a6302,26 to 30,College Degree,4,Female,6,White,Urban,CA,8,0.962744091770421
+6c2bb561-078c-423f-98d6-e2b31115f9f9,26 to 30,High School Graduate,5,Female,4,White,Suburban,CA,8,0.8101013243361599
+86362c6a-464a-49c2-a3be-746eb4ab867e,18 to 25,Graduate Degree,2,Female,4,White,Suburban,TX,8,0.9318234960442783
+8b6462f8-6cee-4662-b69f-b72b032c7fb3,61 to 70,College Degree,10,Female,5,White,Suburban,KS,8,0.5396939101187543
+9df8f803-a470-47c9-8cc4-86aa9bae2b04,51 to 60,Graduate Degree,3,Male,5,Black or African American,Urban,TX,8,3.0
+d9319b42-607c-48d2-9aa2-2bdac7737a3c,51 to 60,College Degree,2,Female,6,Hispanic or Latino,Suburban,TX,8,2.055695471486259
+a1bc54bd-810b-40ec-a79b-15775ab4b5b2,18 to 25,Some College,3,Male,1,Hispanic or Latino,Urban,CA,8,0.4992548876273397
+933cbb50-7fab-40d8-bb34-766b0772ec01,71 to 80,Some College,7,Non-binary,5,Black or African American,Urban,TX,8,0.3350411145749296
+368f303b-d7a0-4846-b9fd-fc73f28760d5,61 to 70,Graduate Degree,4,Female,6,Other,Rural,KY,8,0.4663462669227056
+c5b1cb5b-5ee5-4c71-97e8-8edafa28d726,26 to 30,College Degree,5,Male,2,White,Urban,MI,8,1.6271807849129494
+37307c55-cc42-45e2-b214-bfa9230b6b33,26 to 30,Less than High School,1,Female,4,White,Suburban,NY,8,1.6534959815548496
+55952981-ecd2-45a9-89cf-fa35ce441266,26 to 30,Less than High School,1,Female,2,White,Suburban,VA,8,2.0719995816575127
+69fbb73a-4503-430d-a24d-d135bbd7f1df,31 to 40,Some College,5,Male,7,Black or African American,Suburban,AL,8,0.39533024759078705
+94c54ffc-784c-4b54-91fd-fefb354fa4ec,41 to 50,College Degree,7,Female,1,Asian,Rural,MA,8,1.1793834598729556
+f13bb98b-81b6-4af6-a2bf-716daaeece6c,41 to 50,Graduate Degree,8,Female,4,White,Urban,NY,8,0.42783467079730214
+b0e0b302-cc19-4a81-bc9e-b3f5ef25ea1e,31 to 40,High School Graduate,2,Male,1,Native American,Suburban,OH,8,2.3638436059535812
+937c2b6e-fabf-4aed-be2a-d1105a2c9b1c,51 to 60,Some College,5,Female,5,White,Rural,NY,8,0.4073511214199662
+59618bde-8d17-4599-84cc-0d066b3fc9a0,26 to 30,Some College,8,Male,1,Native American,Suburban,CA,8,0.26806294753912274
+08ec628a-c109-47d4-af34-ecd6ace12dbc,31 to 40,Graduate Degree,4,Female,1,White,Rural,FL,8,0.3178537278780572
+d03b398c-870c-4dad-ab3c-c7f036b93237,31 to 40,College Degree,7,Female,3,White,Urban,IL,8,0.8269946763644491
+53969b18-1021-4af9-bd1e-7df4b4b51a8d,41 to 50,College Degree,2,Female,7,White,Suburban,TX,8,1.3457568857279223
+296ad6f6-e788-483b-bf6e-2f8244204174,51 to 60,Some College,8,Male,1,White,Urban,FL,8,1.2869964179290754
+2423ef3d-884d-4d0a-bdd8-09ca7396319f,26 to 30,Some College,7,Female,1,White,Suburban,CO,8,0.33051728047260537
+1f657f57-fbec-4117-9425-53ad22e80606,41 to 50,High School Graduate,9,Female,5,White,Rural,WA,8,0.6148652365967349
+c0195e07-fe9b-4a26-a325-bdca8ba1d71e,41 to 50,Less than High School,6,Male,3,Hispanic or Latino,Urban,AL,8,0.5521581101777359
+357b7b73-c957-47d6-b2d2-282199a7e4fb,18 to 25,College Degree,4,Female,7,White,Suburban,WI,8,0.28849926083828886
+7e8fbb42-cb09-44af-a659-15698603fa2e,51 to 60,College Degree,8,Male,1,White,Urban,NY,8,0.5415703224021899
+a755be8c-d515-4229-baef-b727c03f6b34,26 to 30,Graduate Degree,3,Female,4,Black or African American,Suburban,TX,8,2.0149103015555223
+2a27795e-fa3d-4f82-9a4b-c62f1b7de7ed,18 to 25,Graduate Degree,4,Male,1,Black or African American,Suburban,FL,8,0.25242662055389636
+edfb3b12-f056-4520-90ba-b53600f4297a,71 to 80,Some College,6,Male,1,White,Rural,AL,8,0.9773728270122699
+901549cd-7582-4b03-959e-d07db2cbcb9b,71 to 80,College Degree,7,Male,5,White,Suburban,OH,8,2.0451052842056647
+220d8757-a218-4f1f-8d0e-3ec4d8db9dc0,61 to 70,Graduate Degree,8,Female,4,White,Suburban,TX,8,1.9773185016892403
+7eeaa13e-a790-48ef-affe-738e0c509696,31 to 40,College Degree,3,Male,5,White,Urban,OH,8,2.434661844089945
+81e64662-a50a-4cc2-868a-14cbc419e450,18 to 25,High School Graduate,7,Female,2,Black or African American,Urban,CA,8,1.046303780492261
+e73c20ac-3dc2-4602-865b-2256ec25d6f8,51 to 60,Some College,6,Male,3,White,Urban,PA,8,1.1567696537553516
+501bef48-4d34-4721-9dc8-f0afdb760ca0,41 to 50,High School Graduate,1,Male,3,White,Urban,PA,8,0.5498543556030737
+0d723ee2-1318-48d4-8681-45faee37e5c7,26 to 30,Graduate Degree,4,Female,7,Black or African American,Rural,NY,8,0.24703783112310304
+080156de-2c9e-4ba3-86f4-f42f932cc56e,41 to 50,Some College,3,Female,2,White,Suburban,PA,8,0.7442384463728139
+114ab10d-ba3d-4270-951f-f015dc84d03a,18 to 25,High School Graduate,4,Male,2,White,Suburban,TX,8,1.760467196923066
+ac40803a-7d22-44c7-a537-1ddf480dff6a,61 to 70,College Degree,10,Female,2,White,Urban,NC,8,0.2
+7e21e132-4388-4230-a331-4eb9ffdfedca,31 to 40,Some College,6,Female,4,Two or more races,Rural,CA,8,0.5703930510410452
+446e61e7-a60d-46b7-a687-af19c31feb7f,51 to 60,Some College,6,Female,2,White,Suburban,MA,8,1.2356044110919715
+c3997498-fe46-4628-93cc-c998eb3c804f,31 to 40,High School Graduate,9,Male,7,Hispanic or Latino,Urban,CA,8,0.8353668341259246
+f8454ba5-c9ae-48fe-be6c-2bc7183d840f,41 to 50,College Degree,4,Male,2,White,Suburban,IL,8,1.9061271146990293
+c99cca39-4e4a-4934-b8fe-da7fd76764f2,41 to 50,Some College,7,Female,6,White,Suburban,IL,8,1.6422089481646636
+b55b0800-cf70-4490-a338-a02be08796f8,26 to 30,College Degree,4,Male,1,Black or African American,Urban,CA,8,0.21692428750248707
+0e7ec13f-99cc-4f51-bf86-818507328781,71 to 80,Some College,8,Female,4,Other,Suburban,GA,8,0.8879532192094102
+2d1a462f-7647-4ff4-9913-0daea4636f93,51 to 60,College Degree,3,Female,7,Black or African American,Suburban,CA,8,0.4461343876088108
+d335e017-cc9c-42ca-bd3e-2c861d765286,71 to 80,Some College,9,Female,1,Hispanic or Latino,Urban,TX,8,0.44121603217723737
+54833a1b-466c-43b8-89ff-9dd0da67845d,61 to 70,Some College,3,Female,7,Asian,Rural,WA,8,0.23461082704634467
+a4a21c24-ef3a-4381-991d-e2afbfb85094,41 to 50,Graduate Degree,4,Prefer not to say,3,White,Rural,CA,8,0.9982008208675995
+f2f9dac2-4e2b-4b8c-8aaf-4cd26a3c2367,61 to 70,Some College,7,Male,7,White,Suburban,WA,8,1.9321782894645054
+5f6939e6-7bbb-4c3d-a524-c392a6d3342b,18 to 25,High School Graduate,4,Female,5,Black or African American,Suburban,MI,8,1.0626242268447041
+3e8b0654-2789-4422-9f7e-c518d5dea256,26 to 30,Less than High School,6,Male,2,White,Suburban,FL,8,0.21977141643820045
+20687948-2968-4eb7-b676-5051edc10e9d,18 to 25,College Degree,5,Male,1,Hispanic or Latino,Suburban,CA,8,0.8005158994100967
+1afc7dcf-b84d-4889-89ee-0c1461f0d352,31 to 40,Some College,7,Female,2,Asian,Suburban,MI,8,1.2020865905529152
+52ad1df5-b6e3-4e37-a4c2-686bb9df25fc,31 to 40,College Degree,3,Female,1,White,Urban,PA,8,0.7562237910871332
+52e6386e-72b5-4f8a-bf01-732ee39e3dd3,31 to 40,High School Graduate,1,Non-binary,1,White,Suburban,OH,8,1.0491643933298505
+b2618aa9-e3b9-439a-a2ae-e2b547647504,61 to 70,High School Graduate,3,Female,1,Hispanic or Latino,Suburban,AZ,8,0.4776994830039468
+47457d65-2c80-47c1-a93c-58ac1d78cda3,31 to 40,Less than High School,5,Male,3,White,Suburban,CA,8,0.690254489179932
+6fd2f80f-00cf-4c56-bae6-ea091a2fa4da,31 to 40,Some College,2,Male,5,Hispanic or Latino,Urban,IL,8,0.6573474380084834
+0202a51d-2260-454c-bc92-889110d7bfc3,41 to 50,Some College,4,Female,1,White,Suburban,FL,8,2.1668132163650977
+d63300d9-eeba-49cc-99d4-0f1691839910,26 to 30,Some College,4,Male,1,Black or African American,Urban,FL,8,0.3371662445249573
+513cde50-d9c4-438a-9522-ba67af8c94a3,61 to 70,Some College,1,Male,4,White,Urban,FL,8,0.2
+fda90cd4-21d2-4b3d-a5b6-9df31956119b,18 to 25,Graduate Degree,5,Male,1,Black or African American,Urban,TX,8,2.077400862846895
+7fe9523b-57a5-42fd-9fe0-93d50c4869fe,71 to 80,High School Graduate,8,Male,1,White,Suburban,VA,8,0.9103559607393232
+5d8c40f2-69c0-487c-a2d7-652e65448547,51 to 60,Some College,2,Male,1,White,Suburban,IL,8,0.27457529823523047
+40ca9e85-f971-4658-bb2d-5d93b2840826,26 to 30,College Degree,5,Male,7,White,Suburban,TX,8,1.547105752841951
+2bd6263e-9237-44b2-9109-f5fcc3d949fc,18 to 25,Some College,6,Male,6,Hispanic or Latino,Urban,GA,8,1.2536970080941432
+9debe371-5d88-426d-a968-58498df38c3e,61 to 70,Some College,4,Male,2,Asian,Rural,MA,8,2.3979958313653817
+d3a4cd29-f099-41ef-a885-12e4d5973886,51 to 60,College Degree,6,Non-binary,4,White,Rural,CO,8,0.9639388497983372
+9f81900f-49f1-43e7-b234-f105bce5b97a,51 to 60,Graduate Degree,4,Male,4,White,Rural,NY,8,3.0
+9ef7b9cc-35c6-461c-8e12-6d1bd8f495f4,51 to 60,High School Graduate,5,Male,5,White,Urban,WI,8,0.7614036894645148
+097111db-c6a4-41a7-8269-6e1b49197edd,18 to 25,Graduate Degree,1,Female,5,Black or African American,Suburban,NC,8,1.2553328727845479
+c0010ecf-8be3-4194-843e-ed82d3c898fc,31 to 40,Some College,6,Male,4,Black or African American,Rural,GA,8,1.3820623961210676
+2086e42f-c5fd-44db-a1be-dfefd67e1d32,26 to 30,High School Graduate,6,Female,2,White,Suburban,NY,8,0.5886348033445135
+7f0b56a3-ed8a-4548-8e5c-f447451c7709,61 to 70,Some College,1,Female,1,White,Urban,CA,8,0.5735827343928871
+69b0e204-450f-422f-8f02-224387f8725b,51 to 60,Graduate Degree,4,Male,3,White,Urban,TX,8,1.4015242201531461
+e001911c-ef0a-4f75-855f-d2de04c69b72,31 to 40,Some College,9,Male,6,White,Suburban,MI,8,0.2517537727807383
+1addaf79-275f-4f2d-936e-44b6a93af26e,18 to 25,High School Graduate,4,Female,4,White,Rural,KY,8,0.44355967091578263
+7807996f-b5f6-4bf4-8689-4e0d1b6c7f2f,31 to 40,Some College,5,Female,6,Two or more races,Suburban,NC,8,0.7452741196672511
+df1e77d0-56d4-459d-b99c-0b9f5476089b,31 to 40,High School Graduate,8,Male,7,White,Suburban,NY,8,2.3493876317621023
+1392eace-592a-4c38-893f-2a14a63fadd0,51 to 60,Less than High School,6,Female,1,Black or African American,Urban,CA,8,1.4021804412290815
+1c679a5a-6ac5-4f73-82d2-ed5aec11bb51,51 to 60,High School Graduate,5,Male,5,White,Suburban,NY,8,0.8837688833970178
+3182da0b-f3ca-40da-8ec0-5ea8916eb10a,61 to 70,High School Graduate,7,Non-binary,5,White,Suburban,FL,8,0.5447190959344219
+80281044-42d0-42da-a0e2-4ffbb3f6221c,41 to 50,High School Graduate,8,Male,7,Black or African American,Suburban,OH,8,2.9688047173830943
+98e1f81f-9b4f-4c95-8cd1-8f2bcd98d9b9,26 to 30,High School Graduate,5,Female,7,Black or African American,Suburban,TX,8,0.796510140673045
+8d90401a-73e5-4aa4-bfa4-c9ed8fcde86a,51 to 60,Some College,5,Female,5,Two or more races,Rural,TX,8,0.44318522384342485
+7028b86f-c9d2-4155-8dbb-aab96ac905f7,51 to 60,High School Graduate,4,Female,1,White,Urban,MN,8,3.0
+7958f11b-cb9f-41e8-b276-41107647daf9,41 to 50,High School Graduate,9,Female,5,White,Suburban,MI,8,0.26347475688735417
+0f27ccd1-08fe-4368-ad58-bf4b4c27d47a,51 to 60,Graduate Degree,6,Male,1,Black or African American,Urban,CA,8,1.9719611513132018
+54836810-5bff-4784-bba7-eb0fe5f676bc,41 to 50,Some College,2,Male,5,White,Suburban,PA,8,0.8427339810744507
+41ddec93-efbf-4aaa-a44e-e0d8e52d7b76,41 to 50,College Degree,8,Male,7,White,Suburban,FL,8,1.3998557152839777
+398d2897-9fcb-45ce-8409-a62f64bf2fbc,41 to 50,High School Graduate,5,Male,2,White,Suburban,MI,8,1.2314494461089065
+058b5e04-af6d-474f-a837-aaccdb4e6a9d,18 to 25,High School Graduate,1,Female,4,White,Suburban,FL,8,1.3859764627403415
+cf83494f-53a6-4de2-ac86-c4986ddcf576,26 to 30,Less than High School,5,Male,3,Asian,Suburban,CA,8,3.0
+5845ffa3-5839-40ca-ba54-cb5968ada47c,18 to 25,High School Graduate,4,Male,3,White,Rural,NY,8,3.0
+1527b29e-f0b6-42eb-8618-f8842fe1b238,51 to 60,High School Graduate,8,Female,2,White,Suburban,CA,8,0.4640115301835604
+42d1e3f9-354b-4a5e-9aa2-305c3cb050f8,31 to 40,High School Graduate,3,Female,5,White,Urban,PA,8,1.1987977409144
+d768d119-730f-4bb1-911e-bdc554cba377,41 to 50,High School Graduate,7,Female,7,White,Suburban,GA,8,0.2
+c44ba6a3-2e86-41c8-91bc-81009b93bb1f,61 to 70,High School Graduate,5,Non-binary,7,White,Suburban,AL,8,1.4902677520478564
+40ea4fcb-e102-423b-b613-4506cfddf610,31 to 40,Some College,1,Male,1,White,Suburban,MI,8,1.73354083740889
+8afd68dd-6f40-4bbe-a04e-f53157ba0206,41 to 50,High School Graduate,9,Male,6,White,Rural,AZ,8,0.2
+974663b2-e7b7-41be-a1ee-088ef3b9fcc5,51 to 60,Some College,5,Female,5,Hispanic or Latino,Rural,FL,8,0.8191906588515789
+6797e43f-7ebb-4d6d-8087-5696100f598f,31 to 40,Some College,3,Female,2,White,Urban,OH,8,1.3980896224268333
+47d58549-9467-486f-a414-38086c89dcee,18 to 25,College Degree,5,Male,1,White,Rural,CA,8,1.0811837119814975
+064f93ec-6337-4889-9653-4dc3b8fbfbbf,31 to 40,Less than High School,7,Female,2,Asian,Urban,TX,8,0.2688831125872756
+76b260a9-7a60-4af6-9534-80de19e8f457,26 to 30,College Degree,4,Male,7,Black or African American,Urban,AL,8,0.2987915116174381
+94934e37-552c-4be8-a910-08c004c98e89,61 to 70,Some College,3,Male,4,White,Urban,FL,8,0.7470835514555023
+404adfa4-e36b-425d-aeeb-861d58707ea6,61 to 70,High School Graduate,2,Female,5,White,Rural,OH,8,0.5885680651012972
+39910353-4c3a-48bf-896b-ecb98907fab8,51 to 60,Graduate Degree,3,Female,2,White,Suburban,GA,8,0.6351251793303683
+74df9f38-0ac5-4faa-801b-f6d259572825,61 to 70,Graduate Degree,7,Female,5,Black or African American,Urban,CA,8,0.2328257978726675
+9ce684e9-d6e5-4e8c-a0c5-bb1f68fd9313,61 to 70,Less than High School,5,Male,1,Two or more races,Suburban,IL,8,0.8537640047012071
+4571fd8d-e23d-4a96-850d-0d0d4969fccb,26 to 30,High School Graduate,3,Female,2,Black or African American,Suburban,FL,8,2.3613320853200537
+aee94e35-7208-4c76-a879-851c69d09be8,61 to 70,College Degree,2,Male,4,White,Urban,TX,8,0.28048108999216814
+182fc85f-d126-4fdf-86a8-008f1d527bb0,41 to 50,College Degree,4,Male,1,Hispanic or Latino,Rural,FL,8,0.6994277047229269
+81e66365-cb54-4d53-9732-2daa55a7b45f,61 to 70,High School Graduate,8,Female,6,White,Suburban,PA,8,1.2919493559677722
+cb45d55c-2f00-4f9b-b2df-398ab886b5ce,61 to 70,High School Graduate,4,Female,1,White,Suburban,TX,8,0.2
+00551739-36bf-4205-92dd-54903bcef4bf,31 to 40,Some College,10,Female,4,White,Rural,IN,8,0.8602693898838911
+d5beaba6-c465-4188-9e6e-54df3cba3bcf,26 to 30,Some College,5,Female,3,Other,Suburban,TX,8,1.6981032231092872
+aebca894-9dbf-4f5a-9e01-0db58fe4807c,31 to 40,Some College,2,Female,4,White,Rural,IL,8,0.34244046236298276
+cff0d6a7-6270-4571-8839-1592dd6ceb33,41 to 50,Some College,8,Female,1,Black or African American,Suburban,WA,8,0.9241875348487002
+618560f2-82ee-4adf-824e-2782907d4b26,61 to 70,Some College,5,Male,1,White,Suburban,CA,8,1.6155804117446124
+1a64d391-0db4-46dd-99b5-02f517b601fb,61 to 70,College Degree,6,Male,7,White,Urban,NY,8,3.0
+2defe1db-4277-4833-b582-50530e54d9c4,18 to 25,Less than High School,10,Male,2,White,Rural,MI,8,0.8890889973833593
+c819f1e5-ac11-440a-88ad-6dcddd6f0697,41 to 50,High School Graduate,1,Male,6,White,Suburban,IL,8,0.4523714218154975
+2746e5eb-4cd3-4f5c-9a93-f839f47eb472,41 to 50,College Degree,2,Female,7,Hispanic or Latino,Urban,NY,8,0.45573500598885774
+cbee5385-12ac-404a-880a-d74747fe1c0b,31 to 40,Graduate Degree,6,Female,1,White,Urban,OH,8,0.2190661463293099
+ee67a111-d48f-444e-b107-c3d71c341497,26 to 30,Some College,3,Male,2,Black or African American,Suburban,AL,8,2.488305819561416
+8a2e51a9-8161-4bac-8002-9213e96f6358,31 to 40,Some College,3,Male,4,Hispanic or Latino,Suburban,CA,8,1.549128942679826
+f1e3acd7-8fd5-4855-a18c-e1b0dcec3ec5,71 to 80,High School Graduate,1,Female,7,Native American,Suburban,OH,8,0.2987195340468359
+87b2c309-8cdd-4df4-8d2f-2da2d44fee1f,31 to 40,Some College,1,Male,7,White,Rural,NY,8,0.42986913665739307
+d74afb38-ed60-4bf6-9775-603cb13f4c7b,41 to 50,Some College,7,Female,3,White,Urban,WA,8,0.8780506245586184
+cae7b581-4830-41e4-8c92-44300d36de5b,51 to 60,High School Graduate,2,Female,5,White,Suburban,PA,8,1.6894134959490335
+84033301-b4e7-44ef-998c-6abb6b60b138,31 to 40,High School Graduate,5,Female,1,Two or more races,Urban,WA,8,1.2009288554617639
+be03b5f3-25aa-45aa-b1b8-3150b002ef42,71 to 80,Some College,6,Female,7,Native American,Rural,OH,8,1.119302255901462
+f81377c6-e2bc-491f-81f4-166751324830,71 to 80,Less than High School,4,Female,7,White,Suburban,FL,8,0.9703946634006513
+ac8f81c4-788d-41ed-be56-531f1a379e6d,31 to 40,High School Graduate,1,Male,1,Hispanic or Latino,Suburban,CA,8,0.31464999204606353
+61d3eaf3-ec56-46ac-8492-aa28a09c4097,41 to 50,High School Graduate,7,Female,2,White,Suburban,PA,8,0.8867752660364641
+5740e675-613c-4ee8-b8da-2409d113f2c5,31 to 40,High School Graduate,1,Female,1,Black or African American,Suburban,NY,8,0.8078459688752088
+c6a40f24-f3cb-4fcb-be44-97ca9d5ed9a5,31 to 40,High School Graduate,7,Male,2,White,Suburban,AZ,8,0.21582906118676026
+dc51fec8-7c03-4c0c-84b1-de7b93f8302e,18 to 25,Graduate Degree,8,Female,6,Hispanic or Latino,Suburban,IL,8,2.447389235569491
+4851c413-d0ec-4ad7-8a08-ff194a2e5cc6,51 to 60,Some College,4,Female,2,White,Suburban,WA,8,0.5078146276034505
+46dc8fcc-899f-45de-86b2-4b46ddbc237b,41 to 50,College Degree,5,Female,1,Hispanic or Latino,Suburban,MI,8,0.2220890078339917
+33385b49-0911-41b6-bef5-84fd7f8dec55,18 to 25,College Degree,5,Female,2,Hispanic or Latino,Suburban,IN,8,0.5823113068750958
+8271a08e-c7b1-43ff-808e-3fd152bce98e,31 to 40,Some College,4,Female,7,Black or African American,Suburban,KY,8,0.6778561528304703
+1144949b-b148-4c7a-a5f3-2ebbd16f681e,61 to 70,High School Graduate,8,Female,4,White,Suburban,CO,8,0.7891884255716648
+fc094740-af32-4409-93d7-5d8f4a6fcd78,31 to 40,Some College,8,Female,3,White,Urban,IL,8,0.6688356094964354
+630ec1a3-e184-48c6-850e-a1266fb70985,26 to 30,Some College,4,Female,1,White,Suburban,IL,8,0.8241557589237074
+c1767bf7-8474-4262-8323-693cfce8445d,41 to 50,College Degree,6,Female,7,White,Suburban,CA,8,0.9336763485567572
+2a5f0738-145d-415e-87e6-1f75049eef40,71 to 80,Some College,8,Female,6,White,Urban,PA,8,0.898088958610772
+2b6a8559-474e-4306-903a-4516356d5337,31 to 40,High School Graduate,9,Female,2,Native American,Urban,IN,8,1.1133394089805444
+0803f809-cfbb-4ebb-871f-57f8828e1880,51 to 60,High School Graduate,5,Male,1,White,Urban,TX,8,1.1617501274709194
+cbd5994f-7cea-4f12-a064-d49e42208225,51 to 60,Some College,5,Female,1,White,Suburban,TX,8,1.182756869134912
+d845ceb6-6063-4578-bc11-5d78f39262e9,31 to 40,Some College,3,Female,1,White,Suburban,CO,8,1.3979780250507188
+c2b28716-1ee0-42cd-8a58-e0e63984c993,51 to 60,Some College,9,Male,4,White,Suburban,NY,8,0.4615538434078106
+b6708d64-24e3-4116-81b3-e408e5a0eb0f,31 to 40,Some College,2,Female,7,Black or African American,Suburban,MA,8,0.47620813510405974
+3916d9de-09c7-4f3a-a6ce-4a69bf03ac71,51 to 60,Graduate Degree,5,Male,3,White,Suburban,TX,8,1.6947047052198392
+d2a72d35-3973-4978-9c0c-d20f1fd5f73a,51 to 60,Some College,3,Male,6,Asian,Suburban,CO,8,0.5970192186784279
+251865ea-b4a5-4627-8241-f7da53450d6b,41 to 50,High School Graduate,3,Female,3,White,Rural,NY,8,0.7556541626744429
+d7738b21-92fc-4fe2-965f-c399f79b2808,18 to 25,High School Graduate,4,Male,5,Two or more races,Suburban,NC,8,0.7041971275256462
+a4e3a83a-5978-4ad1-8389-0cf3bd6dc857,61 to 70,High School Graduate,10,Female,5,Hispanic or Latino,Rural,FL,8,3.0
+4bd720e6-4d48-4b32-84d2-8144d1741b29,31 to 40,High School Graduate,1,Female,1,White,Suburban,CA,8,0.3953939061374679
+d2edf003-ad1c-4ded-8c37-5d735273ada0,26 to 30,High School Graduate,5,Female,2,Native American,Urban,NY,8,0.38873169300971844
+4b97394e-3236-4732-96dd-e8d7f13c6e36,18 to 25,High School Graduate,2,Male,4,White,Suburban,OH,8,0.8263382905761123
+e9bcbf6f-dc54-4ad0-b338-5707608d9cb8,41 to 50,High School Graduate,2,Male,1,Hispanic or Latino,Suburban,FL,8,0.7200297630016476
+3e3b26f5-bea4-48c4-947f-455f33470bf6,51 to 60,High School Graduate,4,Female,2,White,Suburban,NY,8,0.2959828044198859
+6a40c2d7-e7dd-4e7b-90d5-642951f0f7c6,18 to 25,Graduate Degree,5,Non-binary,4,Asian,Urban,IL,8,0.7753736729800291
+1699ab15-8b22-451c-aeab-db82169361af,41 to 50,High School Graduate,3,Female,7,Asian,Urban,OH,8,0.8437204692202321
+40eda7ab-13eb-42b4-ab4c-ecdf67f7d402,31 to 40,Some College,4,Male,3,Hispanic or Latino,Rural,CA,8,0.5487125432493011
+fe7ab66e-be74-4932-83da-aa235fdb6075,51 to 60,Some College,2,Female,6,Hispanic or Latino,Urban,TX,8,0.7398441592600906
+f9968437-0099-40fd-80cf-45c0099846d9,26 to 30,Graduate Degree,4,Female,3,White,Rural,FL,8,0.4301777774450453
+6f5fb2ee-8598-42a2-a713-8875c65d4fe9,51 to 60,High School Graduate,9,Female,5,White,Urban,IL,8,0.2966684179948561
+ad007e47-d44b-4e4a-9b12-d1f5a926d4d0,31 to 40,Some College,9,Male,4,White,Suburban,CA,8,0.59332291889502
+aa9ce69b-a163-484a-a786-c097227a0423,71 to 80,Graduate Degree,4,Female,6,White,Suburban,CA,8,0.3418754691427755
+ac12c551-82c3-40ea-b934-3b3210c0746b,26 to 30,College Degree,5,Female,3,Black or African American,Suburban,MI,8,0.24388687826229175
+6aae84d8-18de-405f-9451-a43869224a42,31 to 40,College Degree,8,Female,4,White,Urban,FL,8,0.2
+67ae492e-6d69-410f-84f9-e398efaef654,26 to 30,High School Graduate,1,Male,4,Two or more races,Urban,TX,8,0.982595921234386
+5389f241-4112-4315-9d7c-6c2f26cb5999,61 to 70,High School Graduate,7,Female,3,Black or African American,Urban,AL,8,0.577159683764401
+6a6a8e15-c465-4fcf-a029-e14067cc4d20,61 to 70,College Degree,9,Female,1,Hispanic or Latino,Urban,IL,8,1.7015002042429865
+48238ea3-808d-4794-860b-7a0effef68f2,31 to 40,Graduate Degree,2,Male,1,White,Suburban,GA,8,0.617149645195678
+9fb4af24-2066-4624-bf76-7906630f8e34,51 to 60,Some College,2,Female,1,Asian,Rural,AL,8,0.9791055531657077
+3887ae8a-8c92-4268-9abf-f07cd1376506,61 to 70,Some College,9,Female,6,Native American,Rural,CA,8,0.4867890063831809
+0f90b604-1efe-4098-8fd0-2a268452c970,41 to 50,High School Graduate,5,Male,1,White,Suburban,IN,8,0.8069621895301735
+959b38f7-209c-4b39-a71c-89323d0e8528,41 to 50,College Degree,1,Male,1,Black or African American,Suburban,MI,8,0.2
+0728c354-328f-4970-9029-87af07429bec,31 to 40,High School Graduate,3,Female,5,Hispanic or Latino,Suburban,IL,8,0.5861323366327228
+b1646579-3ec9-4cf2-adfb-194771d79426,18 to 25,High School Graduate,5,Male,2,White,Urban,MI,8,0.3976719998391819
+6b92e6f0-4a70-4825-b134-595932f1bc59,61 to 70,Some College,6,Female,3,White,Rural,NC,8,1.5850413572853814
+f3f51f93-6535-4f31-ba6f-19c337430f51,61 to 70,Some College,6,Male,1,White,Suburban,AL,8,0.9335775657256844
+c27a7fa7-c902-488d-b2a3-eeb5308e2b10,51 to 60,High School Graduate,10,Female,7,White,Suburban,KY,8,1.436427612459462
+a2b5e523-66df-404b-a0ba-0d0cab3b8c87,31 to 40,High School Graduate,3,Male,6,White,Urban,WA,8,1.8285924277657
+941530cd-9281-4053-b402-03d58bb15fe5,31 to 40,Some College,5,Female,6,White,Suburban,MI,8,0.5475425191486348
+b485c728-7df7-4fda-a159-34a2565f8525,51 to 60,High School Graduate,5,Female,3,White,Suburban,NY,8,0.9044431042922643
+20ad0cc6-0ab1-43cf-86ad-cd0445000795,61 to 70,Some College,4,Female,5,White,Rural,FL,8,0.3130260652881479
+5b582db6-75cd-416f-a50b-fbfd5bc63e66,61 to 70,High School Graduate,2,Female,1,Two or more races,Suburban,PA,8,1.0882849506158856
+11613f6c-8b2a-4b58-bfa5-9a49ac36932a,51 to 60,Some College,9,Male,1,White,Suburban,PA,8,1.2030736906847472
+7299d01a-44b1-4ff8-b0a4-dad03d07d427,51 to 60,Some College,7,Female,1,Two or more races,Rural,MI,8,1.0356136862786438
+1526024e-29e8-46ab-bf7c-edfc6ee32647,18 to 25,Less than High School,5,Male,4,White,Urban,WA,8,0.5470341035986671
+b60ba261-f4ce-46e8-b057-4304ea5d6a21,26 to 30,High School Graduate,6,Male,3,White,Suburban,CA,8,2.597855892051106
+60c8aa61-afc3-4690-b7a5-8ebb65bd43b9,61 to 70,High School Graduate,3,Male,3,White,Urban,AL,8,0.842045693317932
+7f5c41fa-fd0f-4b66-afd0-650fef3e5da0,51 to 60,Less than High School,5,Female,1,White,Suburban,PA,8,0.31477161461696684
+4cabe0d1-b05c-4d3d-a310-f3c8b8088d12,18 to 25,Graduate Degree,6,Female,3,White,Rural,TX,8,1.2839134245580894
+ef0e757b-44c4-440e-ab7d-784cabccb622,26 to 30,High School Graduate,5,Female,5,Black or African American,Urban,CA,8,1.6172239415325431
+79302552-fa77-48e5-a589-776b20d5fb42,51 to 60,College Degree,10,Male,3,White,Rural,FL,8,0.32064203666385843
+ec54ae4a-c441-43c5-b4e7-81c476302818,18 to 25,High School Graduate,6,Male,5,Black or African American,Urban,AL,8,0.6782361003511196
+25ec587a-46ac-4713-9a5e-e78fdd8683ce,26 to 30,College Degree,4,Prefer not to say,1,Black or African American,Rural,FL,8,0.2175209566200043
+c57fb3a3-d7e7-4e4d-b87d-81c62fc80060,41 to 50,College Degree,7,Male,6,White,Suburban,PA,8,1.875571934687648
+29ff176f-d217-4ada-9a86-c8d171745b69,51 to 60,Some College,2,Male,4,White,Suburban,MI,8,0.7692146272065072
+a16674d1-ed41-4915-9a11-64de269cb321,51 to 60,Some College,4,Male,1,Hispanic or Latino,Urban,GA,8,0.39925147958498114
+6162380b-9426-4baf-b2f0-d8c98257dc16,31 to 40,Some College,4,Female,1,White,Rural,IL,8,1.6314510579918027
+f21439fb-7782-42a8-bbce-8fbf0bd0f0dd,51 to 60,High School Graduate,4,Female,4,White,Suburban,AL,8,0.8247746965632007
+3de64c5b-aa5d-46c8-b334-96287178d9af,31 to 40,Graduate Degree,7,Male,6,Two or more races,Urban,FL,8,1.4820228417620442
+fe4bddeb-2c48-4b2c-b967-7bc80c35abb3,31 to 40,College Degree,5,Male,3,White,Suburban,NY,8,1.137992412720734
+c2388671-4601-492e-9e69-0bec4aaf82fa,51 to 60,Graduate Degree,7,Female,2,Black or African American,Urban,WA,8,0.3524576286541991
+fbc271d4-1b45-4ba7-95e7-968439dc55b2,51 to 60,High School Graduate,5,Female,6,Two or more races,Rural,TX,8,0.5317882494550569
+83b38f14-b050-4223-9196-d1af9e396c03,61 to 70,College Degree,4,Male,4,White,Urban,AZ,8,0.40911353752257623
+ecda8fa0-360b-4816-9bc9-a5ce118a3946,51 to 60,Graduate Degree,7,Female,3,White,Suburban,TX,8,0.2948022092932754
+c0ed4b1e-065b-4da8-a830-e7379958f923,41 to 50,High School Graduate,3,Male,3,White,Suburban,PA,8,0.2
+92e091d4-4e34-4e25-bf8a-ba9bc6aff107,18 to 25,Less than High School,3,Male,1,White,Urban,PA,8,2.939409250333336
+94301052-0863-4455-b50d-35f1c7dbc5ee,31 to 40,College Degree,5,Female,4,White,Urban,KY,8,1.0218394966409068
+bb01c2cd-d59f-4df0-95d7-ccef8500e9a4,31 to 40,Some College,3,Male,2,Black or African American,Urban,IL,8,1.1328956935322518
+4ed4fa17-c938-4a16-b40a-5fba5ad47268,31 to 40,College Degree,1,Female,7,White,Suburban,FL,8,1.7557524173569927
+7a7c4d2e-677f-4d52-a903-b853a6181ec8,71 to 80,High School Graduate,6,Male,3,White,Urban,CA,8,0.5273359680066769
+937781f1-8fb9-4e96-9f4a-ddffa2a3eaf5,31 to 40,College Degree,5,Male,3,Two or more races,Suburban,CO,8,0.23426390354849835
+5d2687b2-0783-4978-aa3d-f269cdac6d7d,61 to 70,High School Graduate,5,Non-binary,4,Hispanic or Latino,Urban,FL,8,1.393603921839268
+b6182eba-23e4-4fce-9b1e-1067bcc861fd,51 to 60,High School Graduate,9,Male,7,Black or African American,Urban,MA,8,0.27403405071603876
+b9079ff8-45fa-44d8-8cbf-1938cb0a5172,51 to 60,High School Graduate,5,Female,6,White,Suburban,PA,8,1.37079621645151
+80b5404f-4440-42f1-84d8-3d17f7a6b214,41 to 50,College Degree,8,Male,3,Black or African American,Urban,MA,8,0.2
+95eef27a-694b-4c76-b306-a332b7e003be,41 to 50,College Degree,2,Male,5,White,Rural,CA,8,0.2550997277296923
+bba8feef-48da-4a9a-9e3b-b1b21fed2455,41 to 50,Some College,5,Male,4,White,Rural,WA,8,0.48423530200126447
+a64e2d9f-98ef-4e03-8c49-43c597885845,26 to 30,Some College,8,Female,3,White,Suburban,VA,8,1.335249439246246
+78013395-55b4-4778-be87-4c638072f2de,51 to 60,Graduate Degree,5,Male,1,Asian,Suburban,PA,8,2.3758505600026294
+8aae60c5-2031-401f-ae0b-7ad304c3b830,31 to 40,Some College,6,Female,3,White,Rural,WI,8,1.131598279553703
+ef4abffe-f4a1-4542-bd2f-b35927451c1a,18 to 25,College Degree,4,Male,1,White,Urban,MN,8,0.5005633860202726
+fec68ecb-0e43-43ab-a731-3bc149cbd5d9,51 to 60,Some College,2,Female,7,White,Urban,WA,8,1.5699740199286796
+7707345a-0945-4202-99a5-6cd973d3d922,26 to 30,Some College,5,Male,2,White,Urban,CA,8,0.2
+5b7f348a-9933-4c3b-bb41-553a575a3478,71 to 80,Some College,4,Female,7,Hispanic or Latino,Suburban,IL,8,0.3700440524544535
+b09db7c2-553a-4418-be2e-1f815fca07f0,71 to 80,High School Graduate,8,Female,4,Hispanic or Latino,Urban,CO,8,0.8857603813441702
+da39ce4f-0808-4ec9-9b72-b9bea8b8e08d,61 to 70,College Degree,3,Female,4,Hispanic or Latino,Suburban,CA,8,1.4253891348715995
+56a6a536-7137-495d-a29d-f6461bed4a98,31 to 40,Some College,9,Female,4,White,Rural,CA,8,0.7057652282165063
+b132a034-5bec-4c4e-96f6-cddf0dd541cf,18 to 25,High School Graduate,9,Female,1,White,Rural,NY,8,0.6473618482027409
+3b489ab5-7149-4cab-91bb-818d01f38fff,61 to 70,Graduate Degree,3,Female,2,White,Suburban,PA,8,0.678036435078665
+05a17139-2bfb-461c-8c26-1bbdfadbc23f,41 to 50,Some College,4,Male,1,White,Urban,NC,8,1.7451710279021468
+6c1df050-3d8d-4129-a700-b0fe2e0eb1f1,71 to 80,Some College,8,Male,4,White,Rural,CA,8,0.43315465063092135
+0ac510e5-7337-4f4a-8260-89cd921ad6c4,71 to 80,Graduate Degree,9,Female,3,Hispanic or Latino,Suburban,TX,8,0.3477655991132067
+8f8db2b3-65e4-4095-b899-558a90d1df8b,61 to 70,Some College,5,Female,5,White,Urban,NY,8,0.669571324575416
+08a9dda9-0f99-4922-95a0-8cce2a1b88a6,31 to 40,High School Graduate,4,Female,1,White,Urban,IL,8,1.910314388467667
+ece20c4f-251a-414b-ada2-1789341134e8,31 to 40,Graduate Degree,5,Female,1,White,Rural,NY,8,0.47725346180099393
+77196546-0c83-4ef4-bd55-4c32c25863c1,61 to 70,Some College,6,Male,3,White,Suburban,FL,8,0.6763450189218867
+fd39c76f-10c7-486f-ac5e-9971f4c9dec1,31 to 40,High School Graduate,3,Male,7,White,Suburban,GA,8,0.2
+67de9ffd-2f19-419c-8e6e-f0b4a8fd679b,26 to 30,High School Graduate,6,Female,5,Two or more races,Rural,VA,8,0.6989288408738257
+0b7c1739-9273-4202-a400-0c17d44d2675,41 to 50,College Degree,1,Male,3,Hispanic or Latino,Suburban,FL,8,0.9859292790357703
+d196ef7b-b014-4755-a55a-2c381c09880f,71 to 80,Some College,1,Male,3,Other,Suburban,MA,8,0.2744442333443525
+a75ace86-0882-4b72-847b-da6e4cd8bf25,51 to 60,Some College,4,Female,1,White,Suburban,TX,8,1.7473759333263232
+12e47013-c3fc-40fe-b5e2-b59586e03b36,41 to 50,Graduate Degree,4,Male,7,White,Suburban,OH,8,0.976588009451103
+0aafe9e4-7973-4dbb-8fbc-6e2efddf702e,18 to 25,College Degree,4,Female,4,White,Suburban,CA,8,0.5418101813122961
+e0d3dd1f-6ef8-48b1-b855-8e93fa0f3765,51 to 60,High School Graduate,5,Male,2,White,Suburban,CA,8,0.9819786562319494
+22f30c23-61a2-4832-b482-1f416a331c6d,81+,High School Graduate,4,Female,4,Hispanic or Latino,Suburban,AL,8,1.179564776874835
+77b317dc-014b-4da1-9879-5d3b68181348,26 to 30,High School Graduate,3,Male,1,White,Rural,NY,8,0.2
+448c6fe2-15c5-40b6-9f7a-392bdd2af6a4,41 to 50,College Degree,4,Male,7,White,Suburban,KY,8,1.0098691184183244
+e5c4ee8c-3f92-4a82-84ba-767dd21448e8,61 to 70,Less than High School,9,Male,1,White,Suburban,CA,8,1.8653190327651874
+8f3daa1b-e831-417c-ae64-2a72a3540bbd,51 to 60,Some College,4,Male,4,White,Suburban,WA,8,0.42784756005254326
+7afbe76e-b050-4794-8f2e-75048df6ca7a,51 to 60,College Degree,5,Male,1,Hispanic or Latino,Suburban,MI,8,0.5514568001173678
+010963df-1516-473b-ab72-7c7256a321cb,51 to 60,Graduate Degree,5,Male,5,White,Suburban,FL,8,0.6287148553771319
+145be1b8-cce9-4c0a-b84c-f19af1c61543,31 to 40,High School Graduate,10,Female,5,White,Urban,MI,8,1.4364758774813149
+a83a7746-2545-4795-a45e-3ef2cdf4bad3,31 to 40,College Degree,3,Male,5,White,Suburban,NY,8,0.3213922683107542
+12030057-eda1-4194-a611-46a6bd1283cd,61 to 70,High School Graduate,6,Female,4,White,Urban,CA,8,1.1411137073312396
+2ca87f9f-b174-45e1-bbeb-fe1bed25f3db,61 to 70,College Degree,6,Female,6,Hispanic or Latino,Suburban,FL,8,0.6382296665888649
+fed0c264-9188-4aeb-9da3-1609b6a24d0a,61 to 70,High School Graduate,6,Female,1,Asian,Suburban,TX,8,2.4493697892532484
+dd3b8753-1e67-4a31-9c7c-339f8b7aec85,61 to 70,Some College,2,Male,2,Other,Suburban,KY,8,0.6682375840599285
+728cb385-7c92-4e96-b602-47fe7e51354d,41 to 50,College Degree,6,Female,1,Hispanic or Latino,Rural,MN,8,0.2
+cef5fe54-bc5f-47d9-b3a9-e9946ead2da4,41 to 50,High School Graduate,1,Male,7,White,Suburban,IN,8,1.295623152089638
+9850a7b2-9a66-48a0-9bcd-63e6f1c57a93,51 to 60,High School Graduate,5,Male,2,Black or African American,Suburban,AZ,8,1.0999427681958476
+910040b1-1f78-463b-a842-a48bd28be714,51 to 60,College Degree,6,Non-binary,5,White,Suburban,CA,8,0.9462468232249948
+224f3d31-5519-45f6-87ef-6c1349b86ca7,51 to 60,College Degree,3,Male,5,White,Suburban,KS,8,1.8312310938076293
+9de47609-9ad4-4233-9aa7-8f7ee7ee52e4,51 to 60,Some College,7,Female,1,Hispanic or Latino,Urban,CO,8,0.2
+3aa587f3-c384-4970-9918-0a1d8a484b10,61 to 70,College Degree,1,Female,1,White,Urban,AZ,8,0.37504997824020453
+88b8116c-3d6b-40a5-a68f-3f0e364dfe48,31 to 40,Some College,7,Female,2,Asian,Suburban,TX,8,0.8038271092163956
+4ae8a709-8d0c-41cc-90ec-6f2a9181aad8,31 to 40,High School Graduate,5,Female,3,White,Suburban,WI,8,0.9091766969283593
+03b82b55-e34d-4f0f-a985-f45c88f9a12e,18 to 25,High School Graduate,3,Male,1,Black or African American,Urban,PA,8,0.7164665633701977
+decaa828-c7a6-46e1-b07d-14649c3011cb,41 to 50,High School Graduate,2,Male,1,Black or African American,Urban,TX,8,0.2
+752489eb-5712-40c3-9b73-46555a12a946,18 to 25,Graduate Degree,9,Female,6,Asian,Urban,FL,8,0.5559175205003681
+4376a720-7ded-4abc-b61d-ffcb7dfba9d3,41 to 50,Some College,1,Male,7,Black or African American,Rural,WA,8,2.3373230733383865
+8ae424b3-8c6e-4693-8864-9f731ef834fc,41 to 50,Some College,3,Male,2,Black or African American,Suburban,CA,8,0.30711308227848055
+8607b4d1-b833-4efc-9fc7-c108fcc9f2a9,31 to 40,Some College,4,Male,2,White,Suburban,WA,8,0.7902858141197457
+8ebd9659-e189-4ced-ac13-0e1f0c16eea6,41 to 50,Graduate Degree,6,Male,1,White,Urban,WI,8,1.1441548402609552
+8e6e0ddb-1cb5-41c6-a53a-e5cb038cb169,18 to 25,High School Graduate,5,Male,5,White,Suburban,OH,8,1.4077834718952087
+1ae12803-f749-43ad-a4be-e72ec08eadc2,18 to 25,Some College,2,Male,6,Hispanic or Latino,Urban,WI,8,1.2912660004646046
+21fc7466-31f1-4967-b2cb-f7611d3a4ffe,61 to 70,Some College,3,Female,1,White,Urban,MO,8,0.5229589298906512
+7582b2fd-49d7-47f6-8556-a37c8755af52,31 to 40,Some College,3,Female,1,Black or African American,Suburban,FL,8,0.3736030259233569
+681221eb-4191-4748-9e05-9f81ea95c09a,26 to 30,Less than High School,3,Female,5,White,Urban,KS,8,2.4621935957743806
+b790546e-5c47-4fd7-a280-51d67349cb18,41 to 50,Graduate Degree,4,Male,4,White,Urban,NC,8,1.5038499716618208
+4515ff80-4c79-4c48-ab4e-4fa9b881b9bd,51 to 60,Graduate Degree,6,Male,1,Black or African American,Urban,CA,8,0.8483961277064103
+9058955c-9f75-4d59-93a7-fc630ce18486,26 to 30,Some College,3,Male,4,White,Urban,NY,8,2.0449897962632324
+e1da103f-f493-4782-adec-2c0178aa0b0c,51 to 60,College Degree,4,Female,2,White,Urban,WI,8,0.23569539273201337
+842384d2-142d-489a-8020-59440b5fecb4,18 to 25,Graduate Degree,4,Female,2,White,Suburban,CA,8,0.2
+b0793d89-6549-4745-8957-24a0f790043e,18 to 25,College Degree,9,Male,5,Other,Suburban,PA,8,0.9015071844184385
+d5882f68-e4ac-477e-98bf-3672405ae5f3,41 to 50,High School Graduate,9,Female,6,Hispanic or Latino,Suburban,TX,8,0.9334980680288432
+d5d2dece-447c-4c10-8404-89e0abb0d573,41 to 50,Some College,7,Male,3,White,Suburban,VA,8,0.21404600308426638
+5652b304-c03c-45fe-b826-e0fb07d47d04,51 to 60,Some College,3,Female,7,White,Urban,WA,8,1.4667086330220631
+1d08af0c-b35b-4b2b-881a-18eed3dca335,51 to 60,Some College,1,Female,3,White,Rural,MI,8,0.2
+fb0be8ed-9e49-434c-b49e-68e5aa95384d,71 to 80,College Degree,4,Female,5,Hispanic or Latino,Suburban,WI,8,1.0510044392527393
+e7ef5e89-9250-41ff-ab66-f6673fd1b4d2,41 to 50,Graduate Degree,3,Female,3,Black or African American,Urban,PA,8,1.228044113699317
+b0df7a8b-a166-4f4b-ba95-a39b3df8eff4,31 to 40,Graduate Degree,5,Female,6,White,Suburban,CA,8,0.8935278537484519
+6fb30aa6-5b33-406b-a712-82f42b454f04,51 to 60,Some College,7,Male,7,White,Urban,MA,8,0.2
+f97f6f39-f8f3-4f6f-a4fc-0aa349770516,31 to 40,High School Graduate,7,Female,1,White,Suburban,OH,8,1.8181781595440247
+3b42de7c-0497-43d6-9053-7386ff6121c1,41 to 50,Graduate Degree,7,Male,7,Black or African American,Suburban,FL,8,0.5375706295986249
+3e425bbd-7813-4587-ab9d-17e14125e60f,18 to 25,College Degree,4,Female,6,Hispanic or Latino,Rural,NY,8,0.5389962894446418
+7e54fe1f-ac81-4380-a2fe-c537c688033b,18 to 25,High School Graduate,6,Female,5,White,Suburban,NY,8,0.45415790254227234
+0aca5526-07be-4e96-811a-0aa056db7651,71 to 80,Graduate Degree,4,Female,1,White,Suburban,CA,8,1.3225103187553222
+322b27ad-4ff1-461d-94e0-610e47a914e6,61 to 70,College Degree,1,Male,6,White,Rural,MO,8,0.5167460020519925
+240265c7-1956-43a7-a503-07d414d11a66,51 to 60,Some College,6,Female,6,Two or more races,Urban,PA,8,0.28042339887524576
+d92eeab8-8cd2-4979-be45-7b7078fa51fe,41 to 50,Some College,1,Female,2,White,Urban,MI,8,1.585341519734813
+ec44b375-8d00-4f5c-8fed-5804751aea80,26 to 30,Some College,4,Female,7,Hispanic or Latino,Suburban,AL,8,0.7759157504248979
+df7a66ba-df5d-405d-8476-9b54923616b6,26 to 30,Less than High School,4,Male,1,Black or African American,Suburban,AL,8,1.6232319164921982
+757909b3-6e37-4673-a330-e1650541121d,31 to 40,High School Graduate,6,Male,1,White,Suburban,GA,8,0.8204268550265713
+db9b359a-0760-4c07-8c97-61c8610f3134,41 to 50,College Degree,7,Male,4,White,Rural,VA,8,0.428071307486178
+07922b5b-ad79-445d-9aa1-e845ba60781e,51 to 60,Less than High School,4,Male,4,White,Suburban,CO,8,0.2
+54431f5d-701b-4533-bdfe-795490663e51,51 to 60,High School Graduate,7,Female,4,Black or African American,Suburban,NY,8,0.9043664392685012
+d0524846-f1fe-4994-a169-c3ae64d1171b,31 to 40,Some College,3,Male,1,Hispanic or Latino,Urban,CO,8,0.6298065894828435
+24eaa293-68fc-4f75-bfc0-c19fe77be516,71 to 80,Some College,5,Female,7,Black or African American,Suburban,GA,8,1.3609374891549224
+b8c88fc2-e9dd-441c-9574-50cabcdcc029,51 to 60,Graduate Degree,6,Male,1,White,Rural,TX,8,0.4969751752385393
+0abdcec4-588b-410e-8f84-fc0c68bf7aa8,41 to 50,High School Graduate,6,Male,1,White,Suburban,OH,8,1.0740275598604998
+f5f3fd7b-8a51-4b36-8e15-e3ac83a9a9cb,51 to 60,High School Graduate,10,Female,1,Two or more races,Urban,CA,8,0.7951769136779102
+59c23cbb-81ce-4051-bdad-19c2ad0bf3ca,41 to 50,College Degree,3,Female,4,Hispanic or Latino,Suburban,IN,8,0.39602699914423306
+39e1d05d-d1c9-414b-9ea7-c8ab3894c4dc,31 to 40,Some College,6,Female,7,White,Urban,AZ,8,0.5306249258292092
+0eb78e91-4a07-4cc3-a51b-c5df7e368a63,31 to 40,High School Graduate,6,Female,4,Two or more races,Urban,MA,8,0.230431687286565
+0e58df19-f5ed-4199-9d41-0cee1a048a57,51 to 60,Some College,8,Female,6,Black or African American,Urban,NY,8,2.575048532303345
+c9118ea0-3beb-4599-bd11-15cef05412f8,18 to 25,High School Graduate,2,Male,1,White,Suburban,CA,8,1.0574028133985574
+5eb5c834-eeed-43c5-9daf-d2bd2c3cdb19,26 to 30,High School Graduate,7,Prefer not to say,4,Hispanic or Latino,Suburban,FL,8,0.21512069228786906
+f43359c7-9409-4409-9650-c1bd3988487b,18 to 25,Some College,5,Female,3,Hispanic or Latino,Urban,IL,8,2.488961761586967
+16ab5a03-bb59-4246-881c-d89efcf7436b,18 to 25,Some College,3,Female,3,Black or African American,Suburban,VA,8,0.3031841075852557
+f1ad3248-6eb5-48d5-b9ac-14a8c7ad55bd,61 to 70,Graduate Degree,5,Male,1,White,Suburban,WI,8,0.4898425955416008
+5c3b7586-caf9-4bde-9137-b0193a89e8ed,51 to 60,Some College,4,Female,5,White,Suburban,AZ,8,0.6667281238003165
+82de103b-a008-4d3c-bd16-36b47c20517c,41 to 50,Some College,5,Male,3,Native American,Urban,PA,8,0.8099370414618837
+0a415731-b92b-4856-876b-8b054a2b15ee,18 to 25,Some College,8,Male,5,White,Suburban,IL,8,1.3357759914207676
+99292128-f420-4549-8bd5-a41f4ace0628,41 to 50,Less than High School,5,Male,3,White,Suburban,IL,8,0.2
+014ed751-a808-4d1f-82bf-54b0ea5d98fb,41 to 50,College Degree,6,Male,1,White,Urban,PA,8,0.8196949731762796
+afdaba08-5baf-4311-84d2-90381a5e7a15,26 to 30,High School Graduate,5,Female,4,White,Urban,VA,8,0.6397525000359323
+6ed4d2ee-9de3-4f5c-9102-5f370767b466,41 to 50,Graduate Degree,1,Female,1,Black or African American,Suburban,WA,8,0.9164821651454013
+eab920bf-da51-4acd-8a83-9015bb34282c,31 to 40,High School Graduate,3,Female,6,Other,Rural,MO,8,0.6148124367051113
+9b943448-787d-4e30-8270-d4c2b07c77e7,51 to 60,Some College,5,Male,4,White,Suburban,GA,8,0.550361496606922
+be069d05-7800-4bab-9b0a-f9aec0cbc71c,51 to 60,High School Graduate,4,Male,1,White,Suburban,PA,8,0.7284321213060742
+a888a5d4-559a-4acf-8859-9b3ddbd21fbf,18 to 25,Graduate Degree,3,Male,7,White,Suburban,FL,8,2.3992264149314595
+cccb95ae-c1db-4928-b43d-9d63f5b170d9,31 to 40,Some College,5,Non-binary,3,Asian,Suburban,MO,8,0.5591629020716752
+36991f44-2c50-4100-9396-a563dc223ed3,51 to 60,Some College,4,Male,1,Black or African American,Urban,IL,8,1.7630575958570858
+c40076b5-1e4d-4959-a70e-e18bf12361fb,41 to 50,Less than High School,3,Female,4,White,Suburban,NY,8,0.8879130400382772
+b3365421-6fb1-4987-a46b-5d927c0bd7f4,61 to 70,College Degree,5,Female,2,Hispanic or Latino,Rural,FL,8,0.8573027600548935
+d77d037c-bf42-4cfa-8449-5334cb382d81,51 to 60,High School Graduate,2,Male,6,Asian,Suburban,CA,8,0.9229721298189177
+ee9047fc-c969-455c-bfac-f9cc3e46d015,26 to 30,Graduate Degree,8,Female,6,Hispanic or Latino,Rural,VA,8,1.141533761128788
+f9f69e74-c22b-4ad6-8280-f8dfbccdd51d,18 to 25,High School Graduate,8,Female,7,Asian,Suburban,CA,8,0.5951787320650045
+acb3d649-f8c8-443f-bfb5-1ae82028512f,51 to 60,High School Graduate,6,Female,3,White,Urban,MI,8,1.6820355406613057
+72e5d434-1747-4dd3-a438-6739eb5d0f51,18 to 25,Less than High School,2,Female,3,Hispanic or Latino,Rural,CO,8,1.1435415876450692
+310c65bc-c860-4107-8490-474665a7dda3,41 to 50,Some College,7,Male,5,White,Urban,AZ,8,0.25133244500812996
+3d1000df-a83b-4a7d-bcc8-dea6dfca6742,71 to 80,Some College,7,Male,1,Hispanic or Latino,Suburban,AZ,8,0.2
+8d3af050-46be-4d9f-a150-594a34ffa624,41 to 50,Less than High School,7,Female,4,Black or African American,Urban,CA,8,2.350868260940939
+0ffccc6a-abd3-4084-b8b9-e9b8f5908cf1,31 to 40,College Degree,2,Female,4,Hispanic or Latino,Urban,TX,8,0.9447255762681452
+9d107609-8463-455b-b944-4ed2cb9d6b6c,51 to 60,Some College,6,Male,1,Black or African American,Suburban,FL,8,0.22170993174225204
+8b31ad42-e408-41fc-bb3c-8956b933937e,41 to 50,Some College,7,Female,3,White,Urban,WA,8,0.5585182267752501
+2a07e915-f86f-4647-ae3b-3a4795eb16c9,41 to 50,Some College,5,Female,6,White,Suburban,NC,8,1.5033557919847085
+2b3e099a-b398-4659-8d00-805ecdd2c57c,71 to 80,Some College,6,Female,6,Two or more races,Suburban,KS,8,0.6951652028554439
+81605b5b-566b-4dcb-922a-240fb9f0b3c5,31 to 40,Some College,5,Male,1,Native American,Urban,NC,8,0.7451375642799846
+b48d5ab8-f1a5-4334-9cbf-e785ba2049b9,71 to 80,High School Graduate,5,Female,1,White,Urban,MI,8,1.3163812280253961
+c9424c45-4dd6-4822-9c2a-73d6242116e4,61 to 70,High School Graduate,1,Female,2,White,Suburban,PA,8,1.0117773814767745
+faca1664-b863-4373-86e3-d9a589d50679,26 to 30,College Degree,6,Male,6,White,Suburban,FL,8,1.2033160886938397
+a104ee89-e537-42b4-997c-ee90c60bbc75,18 to 25,Graduate Degree,2,Male,1,Black or African American,Suburban,GA,8,1.3067151311748553
+1bee557f-dffe-4c3a-9a34-83c31e6d97f7,26 to 30,Some College,4,Female,5,Hispanic or Latino,Suburban,TX,8,0.4386141956726227
+e857c60b-dd25-4c8d-8216-220064e64fdf,18 to 25,High School Graduate,3,Male,1,White,Rural,WA,8,0.4750967668335598
+00724356-404a-446c-959c-ff4425ae6f2a,18 to 25,Some College,5,Female,4,White,Suburban,TX,8,0.3937767658782376
+c783eb39-13ba-4d99-8bad-f95099cab1e3,51 to 60,Some College,2,Female,2,Hispanic or Latino,Suburban,IN,8,0.49759262571153423
+f72594f6-57ba-4e2c-8d6b-1070d5951d94,18 to 25,Less than High School,6,Male,5,Hispanic or Latino,Suburban,PA,8,0.7228998325120196
+1f4c6f1b-1cc9-42a5-b66e-cc3d11a1a757,31 to 40,High School Graduate,7,Female,1,White,Urban,MA,8,0.7643228623105607
+d74074c0-c5c5-4956-83ad-c0eb51080fd4,61 to 70,College Degree,2,Male,4,White,Urban,MI,8,2.0035732677880955
+a075abfc-3c37-44da-ad58-6b1796e4df0e,18 to 25,College Degree,2,Female,1,White,Suburban,CA,8,0.9767266794170892
+10f7a6ed-2899-46a6-b19a-b0e7946ae773,61 to 70,Less than High School,2,Male,5,White,Suburban,NC,8,0.7340129127369057
+89dd3dc9-7fd8-4508-924c-8119333eed68,31 to 40,High School Graduate,8,Female,6,White,Suburban,CA,8,0.3207756788719914
+caaa0956-ca03-4861-8f22-e9e09bf05179,26 to 30,High School Graduate,5,Male,1,Black or African American,Suburban,GA,8,0.6252444428775409
+249a4ca1-74bc-4323-b1bc-31416da9e71f,51 to 60,College Degree,5,Male,6,Asian,Rural,TX,8,2.4683979349794503
+a1bec9ab-6cb8-4770-bcfc-c1923e062de3,51 to 60,Less than High School,2,Female,4,Black or African American,Rural,CA,8,2.4428367012884507
+51b634c4-b4da-4472-8dd3-75082325f0ae,61 to 70,High School Graduate,6,Male,1,Hispanic or Latino,Suburban,CA,8,0.6191058828592382
+967bf73f-ab2f-4e13-bda2-da36eefe798e,51 to 60,College Degree,8,Female,3,White,Suburban,CA,8,0.2
+f3e381c8-08a7-46d7-9711-34ea18be002b,61 to 70,High School Graduate,7,Male,1,White,Suburban,VA,8,0.5544055470472808
+81322f43-2ff0-4b70-a3ec-74d74cac10b9,31 to 40,College Degree,6,Female,5,White,Suburban,MI,8,2.01814564845955
+8d651644-ce0e-4a40-b9fd-98c9ea34d086,26 to 30,High School Graduate,1,Male,5,White,Suburban,IN,8,0.7267947147792945
+3bb7a229-8328-4ec2-8a1d-fcdd93caa31c,51 to 60,High School Graduate,2,Female,1,Black or African American,Suburban,TX,8,1.3173194273670128
+0d7f729c-12f9-4807-be7c-6a617b72e20d,61 to 70,High School Graduate,1,Male,3,Two or more races,Suburban,TX,8,0.7929667037688308
+e6b4cc57-0ad4-4d29-9e4e-fd01c749057e,81+,College Degree,3,Male,6,White,Suburban,GA,8,0.20381404710798598
+41db5f4b-6aab-4657-a035-facb2599ff08,41 to 50,College Degree,2,Male,7,White,Urban,NY,8,0.8146161331080922
+bbdc17a5-cfdd-45e4-8782-20f6c9d0bf7e,31 to 40,College Degree,3,Male,3,Hispanic or Latino,Suburban,PA,8,1.4404819635145028
+1a58fd9a-9690-4cab-8c16-dd5eedd9067c,51 to 60,Some College,4,Female,7,White,Urban,NY,8,0.49172196221716
+be281ee6-9d4c-4fca-abab-4764effbb544,31 to 40,College Degree,9,Male,4,White,Rural,CA,8,1.4144828695788008
+49d63d20-b50f-488c-880e-bb177d0e7032,71 to 80,High School Graduate,6,Female,2,Hispanic or Latino,Suburban,TX,8,0.8538267837661201
+9f9be335-50c4-4bab-ab45-36d3dbbf189f,61 to 70,High School Graduate,7,Male,6,Black or African American,Urban,MN,8,1.3628546909654269
+8a4768e3-46a1-4021-a41e-a8c99402299a,41 to 50,Graduate Degree,6,Male,3,White,Urban,FL,8,1.0223550412547586
+5cb26e47-fb8a-4756-9443-0d7c233ef0c1,51 to 60,Less than High School,2,Female,3,White,Suburban,IN,8,0.34079378856930537
+928b98c1-52a1-4f45-9ff7-e3a61f7096d1,51 to 60,High School Graduate,6,Female,3,Hispanic or Latino,Suburban,AZ,8,0.6303867544081297
+f19dab2a-5b74-4517-964f-5243ad9c3427,26 to 30,High School Graduate,3,Male,6,White,Suburban,CA,8,0.6141982571493914
+9385a959-3a94-46d5-b785-baf1473c1a74,61 to 70,Less than High School,6,Male,6,White,Urban,PA,8,0.4721728852189402
+a88a0460-d225-4db6-a427-987f568b3853,41 to 50,High School Graduate,4,Male,3,Hispanic or Latino,Suburban,AL,8,0.964495566892518
+d74c48ef-c3fd-4a7a-a741-c200168987c9,61 to 70,Some College,10,Female,2,White,Suburban,IN,8,2.760217834413648
+66284907-bd13-4d96-beb4-6854268ff29d,31 to 40,Some College,3,Female,3,Hispanic or Latino,Suburban,MI,8,1.6835139173634628
+1fb30784-614f-443d-9988-c09495334bf4,61 to 70,Graduate Degree,3,Male,4,White,Suburban,CA,8,1.8369653183182326
+5d8ac6ec-bdd8-42e0-a5be-41abaf9e7e39,31 to 40,College Degree,8,Female,1,Other,Suburban,WA,8,0.44792731759642446
+d68bef0b-d650-4d5c-b671-dbe121b9933d,18 to 25,High School Graduate,1,Female,5,White,Urban,CO,8,1.8574155592985935
+1d788301-d606-4ea5-8a12-f8940f63f4f5,61 to 70,High School Graduate,6,Female,3,White,Rural,FL,8,2.275463725005203
+78cd14cc-2926-4d4b-a68e-35b88fc47e9d,18 to 25,Some College,6,Female,2,White,Suburban,FL,8,0.4352899401978222
+51ce096c-e523-409a-990a-174d9383bed9,31 to 40,Some College,7,Male,1,White,Suburban,FL,8,1.105542804966136
+b28db933-01af-43c8-9454-dbcf8f319472,71 to 80,High School Graduate,9,Male,1,Asian,Urban,AL,8,1.1265493266410243
+bfe103c7-9347-4f0c-a4fa-97580ba3bcd7,71 to 80,Some College,9,Male,7,Two or more races,Suburban,OH,8,0.6671965587786454
+b49349f3-f1cf-4772-bff9-09ff32391fda,41 to 50,Some College,1,Male,2,White,Urban,WA,8,0.9086930615669607
+97bc7a31-185a-441a-987d-a255d2fedffd,51 to 60,Some College,7,Female,1,White,Suburban,CO,8,1.1661123541034735
+c66bc848-701f-49c9-97bd-331a6bb7cb50,41 to 50,Some College,6,Female,3,Black or African American,Rural,NY,8,0.7027609368490335
+91324cf7-7b6e-4973-b06c-9b4ba3f3a1e3,31 to 40,High School Graduate,6,Male,2,Asian,Suburban,OH,8,1.6296932082551678
+7c22986a-27bd-4453-a5b5-ea3c778920ed,31 to 40,Graduate Degree,2,Male,1,White,Urban,TX,8,0.25270834142592075
+ab1a6339-ec1d-4d83-92d6-1d63ae35b73f,51 to 60,College Degree,6,Male,2,White,Urban,IN,8,0.6120699510906604
+7e0c4404-ee5a-4b8d-a6eb-ea3fb098c4f7,51 to 60,High School Graduate,10,Female,4,White,Suburban,FL,8,1.3356712024184596
+1ee57904-5336-458d-8f17-c3c2bacb854a,51 to 60,College Degree,8,Male,4,Black or African American,Urban,GA,8,2.5727793841935713
+ab40f950-248a-4b32-9cfb-953d8cddb673,51 to 60,Some College,4,Female,2,White,Urban,OH,8,1.699605116054425
+a254d0d5-f41c-4d09-92ea-1b0653aca6df,18 to 25,Graduate Degree,1,Male,3,Black or African American,Suburban,TX,8,0.8949247914297814
+8ab89d11-3679-4481-90fb-07c1c1014bde,41 to 50,College Degree,4,Male,7,White,Suburban,CA,8,0.7292984292337231
+e08879c9-e468-4603-9249-30e337f0cdfb,18 to 25,Some College,7,Non-binary,2,Hispanic or Latino,Urban,IL,8,0.6401101644543477
+cc45c0cf-00e5-4912-9672-4843db6b79fe,41 to 50,Less than High School,6,Female,2,White,Rural,TX,8,0.6431616955452385
+a1e88b0b-a6c0-4c82-9787-5364621d43e7,41 to 50,High School Graduate,5,Male,1,White,Urban,TX,8,0.2
+de838721-1665-43f0-b8b0-b00c8322f4d9,61 to 70,Some College,1,Female,3,White,Rural,WI,8,2.5041410008557055
+46b8d982-6e60-405a-926e-7d9c480ea493,31 to 40,Some College,4,Female,5,Black or African American,Suburban,PA,8,0.771952863286813
+a2f2f2a1-e6b3-427c-920d-098f559d487c,26 to 30,High School Graduate,5,Female,1,White,Rural,IL,8,0.41184658379678657
+136120e3-ee4d-403b-b11f-66908b5409c2,26 to 30,High School Graduate,8,Male,5,White,Suburban,NC,8,1.0932441818015655
+dd16fc6a-937b-4d53-b4cc-3f3c969c6e70,51 to 60,College Degree,6,Female,1,White,Suburban,NY,8,0.4409123794758768
+fa7c6fa4-9aa1-446a-9a71-3b521bd737d7,51 to 60,Graduate Degree,4,Female,3,White,Rural,CA,8,1.5255069021585939
+8bf0c50d-20c0-4c30-8cf9-f8c63293d8d9,26 to 30,Some College,5,Female,5,Black or African American,Urban,MN,8,0.4233694544104403
+f3d538ba-4d2f-49d0-ab52-995f12d2f3a6,18 to 25,High School Graduate,1,Male,2,Black or African American,Rural,OH,8,1.378106455956442
+eb0bf505-db22-4816-a6e2-2c40ed66d42b,51 to 60,High School Graduate,9,Male,4,Hispanic or Latino,Suburban,CA,8,0.6326966072010335
+7a22eace-69b6-4148-aa44-65203bc22781,18 to 25,Less than High School,4,Male,1,White,Suburban,PA,8,0.9919538651469161
+69f1dc3e-e904-4ed6-80de-9bba9cee532c,61 to 70,Graduate Degree,5,Female,5,Hispanic or Latino,Suburban,NC,8,1.451005075664845
+b70dd23e-7e4a-4008-94ff-5d8058aec235,51 to 60,High School Graduate,4,Male,1,White,Suburban,WA,8,0.5218167817228277
+1005d7d2-0545-4b75-b3c3-5f32b268280a,18 to 25,Some College,6,Female,6,White,Urban,AZ,8,1.4269422771894225
+4fbbecb5-eeb7-42c5-80d4-8257c8738a10,18 to 25,High School Graduate,6,Female,1,White,Suburban,FL,8,0.2
+84e52b19-3b48-42f8-9b12-7b8a875003b3,71 to 80,Some College,6,Male,6,White,Suburban,NC,8,2.1607658873126225
+5dcf6e9d-fc22-4a9f-afa9-e08b8860ad4e,31 to 40,College Degree,3,Female,2,Hispanic or Latino,Suburban,FL,8,1.5979262890425023
+1b0dd482-10cd-48ed-b5a3-2ce6b052cc5d,31 to 40,College Degree,4,Male,5,Black or African American,Rural,OH,8,0.7516458245510981
+7ecb12a8-b083-4205-9b64-34ab604e8e8c,61 to 70,High School Graduate,2,Female,2,Hispanic or Latino,Suburban,PA,8,1.7943640451937048
+27802bfb-01f2-4483-952b-3cb8462bb509,71 to 80,Less than High School,6,Male,7,White,Urban,CA,8,1.6703629874807873
+003f4e9c-0dec-48df-a5fe-b4f0e1b2a1e3,71 to 80,High School Graduate,1,Female,1,White,Urban,MI,8,0.80502487444728
+8ddf4588-0d68-47e3-ba09-8bc02a8da7ff,51 to 60,Graduate Degree,5,Female,1,White,Urban,MI,8,0.7984718074286413
+0a8eff7f-5c8a-4d6c-b4ed-aeb6bbf0b9ea,31 to 40,Graduate Degree,8,Female,3,White,Urban,IL,8,0.3684680127881284
+72f088a1-56e3-4321-8a85-4c891870fcce,18 to 25,Some College,8,Female,1,White,Suburban,VA,8,0.8380949643276319
+8c25ef01-8300-47f6-a224-ea7ef3beccac,51 to 60,Some College,5,Female,1,White,Urban,TX,8,0.2
+2b88c5d0-8c49-4758-bb07-54a956eb3919,41 to 50,College Degree,5,Female,7,White,Rural,NY,8,1.366306859461782
+264fc9cb-2fc7-4e3c-9795-cd9ea265df6c,41 to 50,High School Graduate,1,Female,7,White,Suburban,OH,8,1.3867514291824734
+8822377e-a268-4d3e-bed6-195bd5dee79a,61 to 70,Graduate Degree,6,Female,2,Hispanic or Latino,Suburban,KY,8,0.2
+884e6850-6e1e-4309-a2c6-e449153f9051,26 to 30,Some College,7,Male,7,Two or more races,Suburban,VA,8,2.0249385221439407
+4cc18259-604a-4f69-aaba-44a4a130cd87,41 to 50,Some College,3,Female,4,Native American,Urban,NY,8,0.48422047183857797
+23e62523-199f-42b1-b4e3-1f3cb520f100,18 to 25,Some College,4,Female,2,Black or African American,Suburban,OH,8,3.0
+628bb1c0-1531-4081-aaf1-13f4ceef3759,41 to 50,Less than High School,7,Female,5,White,Suburban,TX,8,0.9547395027787047
+b9b14e37-10d5-49ff-a9c3-62186686a96e,18 to 25,High School Graduate,8,Male,4,Black or African American,Suburban,FL,8,2.0381061071471986
+d335b397-f680-45ff-8540-280f46225244,26 to 30,College Degree,3,Female,7,Hispanic or Latino,Suburban,TX,8,0.3577938430366056
+cf4469f4-e44b-49ec-a4da-1e90ba1e4ae4,26 to 30,High School Graduate,5,Male,2,White,Rural,CA,8,0.6315890867817832
+5b1d070e-44b2-4047-8be8-79153a010699,51 to 60,Some College,3,Female,5,White,Rural,GA,8,0.5196229966868755
+587d44cd-023e-4ae3-8128-7de1b5316b27,51 to 60,High School Graduate,2,Male,1,Hispanic or Latino,Suburban,GA,8,0.2
+8b24e658-5782-4340-8f74-9b8ae282bf3e,41 to 50,Some College,8,Female,1,White,Suburban,WI,8,0.25352937980883217
+a79c6c2f-fad6-4c7f-a553-1f69dd5048f1,71 to 80,High School Graduate,7,Prefer not to say,1,White,Suburban,TX,8,0.7293727207637628
+de19fd3c-12ce-4f9f-b433-2028056624f2,31 to 40,Some College,7,Male,7,White,Urban,OH,8,1.0662659319617949
+c8b6c88c-f9bf-4077-9210-b1bc1bcfda60,31 to 40,College Degree,1,Female,6,White,Suburban,OH,8,0.323681600486322
+371c0b35-fe25-43ae-8d31-9d5c42064049,61 to 70,High School Graduate,7,Male,5,White,Urban,MO,8,0.6009349813040317
+585f4655-6ece-4430-9501-a386eb3e8e16,31 to 40,Some College,4,Female,3,White,Suburban,WA,8,0.43894012138957245
+30d647f5-0352-4700-a887-a8b813e280fc,71 to 80,Some College,4,Female,2,White,Suburban,MI,8,0.7673967492913096
+6702e5dd-0207-4ccb-a436-2e867fa9e2f6,18 to 25,College Degree,5,Female,1,White,Urban,IL,8,1.2947742658624766
+5a0f9c54-73e4-4cd2-a166-cff9ab640e41,71 to 80,Graduate Degree,2,Female,2,Hispanic or Latino,Rural,CA,8,0.8715818952256259
+1fb0838f-10eb-4053-84b0-ebcf65efc57d,18 to 25,College Degree,7,Female,2,White,Rural,PA,8,0.5011597831492847
+94618f70-cad9-41b3-9b7d-15e56bc63b70,61 to 70,High School Graduate,5,Male,5,White,Suburban,OH,8,1.6331378939324417
+27749d62-6b91-4ae8-8fff-602b399f7a14,41 to 50,Less than High School,3,Male,4,White,Suburban,IL,8,1.0414691508912512
+8e3f6624-3ee9-479c-99ed-9db81770d815,81+,High School Graduate,3,Female,1,Other,Rural,AZ,8,0.8907736590655879
+0b454737-9312-4d2f-950b-dd553ee3ef56,18 to 25,Some College,3,Female,1,White,Urban,TX,8,0.3274811354319422
+7296838e-8a32-41fb-8acf-4d29b0049d4a,41 to 50,Less than High School,1,Female,1,White,Suburban,AL,8,1.5177085141689426
+92c922e9-5e28-4137-aeba-d2e414753315,71 to 80,Some College,5,Female,3,Asian,Urban,OH,8,1.1175840833736415
+746566aa-7fc4-4589-81f0-e17e5e98ceda,41 to 50,Some College,7,Male,7,Hispanic or Latino,Suburban,WA,8,1.1592629286276046
+86ce52a1-6bef-4e9c-aa9a-b045875b1256,51 to 60,High School Graduate,1,Female,4,White,Urban,KS,8,0.6755313841455499
+7cd4ff42-2e5b-4687-b83c-51e2fdea4aba,51 to 60,College Degree,1,Male,6,Hispanic or Latino,Rural,FL,8,0.5834720031100142
+b2532ad7-8afb-48a9-b8d7-bdd1bfc5d541,41 to 50,High School Graduate,5,Female,3,White,Rural,OH,8,2.5125480526675865
+704ae86b-e2b3-4c88-abf7-73fd59e1a0a4,51 to 60,Less than High School,7,Male,2,White,Urban,TX,8,0.5763309792862858
+99142635-5449-4401-8080-3c8ec9b12c5f,41 to 50,College Degree,4,Male,1,White,Suburban,MN,8,0.26942237255447
+ed93dbda-f2f5-4cfc-9a74-1ad995f715da,61 to 70,Some College,4,Male,6,White,Rural,WA,8,0.9241424825567165
+79f893bd-95ec-44b2-ab58-382238126f20,18 to 25,College Degree,5,Male,5,Black or African American,Suburban,CA,8,0.7998988447518449
+031a1ee5-cf75-4c41-bb00-a2445b2235de,31 to 40,Some College,3,Female,1,White,Rural,MI,8,1.683292056121271
+8ec7bc07-68b4-4ac9-8916-b6d591a32969,71 to 80,High School Graduate,1,Male,3,White,Suburban,OH,8,0.7163467243149835
+0044b487-d3d9-4399-a70a-00a4a11d92cc,61 to 70,College Degree,6,Male,3,Black or African American,Suburban,TX,8,1.2660298186976817
+5e44a9e3-b14b-4154-815f-850f824e662b,41 to 50,College Degree,6,Male,4,Hispanic or Latino,Urban,CA,8,2.1174802141530398
+5beb7e3b-8c9c-486e-957e-366483eb3e35,51 to 60,College Degree,5,Male,7,White,Urban,TX,8,1.0713787426093482
+4aece62f-72ca-4de0-ba77-6984cd7c395d,31 to 40,High School Graduate,7,Male,4,Black or African American,Suburban,MN,8,0.34280147924288296
+97440014-2f25-4b95-bd0e-02ff647d603b,26 to 30,Some College,6,Male,4,White,Suburban,IL,8,1.0931918626831711
+7232b095-a16d-425e-8816-84732c9dec3f,41 to 50,Some College,3,Female,1,Hispanic or Latino,Suburban,CA,8,0.6092917938967491
+dd4ff4dc-a25f-4f4f-85fa-f7427922549c,31 to 40,High School Graduate,4,Female,1,Black or African American,Suburban,TX,8,0.9708430608617645
+b48bbb31-653f-4c2f-9cbe-df88adb8fb3b,41 to 50,Graduate Degree,2,Female,1,Other,Suburban,CA,8,0.8044618029145997
+d208d896-253d-4690-9b2d-05e06d20363e,18 to 25,High School Graduate,2,Male,1,White,Rural,FL,8,0.26389759361406123
+88217689-c38b-4c49-8e1e-78fa47ad11ae,71 to 80,Graduate Degree,6,Male,5,White,Rural,FL,8,0.7132354777856103
+4d976279-826d-44a6-b6b0-f04439292260,71 to 80,Some College,7,Female,5,White,Suburban,TX,8,0.32536348559581774
+4f243f2a-5ab2-457d-9a57-3ce27a7ba3d9,31 to 40,College Degree,1,Male,1,White,Urban,TX,9,0.5423642138211487
+5afe7ba3-bbc6-4edf-b1b8-c7ff0420501d,71 to 80,Some College,8,Female,1,White,Urban,PA,9,0.3319655865903759
+96c99405-a329-4e9c-8367-73949682783e,51 to 60,High School Graduate,7,Female,5,White,Rural,MO,9,0.2
+4d9be0b2-0793-437a-88a5-038c3e059e80,41 to 50,College Degree,3,Female,6,White,Urban,WA,9,0.723933168536982
+16f38265-504b-48ad-8017-eea8621a6302,26 to 30,College Degree,7,Female,2,White,Urban,CA,9,0.2
+6c2bb561-078c-423f-98d6-e2b31115f9f9,26 to 30,High School Graduate,1,Female,1,White,Suburban,CA,9,0.40902940722184733
+86362c6a-464a-49c2-a3be-746eb4ab867e,18 to 25,Graduate Degree,9,Female,1,White,Suburban,TX,9,0.8229051596316487
+8b6462f8-6cee-4662-b69f-b72b032c7fb3,61 to 70,College Degree,5,Female,1,White,Suburban,KS,9,1.8253176426691895
+9df8f803-a470-47c9-8cc4-86aa9bae2b04,51 to 60,Graduate Degree,4,Male,1,Black or African American,Urban,TX,9,0.6650670186647575
+d9319b42-607c-48d2-9aa2-2bdac7737a3c,51 to 60,College Degree,4,Female,3,Hispanic or Latino,Suburban,TX,9,0.21618947103322628
+a1bc54bd-810b-40ec-a79b-15775ab4b5b2,18 to 25,Some College,1,Male,1,Hispanic or Latino,Urban,CA,9,0.7654607824179687
+933cbb50-7fab-40d8-bb34-766b0772ec01,71 to 80,Some College,10,Non-binary,3,Black or African American,Urban,TX,9,1.777048571486306
+368f303b-d7a0-4846-b9fd-fc73f28760d5,61 to 70,Graduate Degree,1,Female,2,Other,Rural,KY,9,0.6527130803267471
+c5b1cb5b-5ee5-4c71-97e8-8edafa28d726,26 to 30,College Degree,6,Male,7,White,Urban,MI,9,2.039222015843013
+37307c55-cc42-45e2-b214-bfa9230b6b33,26 to 30,Less than High School,5,Female,7,White,Suburban,NY,9,0.8193043333191541
+55952981-ecd2-45a9-89cf-fa35ce441266,26 to 30,Less than High School,9,Female,4,White,Suburban,VA,9,1.3782861112328428
+69fbb73a-4503-430d-a24d-d135bbd7f1df,31 to 40,Some College,3,Male,2,Black or African American,Suburban,AL,9,0.9824011850139832
+94c54ffc-784c-4b54-91fd-fefb354fa4ec,41 to 50,College Degree,5,Female,2,Asian,Rural,MA,9,1.9728641936308076
+f13bb98b-81b6-4af6-a2bf-716daaeece6c,41 to 50,Graduate Degree,5,Female,3,White,Urban,NY,9,3.0
+b0e0b302-cc19-4a81-bc9e-b3f5ef25ea1e,31 to 40,High School Graduate,6,Male,5,Native American,Suburban,OH,9,0.5653944118564502
+937c2b6e-fabf-4aed-be2a-d1105a2c9b1c,51 to 60,Some College,1,Female,3,White,Rural,NY,9,0.9400678990071736
+59618bde-8d17-4599-84cc-0d066b3fc9a0,26 to 30,Some College,3,Male,6,Native American,Suburban,CA,9,1.8244173158295804
+08ec628a-c109-47d4-af34-ecd6ace12dbc,31 to 40,Graduate Degree,3,Female,7,White,Rural,FL,9,1.008084823805056
+d03b398c-870c-4dad-ab3c-c7f036b93237,31 to 40,College Degree,6,Female,2,White,Urban,IL,9,0.2
+53969b18-1021-4af9-bd1e-7df4b4b51a8d,41 to 50,College Degree,3,Female,4,White,Suburban,TX,9,0.6609634230410493
+296ad6f6-e788-483b-bf6e-2f8244204174,51 to 60,Some College,5,Male,1,White,Urban,FL,9,1.0017234856874881
+2423ef3d-884d-4d0a-bdd8-09ca7396319f,26 to 30,Some College,3,Female,1,White,Suburban,CO,9,2.344053543407156
+1f657f57-fbec-4117-9425-53ad22e80606,41 to 50,High School Graduate,8,Female,3,White,Rural,WA,9,0.9019695373459082
+c0195e07-fe9b-4a26-a325-bdca8ba1d71e,41 to 50,Less than High School,9,Male,1,Hispanic or Latino,Urban,AL,9,0.38458252855684233
+357b7b73-c957-47d6-b2d2-282199a7e4fb,18 to 25,College Degree,5,Female,6,White,Suburban,WI,9,1.0194450435735942
+7e8fbb42-cb09-44af-a659-15698603fa2e,51 to 60,College Degree,4,Male,1,White,Urban,NY,9,2.1876644902309548
+a755be8c-d515-4229-baef-b727c03f6b34,26 to 30,Graduate Degree,3,Female,3,Black or African American,Suburban,TX,9,0.4927399770702847
+2a27795e-fa3d-4f82-9a4b-c62f1b7de7ed,18 to 25,Graduate Degree,1,Male,4,Black or African American,Suburban,FL,9,0.5483567595840981
+edfb3b12-f056-4520-90ba-b53600f4297a,71 to 80,Some College,3,Male,5,White,Rural,AL,9,0.4993384971939456
+901549cd-7582-4b03-959e-d07db2cbcb9b,71 to 80,College Degree,6,Male,2,White,Suburban,OH,9,0.24734814312217682
+220d8757-a218-4f1f-8d0e-3ec4d8db9dc0,61 to 70,Graduate Degree,5,Female,6,White,Suburban,TX,9,0.8716345655288781
+7eeaa13e-a790-48ef-affe-738e0c509696,31 to 40,College Degree,9,Male,4,White,Urban,OH,9,0.7954167015364637
+81e64662-a50a-4cc2-868a-14cbc419e450,18 to 25,High School Graduate,4,Female,3,Black or African American,Urban,CA,9,0.2
+e73c20ac-3dc2-4602-865b-2256ec25d6f8,51 to 60,Some College,6,Male,1,White,Urban,PA,9,0.41231849086126593
+501bef48-4d34-4721-9dc8-f0afdb760ca0,41 to 50,High School Graduate,5,Male,3,White,Urban,PA,9,0.9605311017989575
+0d723ee2-1318-48d4-8681-45faee37e5c7,26 to 30,Graduate Degree,5,Female,6,Black or African American,Rural,NY,9,1.3554042706137415
+080156de-2c9e-4ba3-86f4-f42f932cc56e,41 to 50,Some College,3,Female,4,White,Suburban,PA,9,1.6218187557640162
+114ab10d-ba3d-4270-951f-f015dc84d03a,18 to 25,High School Graduate,5,Male,6,White,Suburban,TX,9,1.4333944588943737
+ac40803a-7d22-44c7-a537-1ddf480dff6a,61 to 70,College Degree,5,Female,3,White,Urban,NC,9,0.8322273415460306
+7e21e132-4388-4230-a331-4eb9ffdfedca,31 to 40,Some College,6,Female,1,Two or more races,Rural,CA,9,0.20691143399425568
+446e61e7-a60d-46b7-a687-af19c31feb7f,51 to 60,Some College,9,Female,1,White,Suburban,MA,9,0.6962201682013767
+c3997498-fe46-4628-93cc-c998eb3c804f,31 to 40,High School Graduate,4,Male,2,Hispanic or Latino,Urban,CA,9,0.2
+f8454ba5-c9ae-48fe-be6c-2bc7183d840f,41 to 50,College Degree,1,Male,5,White,Suburban,IL,9,0.963977696786829
+c99cca39-4e4a-4934-b8fe-da7fd76764f2,41 to 50,Some College,5,Female,5,White,Suburban,IL,9,0.4782137664214172
+b55b0800-cf70-4490-a338-a02be08796f8,26 to 30,College Degree,5,Male,2,Black or African American,Urban,CA,9,0.2
+0e7ec13f-99cc-4f51-bf86-818507328781,71 to 80,Some College,2,Female,3,Other,Suburban,GA,9,1.0984504612005064
+2d1a462f-7647-4ff4-9913-0daea4636f93,51 to 60,College Degree,7,Female,3,Black or African American,Suburban,CA,9,2.17008469501449
+d335e017-cc9c-42ca-bd3e-2c861d765286,71 to 80,Some College,10,Female,3,Hispanic or Latino,Urban,TX,9,0.2
+54833a1b-466c-43b8-89ff-9dd0da67845d,61 to 70,Some College,9,Female,1,Asian,Rural,WA,9,1.1646747287827948
+a4a21c24-ef3a-4381-991d-e2afbfb85094,41 to 50,Graduate Degree,3,Prefer not to say,1,White,Rural,CA,9,0.6043245320999917
+f2f9dac2-4e2b-4b8c-8aaf-4cd26a3c2367,61 to 70,Some College,8,Male,1,White,Suburban,WA,9,0.43171771934580633
+5f6939e6-7bbb-4c3d-a524-c392a6d3342b,18 to 25,High School Graduate,6,Female,1,Black or African American,Suburban,MI,9,0.4325736418251447
+3e8b0654-2789-4422-9f7e-c518d5dea256,26 to 30,Less than High School,5,Male,1,White,Suburban,FL,9,0.6042050761725821
+20687948-2968-4eb7-b676-5051edc10e9d,18 to 25,College Degree,5,Male,1,Hispanic or Latino,Suburban,CA,9,0.6023815985755714
+1afc7dcf-b84d-4889-89ee-0c1461f0d352,31 to 40,Some College,7,Female,4,Asian,Suburban,MI,9,0.8068490439891204
+52ad1df5-b6e3-4e37-a4c2-686bb9df25fc,31 to 40,College Degree,5,Female,2,White,Urban,PA,9,0.3948950878782488
+52e6386e-72b5-4f8a-bf01-732ee39e3dd3,31 to 40,High School Graduate,4,Non-binary,7,White,Suburban,OH,9,0.4716012359831104
+b2618aa9-e3b9-439a-a2ae-e2b547647504,61 to 70,High School Graduate,5,Female,1,Hispanic or Latino,Suburban,AZ,9,1.2436073880633067
+47457d65-2c80-47c1-a93c-58ac1d78cda3,31 to 40,Less than High School,5,Male,2,White,Suburban,CA,9,0.3631814590960777
+6fd2f80f-00cf-4c56-bae6-ea091a2fa4da,31 to 40,Some College,3,Male,2,Hispanic or Latino,Urban,IL,9,1.0106638007998845
+0202a51d-2260-454c-bc92-889110d7bfc3,41 to 50,Some College,8,Female,1,White,Suburban,FL,9,0.6301653171211038
+d63300d9-eeba-49cc-99d4-0f1691839910,26 to 30,Some College,6,Male,6,Black or African American,Urban,FL,9,0.5286778899465354
+513cde50-d9c4-438a-9522-ba67af8c94a3,61 to 70,Some College,6,Male,1,White,Urban,FL,9,2.6421586676972293
+fda90cd4-21d2-4b3d-a5b6-9df31956119b,18 to 25,Graduate Degree,2,Male,7,Black or African American,Urban,TX,9,0.253192485451728
+7fe9523b-57a5-42fd-9fe0-93d50c4869fe,71 to 80,High School Graduate,6,Male,6,White,Suburban,VA,9,2.27021275918294
+5d8c40f2-69c0-487c-a2d7-652e65448547,51 to 60,Some College,2,Male,4,White,Suburban,IL,9,1.4951222383820193
+40ca9e85-f971-4658-bb2d-5d93b2840826,26 to 30,College Degree,1,Male,4,White,Suburban,TX,9,0.4891204955721256
+2bd6263e-9237-44b2-9109-f5fcc3d949fc,18 to 25,Some College,5,Male,4,Hispanic or Latino,Urban,GA,9,1.524950526361966
+9debe371-5d88-426d-a968-58498df38c3e,61 to 70,Some College,4,Male,2,Asian,Rural,MA,9,0.2
+d3a4cd29-f099-41ef-a885-12e4d5973886,51 to 60,College Degree,5,Non-binary,4,White,Rural,CO,9,0.44962579737186753
+9f81900f-49f1-43e7-b234-f105bce5b97a,51 to 60,Graduate Degree,2,Male,1,White,Rural,NY,9,0.3678502675126097
+9ef7b9cc-35c6-461c-8e12-6d1bd8f495f4,51 to 60,High School Graduate,4,Male,1,White,Urban,WI,9,1.1079577519949964
+097111db-c6a4-41a7-8269-6e1b49197edd,18 to 25,Graduate Degree,2,Female,3,Black or African American,Suburban,NC,9,1.374163350358773
+c0010ecf-8be3-4194-843e-ed82d3c898fc,31 to 40,Some College,10,Male,4,Black or African American,Rural,GA,9,1.0949487486038731
+2086e42f-c5fd-44db-a1be-dfefd67e1d32,26 to 30,High School Graduate,5,Female,6,White,Suburban,NY,9,0.9161614321971805
+7f0b56a3-ed8a-4548-8e5c-f447451c7709,61 to 70,Some College,6,Female,1,White,Urban,CA,9,1.5953533989888802
+69b0e204-450f-422f-8f02-224387f8725b,51 to 60,Graduate Degree,4,Male,6,White,Urban,TX,9,1.4421761940979902
+e001911c-ef0a-4f75-855f-d2de04c69b72,31 to 40,Some College,2,Male,1,White,Suburban,MI,9,0.478919929553626
+1addaf79-275f-4f2d-936e-44b6a93af26e,18 to 25,High School Graduate,9,Female,2,White,Rural,KY,9,0.5264400786461911
+7807996f-b5f6-4bf4-8689-4e0d1b6c7f2f,31 to 40,Some College,3,Female,2,Two or more races,Suburban,NC,9,1.3854692323294657
+df1e77d0-56d4-459d-b99c-0b9f5476089b,31 to 40,High School Graduate,4,Male,3,White,Suburban,NY,9,0.8007699628949815
+1392eace-592a-4c38-893f-2a14a63fadd0,51 to 60,Less than High School,6,Female,1,Black or African American,Urban,CA,9,0.8437852341041474
+1c679a5a-6ac5-4f73-82d2-ed5aec11bb51,51 to 60,High School Graduate,1,Male,3,White,Suburban,NY,9,0.9293021543534027
+3182da0b-f3ca-40da-8ec0-5ea8916eb10a,61 to 70,High School Graduate,7,Non-binary,6,White,Suburban,FL,9,0.2
+80281044-42d0-42da-a0e2-4ffbb3f6221c,41 to 50,High School Graduate,5,Male,3,Black or African American,Suburban,OH,9,0.4603365752472074
+98e1f81f-9b4f-4c95-8cd1-8f2bcd98d9b9,26 to 30,High School Graduate,3,Female,3,Black or African American,Suburban,TX,9,1.1775778916215185
+8d90401a-73e5-4aa4-bfa4-c9ed8fcde86a,51 to 60,Some College,1,Female,6,Two or more races,Rural,TX,9,0.45697159578737917
+7028b86f-c9d2-4155-8dbb-aab96ac905f7,51 to 60,High School Graduate,2,Female,5,White,Urban,MN,9,0.6890620047007078
+7958f11b-cb9f-41e8-b276-41107647daf9,41 to 50,High School Graduate,8,Female,3,White,Suburban,MI,9,1.172128735220681
+0f27ccd1-08fe-4368-ad58-bf4b4c27d47a,51 to 60,Graduate Degree,6,Male,2,Black or African American,Urban,CA,9,1.6568384832095104
+54836810-5bff-4784-bba7-eb0fe5f676bc,41 to 50,Some College,3,Male,6,White,Suburban,PA,9,1.7934065889394977
+41ddec93-efbf-4aaa-a44e-e0d8e52d7b76,41 to 50,College Degree,1,Male,4,White,Suburban,FL,9,1.8628676579082912
+398d2897-9fcb-45ce-8409-a62f64bf2fbc,41 to 50,High School Graduate,6,Male,1,White,Suburban,MI,9,0.7420886899055129
+058b5e04-af6d-474f-a837-aaccdb4e6a9d,18 to 25,High School Graduate,5,Female,2,White,Suburban,FL,9,0.6825076942888124
+cf83494f-53a6-4de2-ac86-c4986ddcf576,26 to 30,Less than High School,4,Male,6,Asian,Suburban,CA,9,0.2854704937081227
+5845ffa3-5839-40ca-ba54-cb5968ada47c,18 to 25,High School Graduate,4,Male,1,White,Rural,NY,9,2.178428179201493
+1527b29e-f0b6-42eb-8618-f8842fe1b238,51 to 60,High School Graduate,3,Female,7,White,Suburban,CA,9,0.6595552256903174
+42d1e3f9-354b-4a5e-9aa2-305c3cb050f8,31 to 40,High School Graduate,6,Female,1,White,Urban,PA,9,2.1443766146766503
+d768d119-730f-4bb1-911e-bdc554cba377,41 to 50,High School Graduate,9,Female,5,White,Suburban,GA,9,1.030987032260514
+c44ba6a3-2e86-41c8-91bc-81009b93bb1f,61 to 70,High School Graduate,2,Non-binary,2,White,Suburban,AL,9,1.7097925543370918
+40ea4fcb-e102-423b-b613-4506cfddf610,31 to 40,Some College,5,Male,3,White,Suburban,MI,9,0.7820924122291085
+8afd68dd-6f40-4bbe-a04e-f53157ba0206,41 to 50,High School Graduate,4,Male,6,White,Rural,AZ,9,1.2566070711019188
+974663b2-e7b7-41be-a1ee-088ef3b9fcc5,51 to 60,Some College,5,Female,3,Hispanic or Latino,Rural,FL,9,1.749684868206247
+6797e43f-7ebb-4d6d-8087-5696100f598f,31 to 40,Some College,3,Female,4,White,Urban,OH,9,0.5508800073495995
+47d58549-9467-486f-a414-38086c89dcee,18 to 25,College Degree,7,Male,1,White,Rural,CA,9,1.8695825359128897
+064f93ec-6337-4889-9653-4dc3b8fbfbbf,31 to 40,Less than High School,5,Female,1,Asian,Urban,TX,9,0.3244799138452816
+76b260a9-7a60-4af6-9534-80de19e8f457,26 to 30,College Degree,5,Male,1,Black or African American,Urban,AL,9,2.596681826547404
+94934e37-552c-4be8-a910-08c004c98e89,61 to 70,Some College,4,Male,5,White,Urban,FL,9,0.9320757434946592
+404adfa4-e36b-425d-aeeb-861d58707ea6,61 to 70,High School Graduate,3,Female,1,White,Rural,OH,9,0.4667348348812688
+39910353-4c3a-48bf-896b-ecb98907fab8,51 to 60,Graduate Degree,2,Female,1,White,Suburban,GA,9,1.4747694657593353
+74df9f38-0ac5-4faa-801b-f6d259572825,61 to 70,Graduate Degree,6,Female,3,Black or African American,Urban,CA,9,1.0664719495908566
+9ce684e9-d6e5-4e8c-a0c5-bb1f68fd9313,61 to 70,Less than High School,3,Male,4,Two or more races,Suburban,IL,9,0.2
+4571fd8d-e23d-4a96-850d-0d0d4969fccb,26 to 30,High School Graduate,6,Female,5,Black or African American,Suburban,FL,9,0.6044767359518995
+aee94e35-7208-4c76-a879-851c69d09be8,61 to 70,College Degree,4,Male,1,White,Urban,TX,9,0.3396916452346646
+182fc85f-d126-4fdf-86a8-008f1d527bb0,41 to 50,College Degree,4,Male,1,Hispanic or Latino,Rural,FL,9,0.36855196845389615
+81e66365-cb54-4d53-9732-2daa55a7b45f,61 to 70,High School Graduate,5,Female,7,White,Suburban,PA,9,0.35653387468134523
+cb45d55c-2f00-4f9b-b2df-398ab886b5ce,61 to 70,High School Graduate,4,Female,2,White,Suburban,TX,9,1.2145969888516337
+00551739-36bf-4205-92dd-54903bcef4bf,31 to 40,Some College,2,Female,6,White,Rural,IN,9,1.5540907962015356
+d5beaba6-c465-4188-9e6e-54df3cba3bcf,26 to 30,Some College,4,Female,6,Other,Suburban,TX,9,0.43009400284883703
+aebca894-9dbf-4f5a-9e01-0db58fe4807c,31 to 40,Some College,6,Female,5,White,Rural,IL,9,0.2
+cff0d6a7-6270-4571-8839-1592dd6ceb33,41 to 50,Some College,6,Female,1,Black or African American,Suburban,WA,9,3.0
+618560f2-82ee-4adf-824e-2782907d4b26,61 to 70,Some College,3,Male,6,White,Suburban,CA,9,0.9396054825601873
+1a64d391-0db4-46dd-99b5-02f517b601fb,61 to 70,College Degree,5,Male,5,White,Urban,NY,9,1.4823700841535923
+2defe1db-4277-4833-b582-50530e54d9c4,18 to 25,Less than High School,3,Male,4,White,Rural,MI,9,0.7134174064391057
+c819f1e5-ac11-440a-88ad-6dcddd6f0697,41 to 50,High School Graduate,3,Male,2,White,Suburban,IL,9,0.2
+2746e5eb-4cd3-4f5c-9a93-f839f47eb472,41 to 50,College Degree,1,Female,2,Hispanic or Latino,Urban,NY,9,1.1298495677961238
+cbee5385-12ac-404a-880a-d74747fe1c0b,31 to 40,Graduate Degree,8,Female,1,White,Urban,OH,9,2.4173426950255466
+ee67a111-d48f-444e-b107-c3d71c341497,26 to 30,Some College,3,Male,3,Black or African American,Suburban,AL,9,0.4895899618012586
+8a2e51a9-8161-4bac-8002-9213e96f6358,31 to 40,Some College,3,Male,4,Hispanic or Latino,Suburban,CA,9,0.2
+f1e3acd7-8fd5-4855-a18c-e1b0dcec3ec5,71 to 80,High School Graduate,3,Female,2,Native American,Suburban,OH,9,0.28385071779324
+87b2c309-8cdd-4df4-8d2f-2da2d44fee1f,31 to 40,Some College,2,Male,3,White,Rural,NY,9,1.532597038862304
+d74afb38-ed60-4bf6-9775-603cb13f4c7b,41 to 50,Some College,6,Female,2,White,Urban,WA,9,1.0604859427343434
+cae7b581-4830-41e4-8c92-44300d36de5b,51 to 60,High School Graduate,1,Female,4,White,Suburban,PA,9,1.8748571669963787
+84033301-b4e7-44ef-998c-6abb6b60b138,31 to 40,High School Graduate,2,Female,7,Two or more races,Urban,WA,9,0.8390191311829996
+be03b5f3-25aa-45aa-b1b8-3150b002ef42,71 to 80,Some College,6,Female,1,Native American,Rural,OH,9,1.3578224313620406
+f81377c6-e2bc-491f-81f4-166751324830,71 to 80,Less than High School,4,Female,2,White,Suburban,FL,9,0.589946867251602
+ac8f81c4-788d-41ed-be56-531f1a379e6d,31 to 40,High School Graduate,6,Male,1,Hispanic or Latino,Suburban,CA,9,0.306219431942262
+61d3eaf3-ec56-46ac-8492-aa28a09c4097,41 to 50,High School Graduate,5,Female,4,White,Suburban,PA,9,1.3604843873562165
+5740e675-613c-4ee8-b8da-2409d113f2c5,31 to 40,High School Graduate,3,Female,5,Black or African American,Suburban,NY,9,1.550011236898181
+c6a40f24-f3cb-4fcb-be44-97ca9d5ed9a5,31 to 40,High School Graduate,6,Male,7,White,Suburban,AZ,9,0.49959659996764116
+dc51fec8-7c03-4c0c-84b1-de7b93f8302e,18 to 25,Graduate Degree,2,Female,2,Hispanic or Latino,Suburban,IL,9,2.273973963778228
+4851c413-d0ec-4ad7-8a08-ff194a2e5cc6,51 to 60,Some College,5,Female,7,White,Suburban,WA,9,2.316150701432224
+46dc8fcc-899f-45de-86b2-4b46ddbc237b,41 to 50,College Degree,4,Female,1,Hispanic or Latino,Suburban,MI,9,0.35861427131987517
+33385b49-0911-41b6-bef5-84fd7f8dec55,18 to 25,College Degree,3,Female,4,Hispanic or Latino,Suburban,IN,9,0.3743093312722123
+8271a08e-c7b1-43ff-808e-3fd152bce98e,31 to 40,Some College,6,Female,1,Black or African American,Suburban,KY,9,0.390795849717934
+1144949b-b148-4c7a-a5f3-2ebbd16f681e,61 to 70,High School Graduate,8,Female,6,White,Suburban,CO,9,0.7542962603828411
+fc094740-af32-4409-93d7-5d8f4a6fcd78,31 to 40,Some College,10,Female,4,White,Urban,IL,9,0.6136193393077892
+630ec1a3-e184-48c6-850e-a1266fb70985,26 to 30,Some College,6,Female,4,White,Suburban,IL,9,0.24296928335312848
+c1767bf7-8474-4262-8323-693cfce8445d,41 to 50,College Degree,4,Female,6,White,Suburban,CA,9,0.4012415437433126
+2a5f0738-145d-415e-87e6-1f75049eef40,71 to 80,Some College,3,Female,1,White,Urban,PA,9,0.2
+2b6a8559-474e-4306-903a-4516356d5337,31 to 40,High School Graduate,3,Female,1,Native American,Urban,IN,9,0.2
+0803f809-cfbb-4ebb-871f-57f8828e1880,51 to 60,High School Graduate,5,Male,6,White,Urban,TX,9,0.2
+cbd5994f-7cea-4f12-a064-d49e42208225,51 to 60,Some College,4,Female,2,White,Suburban,TX,9,2.8939455374568035
+d845ceb6-6063-4578-bc11-5d78f39262e9,31 to 40,Some College,8,Female,1,White,Suburban,CO,9,2.6661099926776792
+c2b28716-1ee0-42cd-8a58-e0e63984c993,51 to 60,Some College,4,Male,3,White,Suburban,NY,9,1.4165980556265627
+b6708d64-24e3-4116-81b3-e408e5a0eb0f,31 to 40,Some College,4,Female,4,Black or African American,Suburban,MA,9,0.5040997266256091
+3916d9de-09c7-4f3a-a6ce-4a69bf03ac71,51 to 60,Graduate Degree,4,Male,1,White,Suburban,TX,9,0.2
+d2a72d35-3973-4978-9c0c-d20f1fd5f73a,51 to 60,Some College,7,Male,2,Asian,Suburban,CO,9,0.8254199004006227
+251865ea-b4a5-4627-8241-f7da53450d6b,41 to 50,High School Graduate,6,Female,1,White,Rural,NY,9,1.1526963287193246
+d7738b21-92fc-4fe2-965f-c399f79b2808,18 to 25,High School Graduate,6,Male,3,Two or more races,Suburban,NC,9,0.43660273159445856
+a4e3a83a-5978-4ad1-8389-0cf3bd6dc857,61 to 70,High School Graduate,4,Female,6,Hispanic or Latino,Rural,FL,9,1.1081295644397609
+4bd720e6-4d48-4b32-84d2-8144d1741b29,31 to 40,High School Graduate,7,Female,7,White,Suburban,CA,9,0.28119335716393007
+d2edf003-ad1c-4ded-8c37-5d735273ada0,26 to 30,High School Graduate,1,Female,4,Native American,Urban,NY,9,0.5130936891770009
+4b97394e-3236-4732-96dd-e8d7f13c6e36,18 to 25,High School Graduate,8,Male,1,White,Suburban,OH,9,0.6776379055977717
+e9bcbf6f-dc54-4ad0-b338-5707608d9cb8,41 to 50,High School Graduate,5,Male,7,Hispanic or Latino,Suburban,FL,9,2.718555952607204
+3e3b26f5-bea4-48c4-947f-455f33470bf6,51 to 60,High School Graduate,4,Female,3,White,Suburban,NY,9,0.3959205441553261
+6a40c2d7-e7dd-4e7b-90d5-642951f0f7c6,18 to 25,Graduate Degree,5,Non-binary,1,Asian,Urban,IL,9,1.1485422237235128
+1699ab15-8b22-451c-aeab-db82169361af,41 to 50,High School Graduate,6,Female,7,Asian,Urban,OH,9,0.34243921778183195
+40eda7ab-13eb-42b4-ab4c-ecdf67f7d402,31 to 40,Some College,1,Male,5,Hispanic or Latino,Rural,CA,9,0.29915400237632656
+fe7ab66e-be74-4932-83da-aa235fdb6075,51 to 60,Some College,8,Female,5,Hispanic or Latino,Urban,TX,9,0.43486970020471066
+f9968437-0099-40fd-80cf-45c0099846d9,26 to 30,Graduate Degree,5,Female,5,White,Rural,FL,9,0.8478365838243992
+6f5fb2ee-8598-42a2-a713-8875c65d4fe9,51 to 60,High School Graduate,4,Female,1,White,Urban,IL,9,2.4742047684212816
+ad007e47-d44b-4e4a-9b12-d1f5a926d4d0,31 to 40,Some College,2,Male,1,White,Suburban,CA,9,0.49461120771339706
+aa9ce69b-a163-484a-a786-c097227a0423,71 to 80,Graduate Degree,4,Female,5,White,Suburban,CA,9,1.5582792887030503
+ac12c551-82c3-40ea-b934-3b3210c0746b,26 to 30,College Degree,5,Female,1,Black or African American,Suburban,MI,9,2.807953741220543
+6aae84d8-18de-405f-9451-a43869224a42,31 to 40,College Degree,4,Female,3,White,Urban,FL,9,1.0102948724344405
+67ae492e-6d69-410f-84f9-e398efaef654,26 to 30,High School Graduate,6,Male,5,Two or more races,Urban,TX,9,1.7586094974401079
+5389f241-4112-4315-9d7c-6c2f26cb5999,61 to 70,High School Graduate,4,Female,5,Black or African American,Urban,AL,9,0.41382777060599074
+6a6a8e15-c465-4fcf-a029-e14067cc4d20,61 to 70,College Degree,9,Female,3,Hispanic or Latino,Urban,IL,9,1.1262545167458535
+48238ea3-808d-4794-860b-7a0effef68f2,31 to 40,Graduate Degree,5,Male,5,White,Suburban,GA,9,1.341954683391802
+9fb4af24-2066-4624-bf76-7906630f8e34,51 to 60,Some College,7,Female,6,Asian,Rural,AL,9,0.23112255973190837
+3887ae8a-8c92-4268-9abf-f07cd1376506,61 to 70,Some College,2,Female,4,Native American,Rural,CA,9,0.3773854577434785
+0f90b604-1efe-4098-8fd0-2a268452c970,41 to 50,High School Graduate,4,Male,1,White,Suburban,IN,9,0.6538432169365861
+959b38f7-209c-4b39-a71c-89323d0e8528,41 to 50,College Degree,4,Male,2,Black or African American,Suburban,MI,9,0.44579938289221754
+0728c354-328f-4970-9029-87af07429bec,31 to 40,High School Graduate,5,Female,2,Hispanic or Latino,Suburban,IL,9,0.7171826648349617
+b1646579-3ec9-4cf2-adfb-194771d79426,18 to 25,High School Graduate,8,Male,1,White,Urban,MI,9,0.2
+6b92e6f0-4a70-4825-b134-595932f1bc59,61 to 70,Some College,1,Female,2,White,Rural,NC,9,2.626612535110705
+f3f51f93-6535-4f31-ba6f-19c337430f51,61 to 70,Some College,1,Male,1,White,Suburban,AL,9,1.6709429968993554
+c27a7fa7-c902-488d-b2a3-eeb5308e2b10,51 to 60,High School Graduate,7,Female,3,White,Suburban,KY,9,3.0
+a2b5e523-66df-404b-a0ba-0d0cab3b8c87,31 to 40,High School Graduate,3,Male,7,White,Urban,WA,9,0.2604979266444819
+941530cd-9281-4053-b402-03d58bb15fe5,31 to 40,Some College,6,Female,1,White,Suburban,MI,9,1.1587252650348716
+b485c728-7df7-4fda-a159-34a2565f8525,51 to 60,High School Graduate,5,Female,5,White,Suburban,NY,9,0.4495306219340336
+20ad0cc6-0ab1-43cf-86ad-cd0445000795,61 to 70,Some College,7,Female,5,White,Rural,FL,9,0.29744973200379626
+5b582db6-75cd-416f-a50b-fbfd5bc63e66,61 to 70,High School Graduate,2,Female,1,Two or more races,Suburban,PA,9,1.6060773630139065
+11613f6c-8b2a-4b58-bfa5-9a49ac36932a,51 to 60,Some College,2,Male,7,White,Suburban,PA,9,0.8693441832992455
+7299d01a-44b1-4ff8-b0a4-dad03d07d427,51 to 60,Some College,5,Female,4,Two or more races,Rural,MI,9,0.6180670966752195
+1526024e-29e8-46ab-bf7c-edfc6ee32647,18 to 25,Less than High School,9,Male,2,White,Urban,WA,9,1.0330783051035672
+b60ba261-f4ce-46e8-b057-4304ea5d6a21,26 to 30,High School Graduate,4,Male,5,White,Suburban,CA,9,0.39249955953514265
+60c8aa61-afc3-4690-b7a5-8ebb65bd43b9,61 to 70,High School Graduate,4,Male,2,White,Urban,AL,9,0.3805273593597918
+7f5c41fa-fd0f-4b66-afd0-650fef3e5da0,51 to 60,Less than High School,6,Female,5,White,Suburban,PA,9,0.464088684020813
+4cabe0d1-b05c-4d3d-a310-f3c8b8088d12,18 to 25,Graduate Degree,8,Female,1,White,Rural,TX,9,1.832449473153091
+ef0e757b-44c4-440e-ab7d-784cabccb622,26 to 30,High School Graduate,7,Female,6,Black or African American,Urban,CA,9,1.7311350333934965
+79302552-fa77-48e5-a589-776b20d5fb42,51 to 60,College Degree,10,Male,3,White,Rural,FL,9,0.24834928385718136
+ec54ae4a-c441-43c5-b4e7-81c476302818,18 to 25,High School Graduate,1,Male,4,Black or African American,Urban,AL,9,2.551507131201819
+25ec587a-46ac-4713-9a5e-e78fdd8683ce,26 to 30,College Degree,2,Prefer not to say,1,Black or African American,Rural,FL,9,0.8131533407736966
+c57fb3a3-d7e7-4e4d-b87d-81c62fc80060,41 to 50,College Degree,6,Male,5,White,Suburban,PA,9,1.1447299234749733
+29ff176f-d217-4ada-9a86-c8d171745b69,51 to 60,Some College,7,Male,5,White,Suburban,MI,9,0.45082799615761165
+a16674d1-ed41-4915-9a11-64de269cb321,51 to 60,Some College,3,Male,3,Hispanic or Latino,Urban,GA,9,0.847022928805075
+6162380b-9426-4baf-b2f0-d8c98257dc16,31 to 40,Some College,3,Female,4,White,Rural,IL,9,0.2956952549680008
+f21439fb-7782-42a8-bbce-8fbf0bd0f0dd,51 to 60,High School Graduate,7,Female,3,White,Suburban,AL,9,0.4234700206142734
+3de64c5b-aa5d-46c8-b334-96287178d9af,31 to 40,Graduate Degree,1,Male,6,Two or more races,Urban,FL,9,1.5142723688619613
+fe4bddeb-2c48-4b2c-b967-7bc80c35abb3,31 to 40,College Degree,4,Male,3,White,Suburban,NY,9,1.5392058929748282
+c2388671-4601-492e-9e69-0bec4aaf82fa,51 to 60,Graduate Degree,5,Female,6,Black or African American,Urban,WA,9,1.1836546987495198
+fbc271d4-1b45-4ba7-95e7-968439dc55b2,51 to 60,High School Graduate,5,Female,6,Two or more races,Rural,TX,9,0.5856319394397822
+83b38f14-b050-4223-9196-d1af9e396c03,61 to 70,College Degree,6,Male,3,White,Urban,AZ,9,0.24402311680825642
+ecda8fa0-360b-4816-9bc9-a5ce118a3946,51 to 60,Graduate Degree,4,Female,1,White,Suburban,TX,9,1.9856464590910798
+c0ed4b1e-065b-4da8-a830-e7379958f923,41 to 50,High School Graduate,6,Male,3,White,Suburban,PA,9,1.6196084216327482
+92e091d4-4e34-4e25-bf8a-ba9bc6aff107,18 to 25,Less than High School,5,Male,6,White,Urban,PA,9,0.2
+94301052-0863-4455-b50d-35f1c7dbc5ee,31 to 40,College Degree,5,Female,1,White,Urban,KY,9,1.5578929292573118
+bb01c2cd-d59f-4df0-95d7-ccef8500e9a4,31 to 40,Some College,6,Male,4,Black or African American,Urban,IL,9,0.6177600731292671
+4ed4fa17-c938-4a16-b40a-5fba5ad47268,31 to 40,College Degree,3,Female,6,White,Suburban,FL,9,1.3740492152826909
+7a7c4d2e-677f-4d52-a903-b853a6181ec8,71 to 80,High School Graduate,2,Male,2,White,Urban,CA,9,0.2002884779932132
+937781f1-8fb9-4e96-9f4a-ddffa2a3eaf5,31 to 40,College Degree,2,Male,4,Two or more races,Suburban,CO,9,0.4720350574153452
+5d2687b2-0783-4978-aa3d-f269cdac6d7d,61 to 70,High School Graduate,3,Non-binary,1,Hispanic or Latino,Urban,FL,9,0.8958519752891986
+b6182eba-23e4-4fce-9b1e-1067bcc861fd,51 to 60,High School Graduate,5,Male,1,Black or African American,Urban,MA,9,2.6273268015070412
+b9079ff8-45fa-44d8-8cbf-1938cb0a5172,51 to 60,High School Graduate,7,Female,5,White,Suburban,PA,9,0.897633486966406
+80b5404f-4440-42f1-84d8-3d17f7a6b214,41 to 50,College Degree,6,Male,1,Black or African American,Urban,MA,9,1.78195171651279
+95eef27a-694b-4c76-b306-a332b7e003be,41 to 50,College Degree,7,Male,2,White,Rural,CA,9,0.9923071047414976
+bba8feef-48da-4a9a-9e3b-b1b21fed2455,41 to 50,Some College,4,Male,6,White,Rural,WA,9,0.9657039361011757
+a64e2d9f-98ef-4e03-8c49-43c597885845,26 to 30,Some College,4,Female,2,White,Suburban,VA,9,1.2306488046208948
+78013395-55b4-4778-be87-4c638072f2de,51 to 60,Graduate Degree,4,Male,7,Asian,Suburban,PA,9,0.796183005345673
+8aae60c5-2031-401f-ae0b-7ad304c3b830,31 to 40,Some College,3,Female,7,White,Rural,WI,9,1.4886938887422294
+ef4abffe-f4a1-4542-bd2f-b35927451c1a,18 to 25,College Degree,1,Male,2,White,Urban,MN,9,0.3172389037825943
+fec68ecb-0e43-43ab-a731-3bc149cbd5d9,51 to 60,Some College,5,Female,1,White,Urban,WA,9,0.8005037831507873
+7707345a-0945-4202-99a5-6cd973d3d922,26 to 30,Some College,10,Male,5,White,Urban,CA,9,2.777086685265053
+5b7f348a-9933-4c3b-bb41-553a575a3478,71 to 80,Some College,2,Female,3,Hispanic or Latino,Suburban,IL,9,1.8331962889445117
+b09db7c2-553a-4418-be2e-1f815fca07f0,71 to 80,High School Graduate,1,Female,1,Hispanic or Latino,Urban,CO,9,1.0581840553476838
+da39ce4f-0808-4ec9-9b72-b9bea8b8e08d,61 to 70,College Degree,7,Female,5,Hispanic or Latino,Suburban,CA,9,1.6621277134779604
+56a6a536-7137-495d-a29d-f6461bed4a98,31 to 40,Some College,3,Female,1,White,Rural,CA,9,2.3006908422569867
+b132a034-5bec-4c4e-96f6-cddf0dd541cf,18 to 25,High School Graduate,7,Female,6,White,Rural,NY,9,0.2
+3b489ab5-7149-4cab-91bb-818d01f38fff,61 to 70,Graduate Degree,6,Female,1,White,Suburban,PA,9,0.6670754659229305
+05a17139-2bfb-461c-8c26-1bbdfadbc23f,41 to 50,Some College,9,Male,1,White,Urban,NC,9,0.47059331157755985
+6c1df050-3d8d-4129-a700-b0fe2e0eb1f1,71 to 80,Some College,4,Male,1,White,Rural,CA,9,0.21631995936414083
+0ac510e5-7337-4f4a-8260-89cd921ad6c4,71 to 80,Graduate Degree,6,Female,7,Hispanic or Latino,Suburban,TX,9,3.0
+8f8db2b3-65e4-4095-b899-558a90d1df8b,61 to 70,Some College,5,Female,5,White,Urban,NY,9,1.2734915418923174
+08a9dda9-0f99-4922-95a0-8cce2a1b88a6,31 to 40,High School Graduate,6,Female,6,White,Urban,IL,9,1.6216600668894525
+ece20c4f-251a-414b-ada2-1789341134e8,31 to 40,Graduate Degree,5,Female,2,White,Rural,NY,9,0.48885073496352516
+77196546-0c83-4ef4-bd55-4c32c25863c1,61 to 70,Some College,3,Male,2,White,Suburban,FL,9,0.6554694813047359
+fd39c76f-10c7-486f-ac5e-9971f4c9dec1,31 to 40,High School Graduate,5,Male,1,White,Suburban,GA,9,0.8300413609054387
+67de9ffd-2f19-419c-8e6e-f0b4a8fd679b,26 to 30,High School Graduate,5,Female,3,Two or more races,Rural,VA,9,1.1181458813367724
+0b7c1739-9273-4202-a400-0c17d44d2675,41 to 50,College Degree,7,Male,4,Hispanic or Latino,Suburban,FL,9,1.4498645393215497
+d196ef7b-b014-4755-a55a-2c381c09880f,71 to 80,Some College,6,Male,4,Other,Suburban,MA,9,1.3850808732501327
+a75ace86-0882-4b72-847b-da6e4cd8bf25,51 to 60,Some College,6,Female,2,White,Suburban,TX,9,0.6913864481682618
+12e47013-c3fc-40fe-b5e2-b59586e03b36,41 to 50,Graduate Degree,2,Male,7,White,Suburban,OH,9,2.3617673902959635
+0aafe9e4-7973-4dbb-8fbc-6e2efddf702e,18 to 25,College Degree,6,Female,1,White,Suburban,CA,9,2.0478541522032168
+e0d3dd1f-6ef8-48b1-b855-8e93fa0f3765,51 to 60,High School Graduate,5,Male,7,White,Suburban,CA,9,1.0359228043237043
+22f30c23-61a2-4832-b482-1f416a331c6d,81+,High School Graduate,8,Female,1,Hispanic or Latino,Suburban,AL,9,0.8542818425596155
+77b317dc-014b-4da1-9879-5d3b68181348,26 to 30,High School Graduate,8,Male,3,White,Rural,NY,9,0.6493287749258815
+448c6fe2-15c5-40b6-9f7a-392bdd2af6a4,41 to 50,College Degree,1,Male,2,White,Suburban,KY,9,1.1229110386771344
+e5c4ee8c-3f92-4a82-84ba-767dd21448e8,61 to 70,Less than High School,7,Male,3,White,Suburban,CA,9,1.9746962490598652
+8f3daa1b-e831-417c-ae64-2a72a3540bbd,51 to 60,Some College,1,Male,4,White,Suburban,WA,9,0.86947452981357
+7afbe76e-b050-4794-8f2e-75048df6ca7a,51 to 60,College Degree,4,Male,3,Hispanic or Latino,Suburban,MI,9,0.5231253995823903
+010963df-1516-473b-ab72-7c7256a321cb,51 to 60,Graduate Degree,5,Male,3,White,Suburban,FL,9,0.8545796595207219
+145be1b8-cce9-4c0a-b84c-f19af1c61543,31 to 40,High School Graduate,2,Female,5,White,Urban,MI,9,1.0502374811383157
+a83a7746-2545-4795-a45e-3ef2cdf4bad3,31 to 40,College Degree,7,Male,5,White,Suburban,NY,9,0.29692748175173433
+12030057-eda1-4194-a611-46a6bd1283cd,61 to 70,High School Graduate,1,Female,6,White,Urban,CA,9,0.22652709667960041
+2ca87f9f-b174-45e1-bbeb-fe1bed25f3db,61 to 70,College Degree,2,Female,1,Hispanic or Latino,Suburban,FL,9,0.5349983845745675
+fed0c264-9188-4aeb-9da3-1609b6a24d0a,61 to 70,High School Graduate,5,Female,4,Asian,Suburban,TX,9,2.3584607201291563
+dd3b8753-1e67-4a31-9c7c-339f8b7aec85,61 to 70,Some College,6,Male,4,Other,Suburban,KY,9,1.899351033543959
+728cb385-7c92-4e96-b602-47fe7e51354d,41 to 50,College Degree,8,Female,2,Hispanic or Latino,Rural,MN,9,0.2
+cef5fe54-bc5f-47d9-b3a9-e9946ead2da4,41 to 50,High School Graduate,6,Male,3,White,Suburban,IN,9,0.36474982021362806
+9850a7b2-9a66-48a0-9bcd-63e6f1c57a93,51 to 60,High School Graduate,6,Male,2,Black or African American,Suburban,AZ,9,1.4323838205102573
+910040b1-1f78-463b-a842-a48bd28be714,51 to 60,College Degree,4,Non-binary,1,White,Suburban,CA,9,0.5936997275582298
+224f3d31-5519-45f6-87ef-6c1349b86ca7,51 to 60,College Degree,1,Male,1,White,Suburban,KS,9,1.1675691886864887
+9de47609-9ad4-4233-9aa7-8f7ee7ee52e4,51 to 60,Some College,2,Female,1,Hispanic or Latino,Urban,CO,9,0.2
+3aa587f3-c384-4970-9918-0a1d8a484b10,61 to 70,College Degree,5,Female,5,White,Urban,AZ,9,0.8412135388497135
+88b8116c-3d6b-40a5-a68f-3f0e364dfe48,31 to 40,Some College,6,Female,4,Asian,Suburban,TX,9,0.7748092212798329
+4ae8a709-8d0c-41cc-90ec-6f2a9181aad8,31 to 40,High School Graduate,4,Female,7,White,Suburban,WI,9,1.627148964578902
+03b82b55-e34d-4f0f-a985-f45c88f9a12e,18 to 25,High School Graduate,6,Male,5,Black or African American,Urban,PA,9,1.1183252391680083
+decaa828-c7a6-46e1-b07d-14649c3011cb,41 to 50,High School Graduate,5,Male,1,Black or African American,Urban,TX,9,0.9290830491909463
+752489eb-5712-40c3-9b73-46555a12a946,18 to 25,Graduate Degree,1,Female,6,Asian,Urban,FL,9,0.2
+4376a720-7ded-4abc-b61d-ffcb7dfba9d3,41 to 50,Some College,3,Male,6,Black or African American,Rural,WA,9,2.8367009543191997
+8ae424b3-8c6e-4693-8864-9f731ef834fc,41 to 50,Some College,7,Male,3,Black or African American,Suburban,CA,9,1.3600636823583865
+8607b4d1-b833-4efc-9fc7-c108fcc9f2a9,31 to 40,Some College,6,Male,4,White,Suburban,WA,9,0.4533521195464132
+8ebd9659-e189-4ced-ac13-0e1f0c16eea6,41 to 50,Graduate Degree,8,Male,7,White,Urban,WI,9,0.9112460841667518
+8e6e0ddb-1cb5-41c6-a53a-e5cb038cb169,18 to 25,High School Graduate,2,Male,4,White,Suburban,OH,9,0.6090232738203618
+1ae12803-f749-43ad-a4be-e72ec08eadc2,18 to 25,Some College,10,Male,7,Hispanic or Latino,Urban,WI,9,0.7074430150657401
+21fc7466-31f1-4967-b2cb-f7611d3a4ffe,61 to 70,Some College,3,Female,1,White,Urban,MO,9,1.879168186420097
+7582b2fd-49d7-47f6-8556-a37c8755af52,31 to 40,Some College,1,Female,1,Black or African American,Suburban,FL,9,0.3631060565511732
+681221eb-4191-4748-9e05-9f81ea95c09a,26 to 30,Less than High School,10,Female,3,White,Urban,KS,9,1.4006744854077207
+b790546e-5c47-4fd7-a280-51d67349cb18,41 to 50,Graduate Degree,3,Male,4,White,Urban,NC,9,1.933745842692755
+4515ff80-4c79-4c48-ab4e-4fa9b881b9bd,51 to 60,Graduate Degree,6,Male,6,Black or African American,Urban,CA,9,1.2485186605348573
+9058955c-9f75-4d59-93a7-fc630ce18486,26 to 30,Some College,2,Male,7,White,Urban,NY,9,0.7363535241991608
+e1da103f-f493-4782-adec-2c0178aa0b0c,51 to 60,College Degree,5,Female,2,White,Urban,WI,9,0.42469555995621533
+842384d2-142d-489a-8020-59440b5fecb4,18 to 25,Graduate Degree,8,Female,1,White,Suburban,CA,9,0.4793937534645104
+b0793d89-6549-4745-8957-24a0f790043e,18 to 25,College Degree,4,Male,6,Other,Suburban,PA,9,0.9256779328885895
+d5882f68-e4ac-477e-98bf-3672405ae5f3,41 to 50,High School Graduate,6,Female,4,Hispanic or Latino,Suburban,TX,9,0.8680543303994741
+d5d2dece-447c-4c10-8404-89e0abb0d573,41 to 50,Some College,3,Male,1,White,Suburban,VA,9,1.5259564233479654
+5652b304-c03c-45fe-b826-e0fb07d47d04,51 to 60,Some College,6,Female,3,White,Urban,WA,9,0.20140690311070697
+1d08af0c-b35b-4b2b-881a-18eed3dca335,51 to 60,Some College,4,Female,5,White,Rural,MI,9,1.8630552708717034
+fb0be8ed-9e49-434c-b49e-68e5aa95384d,71 to 80,College Degree,3,Female,5,Hispanic or Latino,Suburban,WI,9,3.0
+e7ef5e89-9250-41ff-ab66-f6673fd1b4d2,41 to 50,Graduate Degree,4,Female,3,Black or African American,Urban,PA,9,0.7928594564692619
+b0df7a8b-a166-4f4b-ba95-a39b3df8eff4,31 to 40,Graduate Degree,2,Female,2,White,Suburban,CA,9,0.6992275193784886
+6fb30aa6-5b33-406b-a712-82f42b454f04,51 to 60,Some College,8,Male,7,White,Urban,MA,9,0.7537683032640876
+f97f6f39-f8f3-4f6f-a4fc-0aa349770516,31 to 40,High School Graduate,4,Female,4,White,Suburban,OH,9,0.9013622677417032
+3b42de7c-0497-43d6-9053-7386ff6121c1,41 to 50,Graduate Degree,3,Male,3,Black or African American,Suburban,FL,9,0.6555083407401306
+3e425bbd-7813-4587-ab9d-17e14125e60f,18 to 25,College Degree,5,Female,2,Hispanic or Latino,Rural,NY,9,0.2
+7e54fe1f-ac81-4380-a2fe-c537c688033b,18 to 25,High School Graduate,4,Female,5,White,Suburban,NY,9,0.7405912485039727
+0aca5526-07be-4e96-811a-0aa056db7651,71 to 80,Graduate Degree,7,Female,1,White,Suburban,CA,9,0.9432922914113966
+322b27ad-4ff1-461d-94e0-610e47a914e6,61 to 70,College Degree,9,Male,1,White,Rural,MO,9,2.0019132783010494
+240265c7-1956-43a7-a503-07d414d11a66,51 to 60,Some College,4,Female,4,Two or more races,Urban,PA,9,0.35868938333209743
+d92eeab8-8cd2-4979-be45-7b7078fa51fe,41 to 50,Some College,8,Female,2,White,Urban,MI,9,2.5545964494900413
+ec44b375-8d00-4f5c-8fed-5804751aea80,26 to 30,Some College,5,Female,4,Hispanic or Latino,Suburban,AL,9,0.6191526721258185
+df7a66ba-df5d-405d-8476-9b54923616b6,26 to 30,Less than High School,2,Male,1,Black or African American,Suburban,AL,9,0.4000185696019231
+757909b3-6e37-4673-a330-e1650541121d,31 to 40,High School Graduate,6,Male,4,White,Suburban,GA,9,1.360315866282588
+db9b359a-0760-4c07-8c97-61c8610f3134,41 to 50,College Degree,5,Male,2,White,Rural,VA,9,0.5613791371411653
+07922b5b-ad79-445d-9aa1-e845ba60781e,51 to 60,Less than High School,6,Male,1,White,Suburban,CO,9,0.8048702912629084
+54431f5d-701b-4533-bdfe-795490663e51,51 to 60,High School Graduate,8,Female,1,Black or African American,Suburban,NY,9,0.848320797129392
+d0524846-f1fe-4994-a169-c3ae64d1171b,31 to 40,Some College,5,Male,7,Hispanic or Latino,Urban,CO,9,1.3052913792149115
+24eaa293-68fc-4f75-bfc0-c19fe77be516,71 to 80,Some College,8,Female,6,Black or African American,Suburban,GA,9,0.7862589395603421
+b8c88fc2-e9dd-441c-9574-50cabcdcc029,51 to 60,Graduate Degree,7,Male,1,White,Rural,TX,9,0.7197922645718735
+0abdcec4-588b-410e-8f84-fc0c68bf7aa8,41 to 50,High School Graduate,5,Male,5,White,Suburban,OH,9,0.6058751676474832
+f5f3fd7b-8a51-4b36-8e15-e3ac83a9a9cb,51 to 60,High School Graduate,6,Female,4,Two or more races,Urban,CA,9,1.2128760548057416
+59c23cbb-81ce-4051-bdad-19c2ad0bf3ca,41 to 50,College Degree,4,Female,7,Hispanic or Latino,Suburban,IN,9,0.5368662135917491
+39e1d05d-d1c9-414b-9ea7-c8ab3894c4dc,31 to 40,Some College,10,Female,2,White,Urban,AZ,9,2.047402228851279
+0eb78e91-4a07-4cc3-a51b-c5df7e368a63,31 to 40,High School Graduate,6,Female,5,Two or more races,Urban,MA,9,0.8556520312368229
+0e58df19-f5ed-4199-9d41-0cee1a048a57,51 to 60,Some College,1,Female,1,Black or African American,Urban,NY,9,0.2
+c9118ea0-3beb-4599-bd11-15cef05412f8,18 to 25,High School Graduate,4,Male,2,White,Suburban,CA,9,1.049675760465227
+5eb5c834-eeed-43c5-9daf-d2bd2c3cdb19,26 to 30,High School Graduate,6,Prefer not to say,7,Hispanic or Latino,Suburban,FL,9,1.1796978771533388
+f43359c7-9409-4409-9650-c1bd3988487b,18 to 25,Some College,1,Female,4,Hispanic or Latino,Urban,IL,9,2.063097526479015
+16ab5a03-bb59-4246-881c-d89efcf7436b,18 to 25,Some College,1,Female,2,Black or African American,Suburban,VA,9,0.4420760623784303
+f1ad3248-6eb5-48d5-b9ac-14a8c7ad55bd,61 to 70,Graduate Degree,5,Male,1,White,Suburban,WI,9,0.3858617893181203
+5c3b7586-caf9-4bde-9137-b0193a89e8ed,51 to 60,Some College,4,Female,5,White,Suburban,AZ,9,1.336492204753089
+82de103b-a008-4d3c-bd16-36b47c20517c,41 to 50,Some College,4,Male,4,Native American,Urban,PA,9,1.8372190934575436
+0a415731-b92b-4856-876b-8b054a2b15ee,18 to 25,Some College,3,Male,2,White,Suburban,IL,9,0.42648149513313927
+99292128-f420-4549-8bd5-a41f4ace0628,41 to 50,Less than High School,2,Male,7,White,Suburban,IL,9,1.0217029386493204
+014ed751-a808-4d1f-82bf-54b0ea5d98fb,41 to 50,College Degree,6,Male,1,White,Urban,PA,9,0.7969093976355504
+afdaba08-5baf-4311-84d2-90381a5e7a15,26 to 30,High School Graduate,5,Female,2,White,Urban,VA,9,0.4401121412375572
+6ed4d2ee-9de3-4f5c-9102-5f370767b466,41 to 50,Graduate Degree,3,Female,7,Black or African American,Suburban,WA,9,0.7606777101850712
+eab920bf-da51-4acd-8a83-9015bb34282c,31 to 40,High School Graduate,4,Female,2,Other,Rural,MO,9,1.7484590388326504
+9b943448-787d-4e30-8270-d4c2b07c77e7,51 to 60,Some College,5,Male,2,White,Suburban,GA,9,0.8584691600515242
+be069d05-7800-4bab-9b0a-f9aec0cbc71c,51 to 60,High School Graduate,1,Male,4,White,Suburban,PA,9,0.7292778830956013
+a888a5d4-559a-4acf-8859-9b3ddbd21fbf,18 to 25,Graduate Degree,2,Male,6,White,Suburban,FL,9,1.286871555461545
+cccb95ae-c1db-4928-b43d-9d63f5b170d9,31 to 40,Some College,1,Non-binary,1,Asian,Suburban,MO,9,1.8584425012735473
+36991f44-2c50-4100-9396-a563dc223ed3,51 to 60,Some College,7,Male,7,Black or African American,Urban,IL,9,0.35281887619166974
+c40076b5-1e4d-4959-a70e-e18bf12361fb,41 to 50,Less than High School,7,Female,5,White,Suburban,NY,9,1.053231656252311
+b3365421-6fb1-4987-a46b-5d927c0bd7f4,61 to 70,College Degree,7,Female,1,Hispanic or Latino,Rural,FL,9,0.6224384199565773
+d77d037c-bf42-4cfa-8449-5334cb382d81,51 to 60,High School Graduate,6,Male,5,Asian,Suburban,CA,9,0.8614194608966765
+ee9047fc-c969-455c-bfac-f9cc3e46d015,26 to 30,Graduate Degree,6,Female,2,Hispanic or Latino,Rural,VA,9,1.359975349578908
+f9f69e74-c22b-4ad6-8280-f8dfbccdd51d,18 to 25,High School Graduate,5,Female,3,Asian,Suburban,CA,9,0.6635964340201288
+acb3d649-f8c8-443f-bfb5-1ae82028512f,51 to 60,High School Graduate,6,Female,5,White,Urban,MI,9,0.7815806416843547
+72e5d434-1747-4dd3-a438-6739eb5d0f51,18 to 25,Less than High School,1,Female,7,Hispanic or Latino,Rural,CO,9,1.6508563873061701
+310c65bc-c860-4107-8490-474665a7dda3,41 to 50,Some College,6,Male,1,White,Urban,AZ,9,1.1589893832841953
+3d1000df-a83b-4a7d-bcc8-dea6dfca6742,71 to 80,Some College,7,Male,3,Hispanic or Latino,Suburban,AZ,9,0.7677690553153833
+8d3af050-46be-4d9f-a150-594a34ffa624,41 to 50,Less than High School,5,Female,3,Black or African American,Urban,CA,9,0.9267676010246342
+0ffccc6a-abd3-4084-b8b9-e9b8f5908cf1,31 to 40,College Degree,4,Female,2,Hispanic or Latino,Urban,TX,9,0.876015196530912
+9d107609-8463-455b-b944-4ed2cb9d6b6c,51 to 60,Some College,3,Male,2,Black or African American,Suburban,FL,9,0.2
+8b31ad42-e408-41fc-bb3c-8956b933937e,41 to 50,Some College,6,Female,1,White,Urban,WA,9,0.9387163883783178
+2a07e915-f86f-4647-ae3b-3a4795eb16c9,41 to 50,Some College,6,Female,5,White,Suburban,NC,9,0.2528801873446157
+2b3e099a-b398-4659-8d00-805ecdd2c57c,71 to 80,Some College,8,Female,3,Two or more races,Suburban,KS,9,1.8229888040206355
+81605b5b-566b-4dcb-922a-240fb9f0b3c5,31 to 40,Some College,4,Male,1,Native American,Urban,NC,9,0.24692856447495595
+b48d5ab8-f1a5-4334-9cbf-e785ba2049b9,71 to 80,High School Graduate,7,Female,6,White,Urban,MI,9,0.5972702953203268
+c9424c45-4dd6-4822-9c2a-73d6242116e4,61 to 70,High School Graduate,5,Female,6,White,Suburban,PA,9,0.5069139872193313
+faca1664-b863-4373-86e3-d9a589d50679,26 to 30,College Degree,8,Male,3,White,Suburban,FL,9,2.294272705108224
+a104ee89-e537-42b4-997c-ee90c60bbc75,18 to 25,Graduate Degree,5,Male,2,Black or African American,Suburban,GA,9,1.7712904227986437
+1bee557f-dffe-4c3a-9a34-83c31e6d97f7,26 to 30,Some College,5,Female,4,Hispanic or Latino,Suburban,TX,9,0.2
+e857c60b-dd25-4c8d-8216-220064e64fdf,18 to 25,High School Graduate,5,Male,2,White,Rural,WA,9,0.825583402796191
+00724356-404a-446c-959c-ff4425ae6f2a,18 to 25,Some College,7,Female,1,White,Suburban,TX,9,0.29903998834187534
+c783eb39-13ba-4d99-8bad-f95099cab1e3,51 to 60,Some College,9,Female,5,Hispanic or Latino,Suburban,IN,9,0.9413932979921724
+f72594f6-57ba-4e2c-8d6b-1070d5951d94,18 to 25,Less than High School,1,Male,1,Hispanic or Latino,Suburban,PA,9,1.3380874781329342
+1f4c6f1b-1cc9-42a5-b66e-cc3d11a1a757,31 to 40,High School Graduate,1,Female,1,White,Urban,MA,9,1.0017786712436607
+d74074c0-c5c5-4956-83ad-c0eb51080fd4,61 to 70,College Degree,8,Male,1,White,Urban,MI,9,1.3960221483462087
+a075abfc-3c37-44da-ad58-6b1796e4df0e,18 to 25,College Degree,5,Female,1,White,Suburban,CA,9,0.6781757346891721
+10f7a6ed-2899-46a6-b19a-b0e7946ae773,61 to 70,Less than High School,6,Male,1,White,Suburban,NC,9,1.0256386458980191
+89dd3dc9-7fd8-4508-924c-8119333eed68,31 to 40,High School Graduate,5,Female,7,White,Suburban,CA,9,1.3611812903134584
+caaa0956-ca03-4861-8f22-e9e09bf05179,26 to 30,High School Graduate,2,Male,2,Black or African American,Suburban,GA,9,0.5785319841726093
+249a4ca1-74bc-4323-b1bc-31416da9e71f,51 to 60,College Degree,7,Male,1,Asian,Rural,TX,9,0.3947665662151307
+a1bec9ab-6cb8-4770-bcfc-c1923e062de3,51 to 60,Less than High School,7,Female,1,Black or African American,Rural,CA,9,0.48329105565221364
+51b634c4-b4da-4472-8dd3-75082325f0ae,61 to 70,High School Graduate,4,Male,7,Hispanic or Latino,Suburban,CA,9,0.7596711532514702
+967bf73f-ab2f-4e13-bda2-da36eefe798e,51 to 60,College Degree,4,Female,4,White,Suburban,CA,9,0.8430713919934107
+f3e381c8-08a7-46d7-9711-34ea18be002b,61 to 70,High School Graduate,7,Male,2,White,Suburban,VA,9,1.069792391377685
+81322f43-2ff0-4b70-a3ec-74d74cac10b9,31 to 40,College Degree,1,Female,6,White,Suburban,MI,9,0.4423753404570563
+8d651644-ce0e-4a40-b9fd-98c9ea34d086,26 to 30,High School Graduate,8,Male,2,White,Suburban,IN,9,1.389090794302131
+3bb7a229-8328-4ec2-8a1d-fcdd93caa31c,51 to 60,High School Graduate,3,Female,2,Black or African American,Suburban,TX,9,2.6463627582099365
+0d7f729c-12f9-4807-be7c-6a617b72e20d,61 to 70,High School Graduate,5,Male,1,Two or more races,Suburban,TX,9,0.5101619193237849
+e6b4cc57-0ad4-4d29-9e4e-fd01c749057e,81+,College Degree,8,Male,2,White,Suburban,GA,9,3.0
+41db5f4b-6aab-4657-a035-facb2599ff08,41 to 50,College Degree,6,Male,2,White,Urban,NY,9,2.8815246321910784
+bbdc17a5-cfdd-45e4-8782-20f6c9d0bf7e,31 to 40,College Degree,4,Male,5,Hispanic or Latino,Suburban,PA,9,0.8410256690131056
+1a58fd9a-9690-4cab-8c16-dd5eedd9067c,51 to 60,Some College,6,Female,2,White,Urban,NY,9,0.7419178352495421
+be281ee6-9d4c-4fca-abab-4764effbb544,31 to 40,College Degree,4,Male,4,White,Rural,CA,9,0.4772825200304982
+49d63d20-b50f-488c-880e-bb177d0e7032,71 to 80,High School Graduate,3,Female,1,Hispanic or Latino,Suburban,TX,9,1.534377341826572
+9f9be335-50c4-4bab-ab45-36d3dbbf189f,61 to 70,High School Graduate,10,Male,1,Black or African American,Urban,MN,9,0.8849980243212016
+8a4768e3-46a1-4021-a41e-a8c99402299a,41 to 50,Graduate Degree,7,Male,3,White,Urban,FL,9,0.9571248054522876
+5cb26e47-fb8a-4756-9443-0d7c233ef0c1,51 to 60,Less than High School,6,Female,7,White,Suburban,IN,9,0.4024857320545324
+928b98c1-52a1-4f45-9ff7-e3a61f7096d1,51 to 60,High School Graduate,4,Female,2,Hispanic or Latino,Suburban,AZ,9,1.5646075068913288
+f19dab2a-5b74-4517-964f-5243ad9c3427,26 to 30,High School Graduate,1,Male,4,White,Suburban,CA,9,0.6959086628759769
+9385a959-3a94-46d5-b785-baf1473c1a74,61 to 70,Less than High School,1,Male,2,White,Urban,PA,9,0.3210951670182729
+a88a0460-d225-4db6-a427-987f568b3853,41 to 50,High School Graduate,5,Male,1,Hispanic or Latino,Suburban,AL,9,0.7906853167766341
+d74c48ef-c3fd-4a7a-a741-c200168987c9,61 to 70,Some College,7,Female,1,White,Suburban,IN,9,0.42651541931204373
+66284907-bd13-4d96-beb4-6854268ff29d,31 to 40,Some College,5,Female,2,Hispanic or Latino,Suburban,MI,9,2.065112098587609
+1fb30784-614f-443d-9988-c09495334bf4,61 to 70,Graduate Degree,7,Male,1,White,Suburban,CA,9,2.8569205682509202
+5d8ac6ec-bdd8-42e0-a5be-41abaf9e7e39,31 to 40,College Degree,1,Female,1,Other,Suburban,WA,9,0.8083204880262138
+d68bef0b-d650-4d5c-b671-dbe121b9933d,18 to 25,High School Graduate,4,Female,5,White,Urban,CO,9,1.7379004156189086
+1d788301-d606-4ea5-8a12-f8940f63f4f5,61 to 70,High School Graduate,3,Female,1,White,Rural,FL,9,1.7086218603134566
+78cd14cc-2926-4d4b-a68e-35b88fc47e9d,18 to 25,Some College,5,Female,4,White,Suburban,FL,9,0.2
+51ce096c-e523-409a-990a-174d9383bed9,31 to 40,Some College,1,Male,2,White,Suburban,FL,9,0.4839450450629923
+b28db933-01af-43c8-9454-dbcf8f319472,71 to 80,High School Graduate,9,Male,3,Asian,Urban,AL,9,0.9147576153350064
+bfe103c7-9347-4f0c-a4fa-97580ba3bcd7,71 to 80,Some College,3,Male,4,Two or more races,Suburban,OH,9,0.5910937560854096
+b49349f3-f1cf-4772-bff9-09ff32391fda,41 to 50,Some College,8,Male,2,White,Urban,WA,9,0.4515436226234892
+97bc7a31-185a-441a-987d-a255d2fedffd,51 to 60,Some College,4,Female,2,White,Suburban,CO,9,1.7871185707355461
+c66bc848-701f-49c9-97bd-331a6bb7cb50,41 to 50,Some College,10,Female,5,Black or African American,Rural,NY,9,0.5719320397529467
+91324cf7-7b6e-4973-b06c-9b4ba3f3a1e3,31 to 40,High School Graduate,5,Male,6,Asian,Suburban,OH,9,1.071864272172368
+7c22986a-27bd-4453-a5b5-ea3c778920ed,31 to 40,Graduate Degree,8,Male,1,White,Urban,TX,9,1.6820481489888304
+ab1a6339-ec1d-4d83-92d6-1d63ae35b73f,51 to 60,College Degree,1,Male,1,White,Urban,IN,9,2.1468725885889026
+7e0c4404-ee5a-4b8d-a6eb-ea3fb098c4f7,51 to 60,High School Graduate,7,Female,6,White,Suburban,FL,9,0.3226418645174033
+1ee57904-5336-458d-8f17-c3c2bacb854a,51 to 60,College Degree,8,Male,2,Black or African American,Urban,GA,9,0.35009315404021796
+ab40f950-248a-4b32-9cfb-953d8cddb673,51 to 60,Some College,2,Female,4,White,Urban,OH,9,0.9863957811618798
+a254d0d5-f41c-4d09-92ea-1b0653aca6df,18 to 25,Graduate Degree,2,Male,2,Black or African American,Suburban,TX,9,0.2
+8ab89d11-3679-4481-90fb-07c1c1014bde,41 to 50,College Degree,4,Male,1,White,Suburban,CA,9,0.36629675905263154
+e08879c9-e468-4603-9249-30e337f0cdfb,18 to 25,Some College,8,Non-binary,4,Hispanic or Latino,Urban,IL,9,1.9212252963716607
+cc45c0cf-00e5-4912-9672-4843db6b79fe,41 to 50,Less than High School,5,Female,4,White,Rural,TX,9,1.3143889936832558
+a1e88b0b-a6c0-4c82-9787-5364621d43e7,41 to 50,High School Graduate,5,Male,1,White,Urban,TX,9,0.7596636458788246
+de838721-1665-43f0-b8b0-b00c8322f4d9,61 to 70,Some College,2,Female,3,White,Rural,WI,9,1.1787878469855626
+46b8d982-6e60-405a-926e-7d9c480ea493,31 to 40,Some College,1,Female,5,Black or African American,Suburban,PA,9,1.378611536896279
+a2f2f2a1-e6b3-427c-920d-098f559d487c,26 to 30,High School Graduate,7,Female,4,White,Rural,IL,9,0.2234188000998016
+136120e3-ee4d-403b-b11f-66908b5409c2,26 to 30,High School Graduate,2,Male,1,White,Suburban,NC,9,0.5634623082100148
+dd16fc6a-937b-4d53-b4cc-3f3c969c6e70,51 to 60,College Degree,6,Female,4,White,Suburban,NY,9,2.0975986685371453
+fa7c6fa4-9aa1-446a-9a71-3b521bd737d7,51 to 60,Graduate Degree,8,Female,5,White,Rural,CA,9,0.9993634035195996
+8bf0c50d-20c0-4c30-8cf9-f8c63293d8d9,26 to 30,Some College,3,Female,5,Black or African American,Urban,MN,9,1.0434245707263512
+f3d538ba-4d2f-49d0-ab52-995f12d2f3a6,18 to 25,High School Graduate,6,Male,4,Black or African American,Rural,OH,9,0.809943333553538
+eb0bf505-db22-4816-a6e2-2c40ed66d42b,51 to 60,High School Graduate,1,Male,1,Hispanic or Latino,Suburban,CA,9,0.2
+7a22eace-69b6-4148-aa44-65203bc22781,18 to 25,Less than High School,6,Male,5,White,Suburban,PA,9,0.5031025887747225
+69f1dc3e-e904-4ed6-80de-9bba9cee532c,61 to 70,Graduate Degree,2,Female,5,Hispanic or Latino,Suburban,NC,9,1.1285348873903658
+b70dd23e-7e4a-4008-94ff-5d8058aec235,51 to 60,High School Graduate,6,Male,1,White,Suburban,WA,9,0.5746457813920733
+1005d7d2-0545-4b75-b3c3-5f32b268280a,18 to 25,Some College,4,Female,3,White,Urban,AZ,9,0.3338358663422513
+4fbbecb5-eeb7-42c5-80d4-8257c8738a10,18 to 25,High School Graduate,5,Female,2,White,Suburban,FL,9,0.3767582279841358
+84e52b19-3b48-42f8-9b12-7b8a875003b3,71 to 80,Some College,5,Male,4,White,Suburban,NC,9,2.1264219924762626
+5dcf6e9d-fc22-4a9f-afa9-e08b8860ad4e,31 to 40,College Degree,2,Female,1,Hispanic or Latino,Suburban,FL,9,0.5490550243848485
+1b0dd482-10cd-48ed-b5a3-2ce6b052cc5d,31 to 40,College Degree,7,Male,4,Black or African American,Rural,OH,9,1.8494092327085887
+7ecb12a8-b083-4205-9b64-34ab604e8e8c,61 to 70,High School Graduate,4,Female,7,Hispanic or Latino,Suburban,PA,9,1.0469736115829504
+27802bfb-01f2-4483-952b-3cb8462bb509,71 to 80,Less than High School,6,Male,5,White,Urban,CA,9,0.6929061773465224
+003f4e9c-0dec-48df-a5fe-b4f0e1b2a1e3,71 to 80,High School Graduate,2,Female,7,White,Urban,MI,9,0.4328616421193064
+8ddf4588-0d68-47e3-ba09-8bc02a8da7ff,51 to 60,Graduate Degree,6,Female,7,White,Urban,MI,9,1.3393123032641427
+0a8eff7f-5c8a-4d6c-b4ed-aeb6bbf0b9ea,31 to 40,Graduate Degree,2,Female,1,White,Urban,IL,9,1.6989890232684066
+72f088a1-56e3-4321-8a85-4c891870fcce,18 to 25,Some College,4,Female,4,White,Suburban,VA,9,1.4303699494901554
+8c25ef01-8300-47f6-a224-ea7ef3beccac,51 to 60,Some College,3,Female,3,White,Urban,TX,9,0.24838836422684132
+2b88c5d0-8c49-4758-bb07-54a956eb3919,41 to 50,College Degree,7,Female,6,White,Rural,NY,9,0.547774989019729
+264fc9cb-2fc7-4e3c-9795-cd9ea265df6c,41 to 50,High School Graduate,3,Female,2,White,Suburban,OH,9,0.6042955641077734
+8822377e-a268-4d3e-bed6-195bd5dee79a,61 to 70,Graduate Degree,8,Female,7,Hispanic or Latino,Suburban,KY,9,0.2
+884e6850-6e1e-4309-a2c6-e449153f9051,26 to 30,Some College,8,Male,4,Two or more races,Suburban,VA,9,1.1703630489880972
+4cc18259-604a-4f69-aaba-44a4a130cd87,41 to 50,Some College,3,Female,5,Native American,Urban,NY,9,1.291611712909967
+23e62523-199f-42b1-b4e3-1f3cb520f100,18 to 25,Some College,6,Female,1,Black or African American,Suburban,OH,9,1.2601516094477143
+628bb1c0-1531-4081-aaf1-13f4ceef3759,41 to 50,Less than High School,2,Female,1,White,Suburban,TX,9,1.1167980553870174
+b9b14e37-10d5-49ff-a9c3-62186686a96e,18 to 25,High School Graduate,4,Male,5,Black or African American,Suburban,FL,9,0.6473570894778337
+d335b397-f680-45ff-8540-280f46225244,26 to 30,College Degree,6,Female,1,Hispanic or Latino,Suburban,TX,9,0.41789001879714527
+cf4469f4-e44b-49ec-a4da-1e90ba1e4ae4,26 to 30,High School Graduate,6,Male,6,White,Rural,CA,9,0.6455010792879637
+5b1d070e-44b2-4047-8be8-79153a010699,51 to 60,Some College,6,Female,1,White,Rural,GA,9,1.053151743784424
+587d44cd-023e-4ae3-8128-7de1b5316b27,51 to 60,High School Graduate,3,Male,4,Hispanic or Latino,Suburban,GA,9,1.9659142561462888
+8b24e658-5782-4340-8f74-9b8ae282bf3e,41 to 50,Some College,4,Female,2,White,Suburban,WI,9,0.8847079074291374
+a79c6c2f-fad6-4c7f-a553-1f69dd5048f1,71 to 80,High School Graduate,2,Prefer not to say,4,White,Suburban,TX,9,0.8621004103991708
+de19fd3c-12ce-4f9f-b433-2028056624f2,31 to 40,Some College,6,Male,5,White,Urban,OH,9,0.2
+c8b6c88c-f9bf-4077-9210-b1bc1bcfda60,31 to 40,College Degree,5,Female,2,White,Suburban,OH,9,1.1045294017305316
+371c0b35-fe25-43ae-8d31-9d5c42064049,61 to 70,High School Graduate,6,Male,1,White,Urban,MO,9,2.0620782887815254
+585f4655-6ece-4430-9501-a386eb3e8e16,31 to 40,Some College,3,Female,1,White,Suburban,WA,9,0.7644090126946784
+30d647f5-0352-4700-a887-a8b813e280fc,71 to 80,Some College,4,Female,4,White,Suburban,MI,9,0.7200642823911828
+6702e5dd-0207-4ccb-a436-2e867fa9e2f6,18 to 25,College Degree,4,Female,4,White,Urban,IL,9,0.6136896742899466
+5a0f9c54-73e4-4cd2-a166-cff9ab640e41,71 to 80,Graduate Degree,1,Female,5,Hispanic or Latino,Rural,CA,9,1.371286103608751
+1fb0838f-10eb-4053-84b0-ebcf65efc57d,18 to 25,College Degree,4,Female,3,White,Rural,PA,9,0.2
+94618f70-cad9-41b3-9b7d-15e56bc63b70,61 to 70,High School Graduate,7,Male,3,White,Suburban,OH,9,1.8506424016814398
+27749d62-6b91-4ae8-8fff-602b399f7a14,41 to 50,Less than High School,8,Male,2,White,Suburban,IL,9,0.6952587552835423
+8e3f6624-3ee9-479c-99ed-9db81770d815,81+,High School Graduate,5,Female,1,Other,Rural,AZ,9,1.1191169346547079
+0b454737-9312-4d2f-950b-dd553ee3ef56,18 to 25,Some College,5,Female,2,White,Urban,TX,9,1.4469180206050096
+7296838e-8a32-41fb-8acf-4d29b0049d4a,41 to 50,Less than High School,1,Female,7,White,Suburban,AL,9,0.3725273322419831
+92c922e9-5e28-4137-aeba-d2e414753315,71 to 80,Some College,8,Female,6,Asian,Urban,OH,9,0.8205420742037358
+746566aa-7fc4-4589-81f0-e17e5e98ceda,41 to 50,Some College,1,Male,2,Hispanic or Latino,Suburban,WA,9,0.6833496857790461
+86ce52a1-6bef-4e9c-aa9a-b045875b1256,51 to 60,High School Graduate,9,Female,4,White,Urban,KS,9,0.2946921905802679
+7cd4ff42-2e5b-4687-b83c-51e2fdea4aba,51 to 60,College Degree,5,Male,6,Hispanic or Latino,Rural,FL,9,1.6898389510939724
+b2532ad7-8afb-48a9-b8d7-bdd1bfc5d541,41 to 50,High School Graduate,4,Female,3,White,Rural,OH,9,0.6398268608629426
+704ae86b-e2b3-4c88-abf7-73fd59e1a0a4,51 to 60,Less than High School,8,Male,1,White,Urban,TX,9,0.28298673888582465
+99142635-5449-4401-8080-3c8ec9b12c5f,41 to 50,College Degree,1,Male,1,White,Suburban,MN,9,0.8592322581052192
+ed93dbda-f2f5-4cfc-9a74-1ad995f715da,61 to 70,Some College,5,Male,3,White,Rural,WA,9,0.21097778089232394
+79f893bd-95ec-44b2-ab58-382238126f20,18 to 25,College Degree,5,Male,7,Black or African American,Suburban,CA,9,0.5748014012641143
+031a1ee5-cf75-4c41-bb00-a2445b2235de,31 to 40,Some College,3,Female,5,White,Rural,MI,9,1.0378422216699383
+8ec7bc07-68b4-4ac9-8916-b6d591a32969,71 to 80,High School Graduate,4,Male,1,White,Suburban,OH,9,0.2
+0044b487-d3d9-4399-a70a-00a4a11d92cc,61 to 70,College Degree,6,Male,1,Black or African American,Suburban,TX,9,1.3104975347673382
+5e44a9e3-b14b-4154-815f-850f824e662b,41 to 50,College Degree,6,Male,5,Hispanic or Latino,Urban,CA,9,0.8935782603270276
+5beb7e3b-8c9c-486e-957e-366483eb3e35,51 to 60,College Degree,1,Male,6,White,Urban,TX,9,1.452685431371209
+4aece62f-72ca-4de0-ba77-6984cd7c395d,31 to 40,High School Graduate,8,Male,4,Black or African American,Suburban,MN,9,1.441517349835248
+97440014-2f25-4b95-bd0e-02ff647d603b,26 to 30,Some College,2,Male,4,White,Suburban,IL,9,0.5583618737889813
+7232b095-a16d-425e-8816-84732c9dec3f,41 to 50,Some College,3,Female,1,Hispanic or Latino,Suburban,CA,9,0.5712655407728487
+dd4ff4dc-a25f-4f4f-85fa-f7427922549c,31 to 40,High School Graduate,3,Female,6,Black or African American,Suburban,TX,9,1.1793584921633171
+b48bbb31-653f-4c2f-9cbe-df88adb8fb3b,41 to 50,Graduate Degree,1,Female,5,Other,Suburban,CA,9,0.3206560333637491
+d208d896-253d-4690-9b2d-05e06d20363e,18 to 25,High School Graduate,2,Male,2,White,Rural,FL,9,0.32268704232328194
+88217689-c38b-4c49-8e1e-78fa47ad11ae,71 to 80,Graduate Degree,10,Male,5,White,Rural,FL,9,0.4952429206203049
+4d976279-826d-44a6-b6b0-f04439292260,71 to 80,Some College,4,Female,1,White,Suburban,TX,9,0.230918960972283

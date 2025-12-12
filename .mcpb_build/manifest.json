@@ -1,10 +1,10 @@
 {
-  "manifest_version": "0.4",
+  "manifest_version": "0.1",
   "name": "chip50-survey-mcp",
-  "display_name": "CHIP50 Survey Analysis",
-  "version": "1.0.0",
-  "description": "MCP server for analyzing CHIP50 survey data using BigQuery with weighted cross-tabulations and demographic analysis",
-  "long_description": "A comprehensive Model Context Protocol server that enables AI assistants to perform sophisticated survey analysis on CHIP50 data. Features include:\n\n- **BigQuery Upload**: Seamlessly upload CSV files (demographics and survey responses) to BigQuery tables with configurable write modes\n- **Weighted Cross-Tabulations**: Generate statistically-weighted cross-tabs of survey responses across demographic categories directly in BigQuery\n- **Flexible Analysis**: Support for wave filtering, custom SQL conditions, and multiple demographic breakdowns\n- **Production-Ready**: Designed for large-scale survey data analysis with proper error handling and validation\n\nIdeal for researchers, data analysts, and survey professionals working with CHIP50 panel data.",
+  "display_name": "CHIP50 Survey Analysis (Privacy-Protected)",
+  "version": "2.0.0",
+  "description": "Privacy-preserving MCP server for CHIP50 survey data analysis with automatic cell suppression and protected BigQuery views",
+  "long_description": "A privacy-first Model Context Protocol server for analyzing CHIP50 survey data. Access public opinion data with automatic privacy protections built-in.\n\n**Privacy Features:**\n- **Automatic Cell Suppression**: Cells with n<10 automatically suppressed for k-anonymity\n- **Geographic Aggregation**: State-level data aggregated to 5 regions\n- **Protected Views**: No access to user IDs or personally identifiable information\n- **Weighted Analysis**: Survey-weighted cross-tabulations for accurate population estimates\n\n**Key Features:**\n- **Variable Discovery**: Browse available demographic and survey variables\n- **Flexible Crosstabs**: Generate cross-tabulations across demographics with wave filtering\n- **Research-Ready**: Designed for journalists, academics, and independent researchers\n- **Direct BigQuery**: Queries privacy-protected views in chip50.public dataset\n\n**Perfect for:**\nJournalists covering public opinion, academic researchers, policy analysts, and anyone studying American political attitudes.",
   "author": {
     "name": "Stefan Wojcik",
     "email": "hey@nanocentury-ai.com",
@@ -12,17 +12,61 @@
   },
   "icon": "chip50.png",
   "server": {
-    "type": "uv",
-    "entry_point": "mcp_server/server.py"
+    "type": "python",
+    "entry_point": "mcp_server/server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--no-project",
+        "${__dirname}/mcp_server/server.py"
+      ],
+      "env": {
+        "CHIP50_API_KEY": "${user_config.apiKey}",
+        "CHIP50_PROJECT_ID": "${user_config.projectId}",
+        "CHIP50_DATASET_PUBLIC": "${user_config.datasetPublic}",
+        "CHIP50_MIN_CELL_SIZE": "${user_config.minCellSize}"
+      }
+    }
+  },
+  "user_config": {
+    "apiKey": {
+      "type": "string",
+      "title": "API Key",
+      "description": "CHIP50 API key for authentication. For testing with synthetic data, use: chip50_test_synthetic_data_only",
+      "default": "chip50_test_synthetic_data_only",
+      "required": true
+    },
+    "projectId": {
+      "type": "string",
+      "title": "Google Cloud Project ID",
+      "description": "Your Google Cloud project ID where the BigQuery data is stored",
+      "default": "chip50",
+      "required": true
+    },
+    "datasetPublic": {
+      "type": "string",
+      "title": "Public Dataset Name",
+      "description": "BigQuery dataset containing protected views",
+      "default": "public",
+      "required": false
+    },
+    "minCellSize": {
+      "type": "number",
+      "title": "Minimum Cell Size",
+      "description": "Minimum cell size for privacy protection (cells below this are suppressed, range: 1-100)",
+      "default": 10,
+      "required": false
+    }
   },
   "tools": [
     {
-      "name": "upload_csv_to_bigquery",
-      "description": "Upload CSV files (demographic or survey data) to BigQuery tables. Creates tables if they don't exist, with configurable write modes (truncate, append, or fail if exists)."
+      "name": "get_available_variables",
+      "description": "Discover available demographic and survey variables in the CHIP50 dataset. Returns variable names, descriptions, scales, and privacy protection details. Use this first to explore what data is available."
     },
     {
-      "name": "generate_bigquery_crosstab",
-      "description": "Generate weighted cross-tabulations using BigQuery. Joins demographics and survey response tables to calculate weighted proportions of survey responses across demographic categories. Returns both counts and percentages."
+      "name": "generate_crosstab",
+      "description": "Generate privacy-protected cross-tabulation of CHIP50 survey data. Analyzes survey responses across demographic categories with automatic cell suppression (n≥10). Supports wave filtering and weighted analysis. Returns counts, percentages, and suppression metadata."
     }
   ],
   "keywords": [
@@ -33,29 +77,19 @@
     "data-analysis",
     "statistics",
     "weighted-analysis",
-    "chip50"
+    "chip50",
+    "privacy",
+    "cell-suppression",
+    "public-opinion",
+    "political-science"
   ],
   "license": "MIT",
   "compatibility": {
-    "clients": {
-      "claude_desktop": ">=0.10.0"
-    },
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
+    "platforms": ["darwin", "linux", "win32"],
     "runtimes": {
-      "python": ">=3.8"
+      "python": ">=3.10.0 <4"
     }
   },
-  "privacy_policies": [
-    {
-      "name": "Google Cloud BigQuery",
-      "url": "https://cloud.google.com/terms/cloud-privacy-notice",
-      "description": "This extension uploads data to and queries Google Cloud BigQuery. All data is processed according to Google Cloud's privacy policy."
-    }
-  ],
   "documentation": "https://github.com/nanocentury-ai/chip50MCP/blob/main/README.md",
   "repository": {
     "type": "git",

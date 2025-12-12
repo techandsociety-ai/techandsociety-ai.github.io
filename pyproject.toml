@@ -1,0 +1,43 @@
+[project]
+name = "chip50-mcp"
+version = "0.2.0"
+description = "CHIP50 Survey Data MCP Server with privacy-preserving access"
+authors = [
+    {name = "CHIP50 Team"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "google-cloud-bigquery>=3.11.0",
+    "db-dtypes>=1.1.0",
+    "mcp>=0.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "ruff>=0.1.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["mcp_server"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0.0",
+    "ruff>=0.1.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E501"]

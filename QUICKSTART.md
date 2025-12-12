@@ -1,188 +1,293 @@
-# CHIP50 Survey MCP - Quick Start Guide
+# CHIP50 MCP Server - Quick Start Guide
 
-## What Was Built
+Get started with the CHIP50 survey data MCP server in Claude Desktop.
 
-A complete Model Context Protocol (MCP) server for survey data analysis with:
+## Prerequisites
 
-✅ **Synthetic Data Generation** - 500 respondents across 3 waves (7, 8, 9) with realistic demographic and survey response distributions
-✅ **BigQuery Upload Tool** - Upload CSV files to Google Cloud BigQuery
-✅ **Cross-Tabulation Tool** - Generate weighted/unweighted crosstabs of survey responses by demographics
-✅ **Summary Statistics Tool** - Calculate weighted means, medians, and distributions
-✅ **MCPB Package** - Installable MCP server with bundled dependencies
+1. **Google Cloud Authentication**
+   ```bash
+   gcloud auth application-default login
+   gcloud config set project chip50
+   ```
 
-## Project Structure
+2. **UV Package Manager** (if not already installed)
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
 
-```
-chip50MCP/
-├── mcp_server/
-│   ├── server.py          # MCP server with 3 tools
-│   ├── mcpb.json          # Package configuration
-│   └── lib/               # Bundled dependencies (pandas, numpy, bigquery, mcp)
-│
-├── synthetic_data/
-│   ├── generate_synthetic_data.py
-│   ├── synthetic_demographics.csv     # 1,500 rows (500 respondents × 3 waves)
-│   └── synthetic_survey_responses.csv # 1,500 rows with 12 survey variables
-│
-├── test_mcp_server.py     # Test suite
-├── README.md              # Full documentation
-└── requirements.txt       # Dependencies list
-```
+3. **Protected Views** (should already be set up)
+   - `chip50.public.demographics_protected`
+   - `chip50.public.survey_responses_protected`
 
-## Installation & Testing
+## Step 1: Configure Environment Variables
 
-### 1. Verify Synthetic Data
+Create a `.env` file in your project root (optional):
 
 ```bash
-python3 test_mcp_server.py
+# CHIP50 Configuration
+export CHIP50_API_KEY="chip50_test_synthetic_data_only"
+export CHIP50_PROJECT_ID="chip50"
+export CHIP50_DATASET_PUBLIC="public"
+export CHIP50_MIN_CELL_SIZE="10"
+
+# Google Cloud credentials (if not using gcloud default)
+# export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"
 ```
 
-Expected output: All tests pass ✓
+## Step 2: Configure Claude Desktop
 
-### 2. Install as MCPB Package
+Edit your Claude Desktop MCP configuration file:
 
-To make this MCP server available to Claude Code:
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 
-```bash
-# Option A: Install locally (for development)
-cd mcp_server
-# Add to your MCP settings manually
+Add the CHIP50 MCP server:
 
-# Option B: Create mcpb package (for distribution)
-# Package the mcp_server directory as chip50-survey-mcp.mcpb
-# Then: mcp install chip50-survey-mcp.mcpb
-```
-
-## Using the MCP Server
-
-Once installed, you can use these tools in Claude Code:
-
-### Tool 1: Upload to BigQuery
-
-```
-Upload the synthetic demographics to BigQuery:
-- Project: my-gcp-project
-- Dataset: chip50_surveys
-- Table: demographics
-```
-
-### Tool 2: Generate Cross-Tabulations
-
-```
-Create a weighted cross-tab of trust in Congress by party affiliation using all waves
-```
-
-```
-Show me vote intention by education level for wave 9 only
-```
-
-### Tool 3: Summary Statistics
-
-```
-Calculate weighted summary statistics for all trust variables across waves 7-9
-```
-
-## Synthetic Data Details
-
-### Demographics (11 variables, 1,500 rows)
-- `id` - UUID for respondent
-- `wave` - Survey wave (7, 8, or 9)
-- `age_cat_8` - 8 age categories
-- `education_cat` - 5 education levels
-- `income_cat_10` - Income deciles (1-10)
-- `gender` - Male, Female, Non-binary, Prefer not to say
-- `party_7` - 7-point party scale (1=Strong Dem to 7=Strong Rep)
-- `race` - 7 racial/ethnic categories
-- `urban_type` - Urban, Suburban, Rural
-- `state_code` - US state abbreviation
-- `weight` - Survey weight (0.2 to 3.0)
-
-### Survey Questions (12 variables, 1,500 rows)
-- **Trust in institutions** (1-5 scale): congress, courts, media, military
-- **Political approval** (1-7 scale): president, governor, senator
-- **Issue importance** (0-10 scale): economy, healthcare
-- **Vote intention** (categorical): "Definitely will vote", "Probably will vote", etc.
-- **Registered voter** (binary): 0 or 1
-- **Party thermometer** (0-100 continuous)
-
-## Example Outputs
-
-### Cross-Tab Example
 ```json
 {
-  "crosstab": {
-    "1": {
-      "1": "93.2 (23.3%)",
-      "2": "54.0 (23.5%)",
-      ...
+  "mcpServers": {
+    "chip50": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "/Users/electron/workspace/Nanocentury AI/CHIP50/chip50MCP",
+        "python",
+        "mcp_server/server.py"
+      ],
+      "env": {
+        "CHIP50_API_KEY": "chip50_test_synthetic_data_only",
+        "CHIP50_PROJECT_ID": "chip50",
+        "CHIP50_DATASET_PUBLIC": "public"
+      }
     }
-  },
-  "summary": {"mean": 2.43, "n": 1500},
-  "weight_note": "weighted"
-}
-```
-
-Rows = demographic variable (e.g., party_7)
-Columns = survey response (e.g., trust level 1-5)
-Values = weighted count (percentage within row)
-
-### Summary Stats Example
-```json
-{
-  "trust_congress": {
-    "mean": 2.431,
-    "min": 1.0,
-    "max": 5.0,
-    "n": 1500,
-    "weighted": true
   }
 }
 ```
 
-## Next Steps
+**Important:** Update the `--directory` path to match your local installation path!
 
-### For Real Data
+## Step 3: Restart Claude Desktop
 
-1. **Never commit real data** - See `.gitignore`
-2. **Replace synthetic data** - Place real CSVs in `data/` directory
-3. **Use same column names** - Match the schema from synthetic data
-4. **Set up BigQuery**
-   ```bash
-   gcloud auth application-default login
-   gcloud config set project YOUR_PROJECT_ID
-   ```
+After updating the configuration, restart Claude Desktop completely (Quit and reopen).
 
-### Customization
+## Step 4: Verify Connection
 
-- **Add more survey questions**: Modify `generate_synthetic_data.py`
-- **Change sample size**: Edit `n_respondents` parameter
-- **Add more waves**: Modify `waves=[7,8,9]` list
-- **Add new MCP tools**: Edit `mcp_server/server.py`
+In Claude Desktop, you should see the CHIP50 MCP server tools available. Try asking:
+
+```
+What data is available in the CHIP50 dataset?
+```
+
+Claude should call the `get_available_variables` tool and show you demographic and survey variables.
+
+## Example Usage
+
+### 1. Discover Available Variables
+
+**Ask Claude:**
+> "What survey variables are available in the CHIP50 data?"
+
+**Claude calls:** `get_available_variables()`
+
+**Returns:**
+- Demographic variables (region, age, education, party, etc.)
+- Survey variables (trust scales, approval ratings, etc.)
+- Wave information
+- Privacy protections summary
+
+### 2. Generate Simple Crosstab
+
+**Ask Claude:**
+> "Show me trust in Congress by party affiliation"
+
+**Claude calls:** `generate_crosstab(survey_variable="trust_congress", demographic_variable="party_7")`
+
+**Returns:**
+```json
+{
+  "status": "success",
+  "crosstab": {
+    "1": {"1": {"count": 105.2, "percentage": 26.1}, ...},
+    "2": {"1": {"count": 58.3, "percentage": 25.6}, ...},
+    ...
+  },
+  "metadata": {
+    "total_n": 1500,
+    "cells_suppressed": 0,
+    "privacy_note": "Cells with n<10 suppressed"
+  }
+}
+```
+
+### 3. Filter by Wave
+
+**Ask Claude:**
+> "Show me vote intention by region for wave 9 only"
+
+**Claude calls:**
+```python
+generate_crosstab(
+    survey_variable="vote_intention",
+    demographic_variable="region",
+    waves=[9]
+)
+```
+
+### 4. See Cell Suppression in Action
+
+**Ask Claude:**
+> "Break down trust in media by race"
+
+If any race category has fewer than 10 respondents for a given trust level, those cells will be suppressed:
+
+```json
+{
+  "metadata": {
+    "cells_suppressed": 3,
+    "privacy_note": "Cells with n<10 suppressed for privacy protection"
+  },
+  "suppressed_cells": [
+    {
+      "race": "Native American",
+      "trust_media": 1,
+      "reason": "n<10 (privacy protection)"
+    }
+  ]
+}
+```
+
+## Available Variables
+
+### Demographic Variables
+- `region` - Geographic region (Northeast, Mid-Atlantic, Midwest, South, West)
+- `age_cat_8` - Age category (8 groups)
+- `education_cat` - Education level
+- `income_cat_10` - Income bracket (1-10)
+- `gender` - Gender identity
+- `party_7` - Party identification (1=Strong Dem, 7=Strong Rep)
+- `race` - Race/ethnicity
+- `urban_type` - Urban/Suburban/Rural
+
+### Survey Variables
+- `trust_congress` - Trust in Congress (1-5 scale)
+- `trust_courts` - Trust in courts (1-5 scale)
+- `trust_media` - Trust in media (1-5 scale)
+- `trust_military` - Trust in military (1-5 scale)
+- `approval_pres` - Presidential approval (1-7 scale)
+- `approval_governor` - Governor approval (1-7 scale)
+- `approval_senator` - Senator approval (1-7 scale)
+- `issue_economy` - Economy importance (0-10 scale)
+- `issue_healthcare` - Healthcare importance (0-10 scale)
+- `vote_intention` - Voting intention (categorical)
+- `registered_voter` - Voter registration (0/1)
+- `party_thermometer` - Party feeling thermometer (0-100)
+
+## Privacy Protections
+
+The CHIP50 MCP server implements automatic privacy protections:
+
+### 1. Cell Suppression (n≥10)
+- Any crosstab cell with fewer than 10 observations is automatically suppressed
+- Suppressed cells show `[suppressed]` instead of values
+- Suppression metadata included in results
+
+### 2. Geographic Aggregation
+- State-level data aggregated to 5 regions
+- Cannot access individual state codes through protected views
+
+### 3. No User IDs
+- User IDs (`id`) not accessible in protected views
+- Uses non-reversible `row_hash` for internal JOINs
+
+### 4. No Free Text
+- Free-text responses excluded from protected views
+
+## Common Questions
+
+### Q: How do I see what variables exist?
+**A:** Ask Claude: "What variables are available?" or call `get_available_variables`
+
+### Q: What does "suppressed" mean?
+**A:** Cells with fewer than 10 respondents are hidden for privacy protection (k-anonymity)
+
+### Q: Can I see state-level data?
+**A:** No, states are aggregated to 5 regions for privacy. Use `demographic_variable="region"`
+
+### Q: Can I filter by specific conditions?
+**A:** Currently, you can filter by `waves`. Additional filters planned for future versions.
+
+### Q: Are the results weighted?
+**A:** Yes, by default. Set `use_weights=false` for unweighted counts.
+
+### Q: How many respondents are in the dataset?
+**A:** 500 unique respondents, 1,500 total observations (3 waves)
 
 ## Troubleshooting
 
-**"ModuleNotFoundError"**
-→ Dependencies not in lib/. Run: `python3 -m pip install --target=mcp_server/lib pandas numpy google-cloud-bigquery mcp`
+### Error: "CHIP50_API_KEY environment variable not set"
+**Solution:** Add the API key to your Claude Desktop configuration:
+```json
+"env": {
+  "CHIP50_API_KEY": "chip50_test_synthetic_data_only"
+}
+```
 
-**"Weights sum to zero"**
-→ IDs don't match between demographics and survey CSVs. Regenerate synthetic data.
+### Error: "Invalid API key"
+**Solution:** For testing, use exactly: `chip50_test_synthetic_data_only"
 
-**"Table not found" in BigQuery**
-→ Authenticate: `gcloud auth application-default login`
+### Error: "No data returned"
+**Solution:** Check variable names with `get_available_variables` - names are case-sensitive
 
-## Testing Checklist
+### Server not appearing in Claude Desktop
+1. Check that the `--directory` path is correct in your config
+2. Verify UV is installed: `uv --version`
+3. Check Claude Desktop logs (Help → View Logs)
+4. Restart Claude Desktop completely
 
-- [x] Synthetic data generated (1,500 rows each)
-- [x] IDs match between demographics and survey data
-- [x] Cross-tabs work for numeric variables (trust, approval)
-- [x] Cross-tabs work for categorical variables (vote_intention)
-- [x] Summary stats calculate weighted means
-- [x] Handles missing waves parameter (uses all waves)
-- [ ] BigQuery upload (requires GCP credentials)
+### BigQuery Authentication Errors
+**Solution:**
+```bash
+# Re-authenticate
+gcloud auth application-default login
 
-## Support
+# Verify project
+gcloud config get-value project
 
-For questions about this MCP server, refer to:
-- `README.md` - Full documentation
-- `test_mcp_server.py` - Example usage
-- MCP docs: https://modelcontextprotocol.io
+# Should return: chip50
+```
+
+## Example Analyses
+
+### 1. Political Polarization
+> "Compare trust in Congress between strong Democrats (party_7=1) and strong Republicans (party_7=7)"
+
+### 2. Regional Differences
+> "How does presidential approval vary across regions?"
+
+### 3. Demographic Patterns
+> "Show me vote intention by education level"
+
+### 4. Issue Salience
+> "What is the average importance of economy vs healthcare issues by party?"
+
+### 5. Multi-Variable Analysis
+> "Show trust in courts by region, and tell me if there are any patterns"
+
+## Next Steps
+
+- **Explore the data:** Ask Claude to generate various crosstabs
+- **Test privacy protections:** Try small demographic groups to see cell suppression
+- **Provide feedback:** Report any issues or suggestions
+- **Read the documentation:** See [buildplan.md](buildplan.md) for technical details
+
+## Getting Help
+
+- **Technical docs:** [buildplan.md](buildplan.md)
+- **Setup guide:** [SETUP.md](SETUP.md)
+- **Project status:** [PROJECT_STATUS.md](PROJECT_STATUS.md)
+- **Phase 3 plan:** [PHASE3_PLAN.md](PHASE3_PLAN.md)
+
+---
+
+**Note:** This is a testing version using synthetic data. Production authentication with Firestore and registration will be added in Phase 4.

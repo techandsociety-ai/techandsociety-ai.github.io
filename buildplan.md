@@ -725,81 +725,95 @@ chip50-mcp configure
 
 ## Implementation Timeline & Priorities
 
-### Phase 2: Database Security (Priority: HIGH)
+### Phase 2: Database Security ✅ (COMPLETE)
 **Goal:** Secure raw data and create privacy-preserving views
 
-**Tasks:**
-1. Create `chip50-public` GCP project
-2. Write `demographics_protected` and `survey_responses_protected` SQL views
-3. Test: state→region aggregation, user_id removal, free-text exclusion
-4. Configure cross-project authorized views
-5. Set up IAM roles (core researchers access both projects, outside only public)
-6. Validate with security test suite
+**Status:** COMPLETE
+- ✅ Created protected BigQuery views in `chip50.public.*`
+- ✅ Implemented privacy protections (user_id removal, state→region aggregation)
+- ✅ Validated with comprehensive test suite
+- ✅ Full analytical capability preserved with row_hash JOIN
 
 **Deliverable:** Protected BigQuery views that prevent PII exposure
 
 ---
 
-### Phase 3: Authentication & Access Control (Priority: HIGH)
-**Goal:** Auto-approved API key system with rate limiting
+### Phase 3: MCPB Bundle Package ✅ (COMPLETE - In Testing)
+**Goal:** Installable MCP bundle with privacy-safe BigQuery access
+
+**Status:** CODE COMPLETE - Ready for stakeholder testing
+
+**Approach:** MCPB bundle installed via Claude Desktop UI
+- ✅ Direct BigQuery access to protected views
+- ✅ Cell suppression (n≥10) built-in
+- ✅ Simple API key via Claude Desktop settings UI
+- ✅ No remote server needed
+- ✅ One-click install in Claude Desktop
+
+**Deliverable:** `chip50-survey-mcp.mcpb` bundle
+
+**Advantages of MCPB Approach:**
+- ✅ **Easy Installation:** Users install via Claude Desktop UI (drag-and-drop or file picker)
+- ✅ **Nice Settings UI:** Claude Desktop provides built-in UI for API key configuration
+- ✅ **No Command Line:** Non-technical users can install without terminal
+- ✅ **Auto-Updates:** Bundles can be updated and redistributed easily
+- ✅ **Local Execution:** All privacy logic runs locally (no remote server)
+- ✅ **Direct BigQuery:** Queries protected views directly with user's GCP credentials
+
+---
+
+### Phase 4: MCPB Distribution & Documentation (Priority: HIGH - NEXT)
+**Goal:** Publish bundle and create user-friendly documentation
 
 **Tasks:**
+1. ✅ Create `.mcpb` bundle configuration
+2. ✅ Test bundle installation in Claude Desktop
+3. Create installation video/screenshots
+4. Write non-technical installation guide
+5. Publish bundle to GitHub releases
+6. Create chip50.org landing page with download link
+7. Document GCP setup for end users
+
+**Deliverable:** Publicly available MCPB bundle with docs
+
+---
+
+### Phase 5: Optional Firestore Auth (Priority: LOW - FUTURE)
+**Goal:** Add centralized API key management if needed
+
+**Trigger:** If we need to track/limit usage or add tiered access
+
+**Decision Point:** Do we need this?
+- **Current:** Users bring their own GCP credentials (free, unlimited)
+- **Future:** Centralized API keys with quotas (adds complexity)
+
+**Tasks (If Needed):**
 1. Set up Firestore database for API keys
-2. Build registration endpoint (`/v1/register`) with auto-approval
-3. Create registration web form (chip50.org/register)
-4. Implement email notification on registration (SendGrid/Mailgun)
-5. Build authentication middleware with 100/day rate limiting
-6. Test: quota enforcement, midnight UTC reset, tier separation
-7. Set up audit logging to BigQuery
+2. Build registration web form (chip50.org/register)
+3. Add auth layer between MCP server and BigQuery
+4. Implement rate limiting (100/day)
+5. Set up audit logging
 
-**Deliverable:** Working registration system with instant API key generation
+**Deliverable:** Central API key system (optional)
 
----
+**Note:** This may NOT be needed! Current approach lets users use their own GCP credentials, which:
+- ✅ No quota management needed (users pay their own BigQuery costs)
+- ✅ No registration system to build/maintain
+- ✅ Simpler architecture
+- ✅ Users control their own access
 
-### Phase 4A: Remote Server (Priority: HIGH)
-**Goal:** Deploy FastAPI server with privacy enforcement
-
-**Tasks:**
-1. Create `remote_server/` directory structure
-2. Implement `main.py` (FastAPI app with crosstab endpoint)
-3. Implement `auth.py` (rate limiting, tier validation)
-4. Implement `privacy.py` (cell suppression logic)
-5. Write Dockerfile and Cloud Run config
-6. Deploy to Cloud Run with service account
-7. Test: cell suppression, tier-based query routing, error handling
-
-**Deliverable:** Live remote server at https://chip50-api.example.com
+We can decide later if centralized auth is worth the complexity.
 
 ---
 
-### Phase 4B: Local MCP Proxy (Priority: MEDIUM)
-**Goal:** One-command installation for non-technical users
-
-**Tasks:**
-1. Convert `mcp_server/server.py` to proxy-only (remove BigQuery client)
-2. Implement `local_proxy/config.py` (API key management)
-3. Create `install.sh` (macOS/Linux) with:
-   - Platform detection
-   - Release download
-   - Configuration wizard
-   - Claude Desktop auto-configuration
-4. Create `install.ps1` (Windows equivalent)
-5. Test on fresh machines (Mac, Ubuntu, Windows)
-6. Create GitHub release with install scripts
-
-**Deliverable:** curl-installable MCP server
-
----
-
-### Phase 4C: Documentation (Priority: LOW)
+### Phase 7: Documentation (Priority: LOW - ONGOING)
 **Goal:** User-friendly docs for journalists/researchers
 
 **Tasks:**
-1. Update INSTALLATION.md with curl command
-2. Create QUICKSTART.md with example queries
-3. Document available variables and their meanings
-4. Create troubleshooting guide
-5. Add usage examples for common research questions
+1. Create QUICKSTART.md with example queries
+2. Document available variables and their meanings
+3. Create troubleshooting guide
+4. Add usage examples for common research questions
 
 **Deliverable:** Complete documentation suite
 
@@ -808,12 +822,35 @@ chip50-mcp configure
 ## Open Questions & Future Enhancements
 
 ### Design Decisions (FINALIZED)
-- ✅ **API key storage:** Firestore (simpler, auto-scaling)
-- ✅ **Distribution method:** GitHub releases with platform-specific install scripts
-- ✅ **Query rate limits:** 100 requests per user per day
-- ✅ **API key approval:** Auto-approve by default (instant access)
-- ✅ **Tier conversion:** No upgrade path - core vs. outside are separate pools
-- ✅ **API key expiration:** 1 year with email renewal reminder
+
+**Architecture: MCPB Bundle (Current)**
+- ✅ **Distribution:** MCPB bundle installable via Claude Desktop UI
+- ✅ **Authentication:** User's own GCP credentials (via `gcloud auth`)
+- ✅ **API Key UI:** Claude Desktop settings panel (built-in)
+- ✅ **Cell suppression:** Local (in MCP server Python code, n≥10)
+- ✅ **Privacy:** Protected BigQuery views (`chip50.public.*`)
+- ✅ **Installation:** Drag-and-drop or file picker in Claude Desktop
+- ✅ **Updates:** Redistribute new `.mcpb` file
+
+**Key Simplifications:**
+- ❌ **No remote server** - Direct BigQuery access
+- ❌ **No Firestore** - Users manage own GCP credentials
+- ❌ **No registration** - Download bundle from chip50.org
+- ❌ **No rate limiting** - Users pay own BigQuery costs (minimal)
+- ❌ **No quota management** - Self-service via GCP
+
+**Why MCPB Approach Wins:**
+1. **Easier for users** - No command line, just install in Claude Desktop
+2. **Better UX** - Claude Desktop provides nice settings UI
+3. **Simpler architecture** - No remote server to maintain
+4. **Cost effective** - Users pay their own (tiny) BigQuery costs
+5. **Privacy preserving** - All data stays in user's GCP project
+6. **Scalable** - No server capacity to manage
+
+**Optional Future (If Needed):**
+- 🔄 Centralized API keys (Firestore) - Only if we need usage tracking/limits
+- 🔄 Remote server (Cloud Run) - Only if direct BigQuery becomes problematic
+- 🔄 Registration website - Only if we need centralized auth
 
 ### Future Enhancements (Post-Launch)
 - **Export formats:** CSV/Excel download in addition to JSON

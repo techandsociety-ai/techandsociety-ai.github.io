@@ -3,8 +3,8 @@
 Upload synthetic data CSV files to BigQuery dataset.
 
 This script uploads:
-- synthetic_demographics.csv -> nanocentury.chip50.demographics
-- synthetic_survey_responses.csv -> nanocentury.chip50.survey_responses
+- synthetic_demographics.csv -> chip50.raw.demographics
+- synthetic_survey_responses.csv -> chip50.raw.survey_responses
 """
 
 import os
@@ -69,8 +69,8 @@ def main():
     """Main function to upload all CSV files."""
 
     # Configuration
-    PROJECT_ID = "nanocentury"
-    DATASET_ID = "chip50"
+    PROJECT_ID = "chip50"
+    DATASET_ID = "raw"
 
     # Get the script directory
     script_dir = Path(__file__).parent

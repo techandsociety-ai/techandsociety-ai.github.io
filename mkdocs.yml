@@ -1,0 +1,116 @@
+site_name: CHIP50 Survey MCP
+site_description: Privacy-preserving survey data analysis for Claude Desktop
+site_author: CHIP50 Team
+site_url: https://nanocentury-ai.github.io/chip50MCP/
+
+repo_name: nanocentury-ai/chip50MCP
+repo_url: https://github.com/nanocentury-ai/chip50MCP
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    # Light mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - tags
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/nanocentury-ai/chip50MCP
+  version:
+    provider: mike
+
+nav:
+  - Home: index.md
+
+  - Getting Started:
+    - Quick Start: getting-started/quickstart.md
+    - Installation Guide: getting-started/installation.md
+    - First Steps: getting-started/first-steps.md
+
+  - User Guide:
+    - Using the MCP Server: user-guide/usage.md
+    - Available Variables: user-guide/variables.md
+    - Cross-Tabulation: user-guide/crosstabs.md
+    - Privacy Protections: user-guide/privacy.md
+
+  - Installation:
+    - Complete Guide: install/complete-guide.md
+    - macOS: install/macos.md
+    - Linux: install/linux.md
+    - Windows: install/windows.md
+    - Troubleshooting: install/troubleshooting.md
+
+  - Setup & Configuration:
+    - Data Setup: setup/data-setup.md
+    - BigQuery Configuration: setup/bigquery.md
+    - Google Cloud Auth: setup/gcloud-auth.md
+    - Claude Desktop: setup/claude-desktop.md
+
+  - Technical Documentation:
+    - Architecture: technical/architecture.md
+    - Build Plan: technical/buildplan.md
+    - Privacy Implementation: technical/privacy-implementation.md
+    - Cross-Platform Support: technical/cross-platform.md
+
+  - Development:
+    - Project Status: development/status.md
+    - Phase 2 Complete: development/phase2.md
+    - Phase 3 Complete: development/phase3.md
+    - Contributing: development/contributing.md
+
+  - Reference:
+    - API Reference: reference/api.md
+    - Configuration: reference/configuration.md
+    - Environment Variables: reference/environment.md
+    - Changelog: reference/changelog.md

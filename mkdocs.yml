@@ -9,6 +9,7 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
+  logo: chip50.png
   palette:
     # Light mode
     - scheme: default

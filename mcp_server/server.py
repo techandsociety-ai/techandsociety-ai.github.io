@@ -15,16 +15,18 @@ Provides privacy-preserving access to CHIP50 survey data through protected BigQu
 Implements cell suppression (n≥10) and uses simple test API key for validation.
 
 Architecture:
-- Direct BigQuery access to protected views (chip50.public.*)
+- Wave-based table structure: Each wave has separate tables (e.g., demographics_protected_w35)
+- Direct BigQuery access to wave-specific protected views (chip50.public.*_w35)
 - Local cell suppression enforcement
 - Simple API key validation via environment variable
+- row_hash used for joining demographics and survey responses within a wave
 """
 
 import json
 import sys
 import os
 import asyncio
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 import pandas as pd
 from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
@@ -146,7 +148,7 @@ class SurveyAnalysisServer:
                     name="get_available_variables",
                     description=(
                         "Get list of available survey and demographic variables in the CHIP50 dataset. "
-                        "Returns variable names, descriptions, and scale information. "
+                        "Returns variable names, descriptions, scale information, and available waves. "
                         "Use this first to discover what data is available before generating crosstabs."
                     ),
                     inputSchema={
@@ -162,7 +164,8 @@ class SurveyAnalysisServer:
                         "Analyzes survey responses across demographic categories with automatic "
                         "cell suppression (n≥10) for privacy protection. Uses protected views with "
                         "geographic aggregation (regions, not states) and no user IDs exposed. "
-                        "Returns weighted counts, percentages, and suppression metadata."
+                        "Returns weighted counts, percentages, and suppression metadata. "
+                        "Each wave has separate tables (e.g., demographics_protected_w35)."
                     ),
                     inputSchema={
                         "type": "object",
@@ -170,25 +173,25 @@ class SurveyAnalysisServer:
                             "survey_variable": {
                                 "type": "string",
                                 "description": (
-                                    "Survey variable to analyze (e.g., 'trust_congress', 'approval_pres', "
-                                    "'vote_intention'). Use get_available_variables to see all options."
+                                    "Survey variable to analyze (e.g., 'pol_trust_congress', 'pol_approval_pres', "
+                                    "'pol_vote_intention'). Use get_available_variables to see all options."
                                 )
                             },
                             "demographic_variable": {
                                 "type": "string",
                                 "description": (
-                                    "Demographic variable to group by (e.g., 'party_7', 'region', "
-                                    "'education_cat', 'age_cat_8', 'race', 'gender'). "
+                                    "Demographic variable to group by (e.g., 'party7', 'region', "
+                                    "'educ', 'age_cat', 'race', 'gender'). "
                                     "Note: 'region' used instead of 'state_code' for privacy. "
                                     "Use get_available_variables to see all options."
                                 )
                             },
-                            "waves": {
-                                "type": "array",
-                                "items": {"type": "integer"},
+                            "wave": {
+                                "type": "string",
                                 "description": (
-                                    "Wave numbers to include (e.g., [7, 8, 9]). "
-                                    "Defaults to all waves if not specified."
+                                    "Wave identifier to query (e.g., '35', '35_1', '36'). "
+                                    "Each wave has separate tables. Use get_available_variables to see available waves. "
+                                    "Required parameter."
                                 )
                             },
                             "use_weights": {
@@ -197,7 +200,7 @@ class SurveyAnalysisServer:
                                 "default": True
                             }
                         },
-                        "required": ["survey_variable", "demographic_variable"]
+                        "required": ["survey_variable", "demographic_variable", "wave"]
                     }
                 )
             ]
@@ -212,7 +215,7 @@ class SurveyAnalysisServer:
                     result = await self.generate_crosstab(
                         survey_variable=arguments["survey_variable"],
                         demographic_variable=arguments["demographic_variable"],
-                        waves=arguments.get("waves"),
+                        wave=arguments["wave"],
                         use_weights=arguments.get("use_weights", True)
                     )
                 else:
@@ -237,6 +240,19 @@ class SurveyAnalysisServer:
         """
         return {
             "status": "success",
+            "note": "Each wave has separate tables (e.g., demographics_protected_w35, demographics_protected_w35_1)",
+            "available_waves": [
+                {
+                    "wave": "35",
+                    "table_suffix": "w35",
+                    "description": "Wave 35 data"
+                },
+                {
+                    "wave": "35.1",
+                    "table_suffix": "w35_1",
+                    "description": "Wave 35.1 data"
+                }
+            ],
             "demographic_variables": [
                 {
                     "name": "region",
@@ -245,19 +261,19 @@ class SurveyAnalysisServer:
                     "note": "State-level data aggregated to regions for privacy"
                 },
                 {
-                    "name": "age_cat_8",
-                    "description": "Age category (8 groups)",
-                    "categories": ["18 to 25", "26 to 30", "31 to 40", "41 to 50", "51 to 60", "61 to 70", "71 to 80", "81+"]
+                    "name": "age_cat",
+                    "description": "Age category",
+                    "note": "Categories may vary by wave"
                 },
                 {
-                    "name": "education_cat",
+                    "name": "educ",
                     "description": "Education level",
-                    "categories": ["Less than High School", "High School Graduate", "Some College", "College Degree", "Graduate Degree"]
+                    "note": "Categories may vary by wave"
                 },
                 {
-                    "name": "income_cat_10",
-                    "description": "Income bracket (10 categories, 1=lowest, 10=highest)",
-                    "scale": "1-10"
+                    "name": "income_cat",
+                    "description": "Income bracket",
+                    "note": "Categories may vary by wave"
                 },
                 {
                     "name": "gender",
@@ -265,7 +281,7 @@ class SurveyAnalysisServer:
                     "categories": ["Male", "Female", "Non-binary", "Prefer not to say"]
                 },
                 {
-                    "name": "party_7",
+                    "name": "party7",
                     "description": "Party identification (7-point scale)",
                     "scale": "1=Strong Democrat, 7=Strong Republican, 4=Independent",
                     "categories": "1-7"
@@ -273,7 +289,7 @@ class SurveyAnalysisServer:
                 {
                     "name": "race",
                     "description": "Race/ethnicity",
-                    "categories": ["White", "Black or African American", "Hispanic or Latino", "Asian", "Native American", "Other", "Two or more races"]
+                    "note": "Categories may vary by wave"
                 },
                 {
                     "name": "urban_type",
@@ -283,88 +299,84 @@ class SurveyAnalysisServer:
             ],
             "survey_variables": [
                 {
-                    "name": "trust_congress",
+                    "name": "pol_trust_congress",
                     "description": "Trust in Congress",
                     "scale": "1-5 (1=Strongly distrust, 5=Strongly trust)"
                 },
                 {
-                    "name": "trust_courts",
+                    "name": "pol_trust_courts",
                     "description": "Trust in courts",
                     "scale": "1-5 (1=Strongly distrust, 5=Strongly trust)"
                 },
                 {
-                    "name": "trust_media",
+                    "name": "pol_trust_media",
                     "description": "Trust in media",
                     "scale": "1-5 (1=Strongly distrust, 5=Strongly trust)"
                 },
                 {
-                    "name": "trust_military",
+                    "name": "pol_trust_military",
                     "description": "Trust in military",
                     "scale": "1-5 (1=Strongly distrust, 5=Strongly trust)"
                 },
                 {
-                    "name": "approval_pres",
+                    "name": "pol_approval_pres",
                     "description": "Presidential approval",
                     "scale": "1-7 (1=Strongly disapprove, 7=Strongly approve)"
                 },
                 {
-                    "name": "approval_governor",
+                    "name": "pol_approval_governor",
                     "description": "Governor approval",
                     "scale": "1-7 (1=Strongly disapprove, 7=Strongly approve)"
                 },
                 {
-                    "name": "approval_senator",
+                    "name": "pol_approval_senator",
                     "description": "Senator approval",
                     "scale": "1-7 (1=Strongly disapprove, 7=Strongly approve)"
                 },
                 {
-                    "name": "issue_economy",
+                    "name": "pol_issue_economy",
                     "description": "Economy issue importance",
                     "scale": "0-10 (0=Not important, 10=Extremely important)"
                 },
                 {
-                    "name": "issue_healthcare",
+                    "name": "pol_issue_healthcare",
                     "description": "Healthcare issue importance",
                     "scale": "0-10 (0=Not important, 10=Extremely important)"
                 },
                 {
-                    "name": "vote_intention",
+                    "name": "pol_vote_intention",
                     "description": "Voting intention",
                     "type": "categorical",
-                    "categories": ["Definitely will vote", "Probably will vote", "Unsure", "Probably will not vote", "Definitely will not vote"]
+                    "note": "Categories may vary by wave"
                 },
                 {
-                    "name": "registered_voter",
+                    "name": "pol_registered_voter",
                     "description": "Voter registration status",
                     "scale": "0-1 (0=Not registered, 1=Registered)",
                     "type": "binary"
                 },
                 {
-                    "name": "party_thermometer",
+                    "name": "pol_party_thermometer",
                     "description": "Party feeling thermometer",
                     "scale": "0-100 (0=Very cold, 100=Very warm)",
                     "type": "continuous"
                 }
             ],
-            "waves": [7, 8, 9],
-            "sample_size": {
-                "total_respondents": 500,
-                "observations_per_wave": 500,
-                "total_observations": 1500
-            },
             "privacy_protections": {
                 "cell_suppression": f"Cells with n<{MIN_CELL_SIZE} automatically suppressed",
                 "geographic_aggregation": "State-level data aggregated to 5 regions",
-                "user_ids": "Not accessible in protected views",
-                "free_text": "Excluded from protected views"
-            }
+                "user_ids": "Not accessible in protected views (row_hash used for joins)",
+                "free_text": "Excluded from protected views",
+                "wave_separation": "Each wave stored in separate tables to maintain schema flexibility"
+            },
+            "usage_note": "Variable names and categories may differ across waves. Check specific wave documentation for exact column names."
         }
 
     async def generate_crosstab(
         self,
         survey_variable: str,
         demographic_variable: str,
-        waves: Optional[List[int]] = None,
+        wave: str,
         use_weights: bool = True
     ) -> Dict[str, Any]:
         """
@@ -373,7 +385,7 @@ class SurveyAnalysisServer:
         Args:
             survey_variable: Survey variable to analyze
             demographic_variable: Demographic variable to group by
-            waves: Optional list of wave numbers to include
+            wave: Wave identifier (e.g., '35', '35_1')
             use_weights: Whether to use survey weights
 
         Returns:
@@ -383,28 +395,27 @@ class SurveyAnalysisServer:
             # Initialize BigQuery client
             client = bigquery.Client(project=self.project_id)
 
-            # Use protected views (chip50.public.*)
-            demographics_table = f"{self.project_id}.{self.dataset_public}.demographics_protected"
-            survey_table = f"{self.project_id}.{self.dataset_public}.survey_responses_protected"
+            # Convert wave format: '35' -> 'w35', '35.1' -> 'w35_1', '35_1' -> 'w35_1'
+            wave_suffix = wave.replace('.', '_')
+            if not wave_suffix.startswith('w'):
+                wave_suffix = f'w{wave_suffix}'
+
+            # Use wave-specific protected views (chip50.public.*_w35)
+            demographics_table = f"{self.project_id}.{self.dataset_public}.demographics_protected_{wave_suffix}"
+            survey_table = f"{self.project_id}.{self.dataset_public}.survey_responses_protected_{wave_suffix}"
 
             # Build the base query with JOIN using row_hash (not id)
             base_join = f"""
             SELECT
                 d.{demographic_variable},
                 s.{survey_variable},
-                d.weight,
-                d.wave
+                d.weight
             FROM `{demographics_table}` d
             INNER JOIN `{survey_table}` s
-                ON d.row_hash = s.row_hash AND d.wave = s.wave
+                ON d.row_hash = s.row_hash
             WHERE d.{demographic_variable} IS NOT NULL
                 AND s.{survey_variable} IS NOT NULL
             """
-
-            # Add wave filter if specified
-            if waves:
-                wave_list = ','.join(map(str, waves))
-                base_join += f" AND d.wave IN ({wave_list})"
 
             # Build weighted or unweighted crosstab query
             if use_weights:
@@ -507,9 +518,10 @@ class SurveyAnalysisServer:
                 "metadata": {
                     "survey_variable": survey_variable,
                     "demographic_variable": demographic_variable,
+                    "wave": wave,
+                    "table_suffix": wave_suffix,
                     "weighted": use_weights,
                     "total_n": total_n,
-                    "waves_included": waves if waves else "all",
                     "cells_suppressed": suppressed_count,
                     "min_cell_size": MIN_CELL_SIZE,
                     "privacy_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy protection"
@@ -523,7 +535,7 @@ class SurveyAnalysisServer:
                     for row in suppressed_rows if row.get('suppressed', False)
                 ] if suppressed_count > 0 else [],
                 "message": (
-                    f"Generated {'weighted' if use_weights else 'unweighted'} crosstab. "
+                    f"Generated {'weighted' if use_weights else 'unweighted'} crosstab for wave {wave}. "
                     f"{suppressed_count} cell(s) suppressed for privacy (n<{MIN_CELL_SIZE})."
                 )
             }

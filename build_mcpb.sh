@@ -36,8 +36,8 @@ cp -r mcp_server .mcpb_build/
 cp -r synthetic_data .mcpb_build/
 cp -r sql .mcpb_build/
 cp README.md .mcpb_build/
-cp QUICKSTART.md .mcpb_build/
-cp SETUP.md .mcpb_build/
+cp DATA_PROCESSING.md .mcpb_build/
+cp WAVE_BASED_WORKFLOW.md .mcpb_build/
 cp pyproject.toml .mcpb_build/
 
 # Copy installation scripts

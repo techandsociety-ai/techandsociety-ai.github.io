@@ -64,3 +64,5 @@ uv.lock
 chip50MCP.mcpb
 *.mcpb
 site/
+chip50-survey-mcp-v2.1_wave.mcpb.sha256
+*.mcpb

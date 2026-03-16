@@ -678,6 +678,7 @@ class SurveyAnalysisServer:
             survey_table = f"{self.project_id}.{self.dataset_public}.survey_responses_protected_{wave_suffix}"
 
             # Build the base query with JOIN using row_hash (not id)
+            # Filter for completed surveys only (Finished = 1)
             base_join = f"""
             SELECT
                 d.{demographic_variable},
@@ -688,6 +689,7 @@ class SurveyAnalysisServer:
                 ON d.row_hash = s.row_hash
             WHERE d.{demographic_variable} IS NOT NULL
                 AND s.{survey_variable} IS NOT NULL
+                AND s.Finished = 1
             """
 
             # Build weighted or unweighted crosstab query
@@ -921,18 +923,23 @@ class SurveyAnalysisServer:
             # Build marginals query
             if use_weights:
                 if table_location == 'demographics':
+                    # For demographics, need to join with survey to filter Finished = 1
                     query = f"""
                     SELECT
-                        {variable},
+                        d.{variable},
                         COUNT(*) as n,
-                        SUM(weight) as weighted_count
-                    FROM `{demographics_table}`
-                    WHERE {variable} IS NOT NULL
-                    GROUP BY {variable}
-                    ORDER BY {variable}
+                        SUM(d.weight) as weighted_count
+                    FROM `{demographics_table}` d
+                    INNER JOIN `{survey_table}` s
+                        ON d.row_hash = s.row_hash
+                    WHERE d.{variable} IS NOT NULL
+                        AND s.Finished = 1
+                    GROUP BY d.{variable}
+                    ORDER BY d.{variable}
                     """
                 else:
                     # Need to join with demographics for weights
+                    # Filter for completed surveys only (Finished = 1)
                     query = f"""
                     SELECT
                         s.{variable},
@@ -942,21 +949,38 @@ class SurveyAnalysisServer:
                     INNER JOIN `{demographics_table}` d
                         ON s.row_hash = d.row_hash
                     WHERE s.{variable} IS NOT NULL
+                        AND s.Finished = 1
                     GROUP BY s.{variable}
                     ORDER BY s.{variable}
                     """
             else:
                 # Unweighted query
-                table_name = demographics_table if table_location == 'demographics' else survey_table
-                query = f"""
-                SELECT
-                    {variable},
-                    COUNT(*) as count
-                FROM `{table_name}`
-                WHERE {variable} IS NOT NULL
-                GROUP BY {variable}
-                ORDER BY {variable}
-                """
+                if table_location == 'demographics':
+                    # For demographics, need to join with survey to filter Finished = 1
+                    query = f"""
+                    SELECT
+                        d.{variable},
+                        COUNT(*) as count
+                    FROM `{demographics_table}` d
+                    INNER JOIN `{survey_table}` s
+                        ON d.row_hash = s.row_hash
+                    WHERE d.{variable} IS NOT NULL
+                        AND s.Finished = 1
+                    GROUP BY d.{variable}
+                    ORDER BY d.{variable}
+                    """
+                else:
+                    # For survey variables, filter Finished = 1 directly
+                    query = f"""
+                    SELECT
+                        {variable},
+                        COUNT(*) as count
+                    FROM `{survey_table}`
+                    WHERE {variable} IS NOT NULL
+                        AND Finished = 1
+                    GROUP BY {variable}
+                    ORDER BY {variable}
+                    """
 
             # Execute query
             query_job = client.query(query)

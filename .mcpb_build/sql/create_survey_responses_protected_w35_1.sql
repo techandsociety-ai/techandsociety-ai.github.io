@@ -24,7 +24,7 @@ SELECT
     -- Qualtrics metadata (platform-generated, not survey data)
     Progress,
     Status,
-    Finished,
+    -- Finished kept for filtering completed surveys
 
     -- Free-text fields that may contain identifying information
     -- University and school names (potentially identifying)

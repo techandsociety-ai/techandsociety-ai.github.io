@@ -1,19 +1,28 @@
 # Social Media Demographics MCP Server
 
-A remote Model Context Protocol (MCP) server for analyzing social media demographics data, deployed on Google Cloud Run.
+**A Remote MCP Server** for analyzing social media demographics data, deployed on Google Cloud Run and accessible from anywhere.
 
 ## Overview
 
-This MCP server provides privacy-protected access to synthetic social media demographics data through BigQuery. It enables analysis of platform usage across demographic segments including age, gender, race/ethnicity, education, income, and political affiliation.
+This is a **remote** Model Context Protocol (MCP) server that runs on Google Cloud Run, not locally on your machine. It provides privacy-protected access to synthetic social media demographics data through BigQuery via HTTP/SSE transport.
+
+**Key Difference from Local MCP:**
+- ✅ **Remote**: Runs on Google Cloud Run, accessible via HTTPS
+- ✅ **No Local Resources**: Doesn't consume your machine's CPU/memory
+- ✅ **SSE Transport**: Uses Server-Sent Events, not stdio
+- ✅ **API Authentication**: Secured with API keys
+- ✅ **Always Available**: Access from multiple devices/locations
+- ✅ **Scalable**: Handles concurrent requests, auto-scales
 
 ## Features
 
-- **Remote Access**: Deployed on Google Cloud Run, accessible from anywhere
+- **Remote Access**: Deployed on Google Cloud Run, accessible from anywhere with internet
 - **Privacy Protected**: Automatic cell suppression for small counts (n<10)
 - **Multiple Platforms**: Coverage of major social media platforms (Twitter/X, Facebook, Instagram, TikTok, LinkedIn, YouTube, Reddit, Snapchat)
 - **Rich Demographics**: Age, gender, race/ethnicity, education, income, political affiliation, geography
 - **Batch Operations**: Efficient parallel queries for multiple analyses
 - **Weighted Analysis**: Support for population-weighted estimates
+- **Serverless**: Auto-scales from zero, pay only for actual usage
 
 ## Available Tools
 
@@ -60,7 +69,9 @@ Generate marginal distributions for multiple variables in parallel.
 
 ### Configure Claude Desktop
 
-Add this to your Claude Desktop MCP configuration:
+**Important**: This is a **remote MCP server** using SSE transport, not a local server using stdio.
+
+Add this to your Claude Desktop MCP configuration (`~/.config/claude/claude_desktop_config.json` on macOS/Linux or `%APPDATA%\Claude\claude_desktop_config.json` on Windows):
 
 ```json
 {
@@ -77,6 +88,11 @@ Add this to your Claude Desktop MCP configuration:
   }
 }
 ```
+
+**Note the differences from local MCP:**
+- `url` instead of `command` - points to your Cloud Run service
+- `transport.type: "sse"` instead of stdio - uses HTTP Server-Sent Events
+- `env.API_KEY` - authenticates to your remote server
 
 ## Data Structure
 

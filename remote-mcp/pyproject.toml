@@ -1,0 +1,11 @@
+[project]
+name = "social-media-chip50"
+version = "0.1.0"
+description = "CHIP50 social media MCP server on Cloud Run"
+requires-python = ">=3.10"
+dependencies = [
+    "fastmcp==2.13.1",
+    "google-cloud-bigquery>=3.17.2",
+    "db-dtypes>=1.2.0",
+    "pandas>=2.2.0",
+]

@@ -101,13 +101,16 @@ def wave_clause(wave: Optional[str]) -> str:
     return f"AND wave = '{wave}'"
 
 
-# ── Auth ────────────────────────────────────────────────────────────────────
+# ── Auth (toggle with DISABLE_AUTH env var on Cloud Run) ─────────────────────
 
-auth = GoogleProvider(
-    client_id=os.getenv("GOOGLE_CLIENT_ID"),
-    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
-    base_url=os.getenv("SERVICE_URL", "http://localhost:8080"),
-)
+if os.getenv("DISABLE_AUTH"):
+    auth = None
+else:
+    auth = GoogleProvider(
+        client_id=os.getenv("GOOGLE_CLIENT_ID"),
+        client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+        base_url=os.getenv("SERVICE_URL", "http://localhost:8080"),
+    )
 
 # ── MCP server ──────────────────────────────────────────────────────────────
 

@@ -1,0 +1,70 @@
+name: Build and Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  GCP_PROJECT: chip50
+  SERVICE_NAME: social-media-demographics-mcp
+  REGION: us-central1
+  IMAGE: gcr.io/chip50/social-media-demographics-mcp
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.GCP_PROJECT }}
+
+      - name: Build container image
+        working-directory: remote-mcp
+        run: |
+          gcloud builds submit \
+            --tag "$IMAGE" \
+            --project="$GCP_PROJECT" \
+            .
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy "$SERVICE_NAME" \
+            --image "$IMAGE" \
+            --platform managed \
+            --region "$REGION" \
+            --allow-unauthenticated \
+            --set-env-vars "GCP_PROJECT=$GCP_PROJECT,DATASET_NAME=social_media_demographics,MIN_CELL_SIZE=10,GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+            --memory 1Gi \
+            --cpu 1 \
+            --timeout 300 \
+            --max-instances 10 \
+            --min-instances 1 \
+            --project="$GCP_PROJECT"
+
+      - name: Update SERVICE_URL env var on Cloud Run
+        run: |
+          SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" \
+            --platform managed \
+            --region "$REGION" \
+            --project="$GCP_PROJECT" \
+            --format 'value(status.url)')
+          echo "Deployed to: $SERVICE_URL"
+          gcloud run services update "$SERVICE_NAME" \
+            --region "$REGION" \
+            --project="$GCP_PROJECT" \
+            --update-env-vars "SERVICE_URL=$SERVICE_URL"

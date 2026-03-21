@@ -10,6 +10,8 @@ data/**/*.csv
 credentials.json
 service-account*.json
 *-credentials.json
+key.json
+*.json.key
 
 # Python
 __pycache__/

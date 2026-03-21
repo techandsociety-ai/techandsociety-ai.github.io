@@ -224,7 +224,8 @@ async def get_available_variables() -> str:
             "waves": row["waves"],
             "note": (
                 "Platform usage is binary (1=uses, 0=does not). "
-                "late_platforms have NULL in earlier waves."
+                "late_platforms have NULL in earlier waves. "
+                "All rates are survey-weighted (population-representative) using the 'weight' column."
             )
         }, indent=2)
 
@@ -241,8 +242,9 @@ async def generate_crosstab(
 ) -> str:
     """Platform adoption rate broken down by a demographic variable.
 
-    Returns user_rate_pct (% of respondents using the platform) per demographic group,
-    with cell suppression for groups with n < MIN_CELL_SIZE.
+    Returns survey-weighted user_rate_pct (population-representative % using the platform)
+    per demographic group, with cell suppression for groups with unweighted n < MIN_CELL_SIZE.
+    All rates and counts use the respondent survey weight for population-representative estimates.
 
     Args:
         platform:    Column name, e.g. "use_twitter", "use_tiktok"
@@ -257,22 +259,24 @@ async def generate_crosstab(
     try:
         df = run_query(f"""
             SELECT
-              {demographic}                  AS demographic_value,
-              COUNT(*)                       AS total,
-              SUM({platform})                AS users,
-              COUNT(*) - SUM({platform})     AS non_users,
-              ROUND(SUM({platform}) / COUNT(*) * 100, 2) AS user_rate_pct,
+              {demographic}                                               AS demographic_value,
+              COUNT(*)                                                    AS unweighted_n,
+              ROUND(SUM(weight), 1)                                       AS weighted_n,
+              ROUND(SUM({platform} * weight), 1)                          AS weighted_users,
+              ROUND((SUM(weight) - SUM({platform} * weight)), 1)          AS weighted_non_users,
+              ROUND(SUM({platform} * weight) / SUM(weight) * 100, 2)      AS user_rate_pct,
               CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END AS suppressed
             FROM {FULL_TABLE}
             WHERE {platform} IS NOT NULL
               AND {demographic} IS NOT NULL
+              AND weight IS NOT NULL
               {wave_clause(wave)}
             GROUP BY {demographic}
             ORDER BY {demographic}
         """)
 
-        # Apply suppression
-        df.loc[df["suppressed"], ["total", "users", "non_users", "user_rate_pct"]] = None
+        # Apply suppression (based on unweighted_n to protect actual respondent privacy)
+        df.loc[df["suppressed"], ["weighted_n", "weighted_users", "weighted_non_users", "user_rate_pct"]] = None
 
         return json.dumps({
             "platform": platform,
@@ -313,13 +317,15 @@ async def generate_marginals(
             # Platform: return overall adoption rate
             df = run_query(f"""
                 SELECT
-                  '{variable}'                              AS platform,
-                  COUNT(*)                                  AS total_responses,
-                  SUM({variable})                           AS users,
-                  COUNT(*) - SUM({variable})                AS non_users,
-                  ROUND(SUM({variable}) / COUNT(*) * 100, 2) AS user_rate_pct
+                  '{variable}'                                              AS platform,
+                  COUNT(*)                                                  AS unweighted_n,
+                  ROUND(SUM(weight), 1)                                     AS weighted_n,
+                  ROUND(SUM({variable} * weight), 1)                        AS weighted_users,
+                  ROUND(SUM(weight) - SUM({variable} * weight), 1)          AS weighted_non_users,
+                  ROUND(SUM({variable} * weight) / SUM(weight) * 100, 2)    AS user_rate_pct
                 FROM {FULL_TABLE}
                 WHERE {variable} IS NOT NULL
+                  AND weight IS NOT NULL
                   {wave_clause(wave)}
             """)
             return json.dumps({
@@ -333,18 +339,20 @@ async def generate_marginals(
             # Demographic: category distribution
             df = run_query(f"""
                 SELECT
-                  {variable}  AS value,
-                  COUNT(*)    AS n,
-                  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER(), 2) AS pct,
+                  {variable}                                                   AS value,
+                  COUNT(*)                                                      AS unweighted_n,
+                  ROUND(SUM(weight), 1)                                         AS weighted_n,
+                  ROUND(SUM(weight) * 100.0 / SUM(SUM(weight)) OVER(), 2)      AS pct,
                   CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END AS suppressed
                 FROM {FULL_TABLE}
                 WHERE {variable} IS NOT NULL
+                  AND weight IS NOT NULL
                   {wave_clause(wave)}
                 GROUP BY {variable}
                 ORDER BY {variable}
             """)
 
-            df.loc[df["suppressed"], ["n", "pct"]] = None
+            df.loc[df["suppressed"], ["weighted_n", "pct"]] = None
 
             return json.dumps({
                 "variable": variable,
@@ -437,11 +445,13 @@ async def get_platform_trends(
         df = run_query(f"""
             SELECT
               wave,
-              COUNT(*)   AS total_responses,
-              SUM({platform})  AS users,
-              ROUND(SUM({platform}) / COUNT(*) * 100, 2) AS user_rate_pct
+              COUNT(*)                                                 AS unweighted_n,
+              ROUND(SUM(weight), 1)                                    AS weighted_n,
+              ROUND(SUM({platform} * weight), 1)                       AS weighted_users,
+              ROUND(SUM({platform} * weight) / SUM(weight) * 100, 2)  AS user_rate_pct
             FROM {FULL_TABLE}
             WHERE {platform} IS NOT NULL
+              AND weight IS NOT NULL
               {demo_filter}
             GROUP BY wave
             ORDER BY CAST(wave AS FLOAT64)

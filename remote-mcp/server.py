@@ -118,6 +118,89 @@ mcp = FastMCP("social-media-demographics", auth=auth)
 
 
 @mcp.tool()
+async def introduce_mcp() -> str:
+    """Get a quick introduction to this MCP server, its tools, and how to use them.
+
+    Call this first to understand what data is available and how to query it.
+    """
+    logo = (
+        "            ////\n"
+        "           ////\n"
+        "     \\\\   ////\n"
+        "      \\\\ ////\n"
+        "       \\////\n"
+        "        \\/\n"
+        "    C H I P 5 0"
+    )
+    return json.dumps({
+        "logo": logo,
+        "name": "CHIP50 Social Media Demographics MCP",
+        "description": (
+            "This MCP server provides access to CHIP50 panel survey data covering social media "
+            "usage across waves 14–35 (583,532 responses). You can analyze platform adoption "
+            "rates broken down by demographics, track trends over time, and run batch queries."
+        ),
+        "dataset": {
+            "waves": "14–35",
+            "total_responses": 583532,
+            "demographics": DEMOGRAPHIC_COLUMNS,
+            "platforms": [c.replace("use_", "") for c in PLATFORM_COLUMNS],
+            "note": (
+                "Platform usage is binary (1=uses, 0=does not). "
+                "Cells with n<10 are suppressed for privacy. "
+                "Some platforms (truth, mastodon, post, threads, bluesky) were added mid-panel "
+                "and have NULLs in earlier waves."
+            ),
+        },
+        "tools": [
+            {
+                "name": "introduce_mcp",
+                "purpose": "This tool — get an overview of the MCP and all available tools.",
+                "example": "introduce_mcp()",
+            },
+            {
+                "name": "get_available_variables",
+                "purpose": "Discover available demographics, platforms, and wave range from live data.",
+                "example": "get_available_variables()",
+            },
+            {
+                "name": "generate_marginals",
+                "purpose": "Distribution for a single variable. Demographics return count/% per category; platforms return overall adoption rate.",
+                "example": 'generate_marginals(variable="age_cat_8")  # or variable="use_tiktok"',
+            },
+            {
+                "name": "generate_marginals_batch",
+                "purpose": "Run generate_marginals for multiple variables in parallel — efficient for profiling several variables at once.",
+                "example": 'generate_marginals_batch(variables=["age_cat_8", "gender", "use_tiktok"])',
+            },
+            {
+                "name": "generate_crosstab",
+                "purpose": "Platform adoption rate broken down by one demographic — e.g. TikTok usage by age group.",
+                "example": 'generate_crosstab(platform="use_tiktok", demographic="age_cat_8")',
+            },
+            {
+                "name": "generate_crosstab_batch",
+                "purpose": "Run generate_crosstab for one platform across multiple demographics in parallel.",
+                "example": 'generate_crosstab_batch(platform="use_tiktok", demographics=["age_cat_8", "gender", "party3"])',
+            },
+            {
+                "name": "get_platform_trends",
+                "purpose": "Platform adoption rate across waves (time series). Optionally filter to a specific demographic group.",
+                "example": 'get_platform_trends(platform="use_twitter")  # or add demographic="party3", demographic_value="Republican"',
+            },
+        ],
+        "quick_start": [
+            "1. Call introduce_mcp() to get this overview.",
+            "2. Call get_available_variables() to see live dataset metadata.",
+            "3. Use generate_marginals() to explore a single variable.",
+            "4. Use generate_crosstab() to cross a platform with a demographic.",
+            "5. Use get_platform_trends() to see how usage changed over time.",
+            "6. Use the _batch variants to run multiple queries in parallel.",
+        ],
+    }, indent=2)
+
+
+@mcp.tool()
 async def get_available_variables() -> str:
     """Return available demographic variables, platforms, and wave range from the dataset."""
     try:

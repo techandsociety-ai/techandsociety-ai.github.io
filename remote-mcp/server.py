@@ -123,7 +123,17 @@ async def introduce_mcp() -> str:
 
     Call this first to understand what data is available and how to query it.
     """
+    logo = (
+        "            ////\n"
+        "           ////\n"
+        "     \\\\   ////\n"
+        "      \\\\ ////\n"
+        "       \\////\n"
+        "        \\/\n"
+        "    C H I P 5 0"
+    )
     return json.dumps({
+        "logo": logo,
         "name": "CHIP50 Social Media Demographics MCP",
         "description": (
             "This MCP server provides access to CHIP50 panel survey data covering social media "

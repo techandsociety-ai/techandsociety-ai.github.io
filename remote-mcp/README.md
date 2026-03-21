@@ -69,30 +69,30 @@ Generate marginal distributions for multiple variables in parallel.
 
 ### Configure Claude Desktop
 
-**Important**: This is a **remote MCP server** using SSE transport, not a local server using stdio.
+**Important**: This is a **remote MCP server** using OAuth and streamable HTTP transport.
 
-Add this to your Claude Desktop MCP configuration (`~/.config/claude/claude_desktop_config.json` on macOS/Linux or `%APPDATA%\Claude\claude_desktop_config.json` on Windows):
+First, get the deployed service URL:
+
+```bash
+gcloud run services describe social-media-demographics-mcp \
+  --region=us-central1 \
+  --project=chip50 \
+  --format='value(status.url)'
+```
+
+Add this to your Claude Desktop MCP configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
 
 ```json
 {
   "mcpServers": {
     "social-media-demographics": {
-      "url": "https://your-service-url.run.app/sse",
-      "transport": {
-        "type": "sse"
-      },
-      "env": {
-        "API_KEY": "your-generated-api-key"
-      }
+      "url": "https://your-service-url.run.app/mcp"
     }
   }
 }
 ```
 
-**Note the differences from local MCP:**
-- `url` instead of `command` - points to your Cloud Run service
-- `transport.type: "sse"` instead of stdio - uses HTTP Server-Sent Events
-- `env.API_KEY` - authenticates to your remote server
+Replace `your-service-url.run.app` with the URL from the gcloud command above. Claude Desktop will handle OAuth authentication automatically on first connect — a browser window will open to complete the Google sign-in flow.
 
 ## Data Structure
 

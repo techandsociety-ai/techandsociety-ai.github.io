@@ -33,13 +33,14 @@ jobs:
         with:
           project_id: ${{ env.GCP_PROJECT }}
 
-      - name: Build container image
+      - name: Configure Docker for GCR
+        run: gcloud auth configure-docker gcr.io --quiet
+
+      - name: Build and push container image
         working-directory: remote-mcp
         run: |
-          gcloud builds submit \
-            --tag "$IMAGE" \
-            --project="$GCP_PROJECT" \
-            .
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
 
       - name: Deploy to Cloud Run
         run: |

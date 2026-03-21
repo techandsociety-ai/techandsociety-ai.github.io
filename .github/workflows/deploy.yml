@@ -52,7 +52,7 @@ jobs:
             --memory 1Gi \
             --cpu 1 \
             --timeout 300 \
-            --max-instances 10 \
+            --max-instances 2 \
             --min-instances 1 \
             --project="$GCP_PROJECT"
 

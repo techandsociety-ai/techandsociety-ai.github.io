@@ -1,18 +1,17 @@
 {
   "mcpServers": {
-    "social-media-demographics": {
-      "url": "https://your-service-url.run.app/sse",
-      "transport": {
-        "type": "sse"
-      },
-      "env": {
-        "API_KEY": "your-api-key-here"
-      },
-      "metadata": {
-        "name": "Social Media Demographics",
-        "description": "Analyze social media usage patterns across demographic groups",
-        "icon": "logo.svg"
-      }
+    "chip50-social-media-demographics": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://social-media-demographics-mcp-dnbn5uv2jq-uc.a.run.app/mcp"
+      ]
     }
+  },
+  "preferences": {
+    "coworkScheduledTasksEnabled": true,
+    "ccdScheduledTasksEnabled": true,
+    "sidebarMode": "chat",
+    "coworkWebSearchEnabled": true
   }
 }

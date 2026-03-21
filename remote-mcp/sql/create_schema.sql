@@ -18,6 +18,8 @@ AS SELECT
   party3,
   CAST(party7 AS INT64) as party7,
   urban_type,
+  -- Survey weight for population-representative estimates
+  CAST(weight AS FLOAT64) as weight,
   -- Platform usage (binary: 1 = uses platform, 0 = does not, NULL = not asked this wave)
   CAST(use_facebook   AS INT64) as use_facebook,
   CAST(use_instagram  AS INT64) as use_instagram,
@@ -49,8 +51,8 @@ SELECT
   COUNT(DISTINCT wave)  AS waves,
   MIN(CAST(wave AS FLOAT64)) AS first_wave,
   MAX(CAST(wave AS FLOAT64)) AS last_wave,
-  ROUND(AVG(use_facebook) * 100, 1)  AS facebook_use_pct,
-  ROUND(AVG(use_twitter)  * 100, 1)  AS twitter_use_pct,
-  ROUND(AVG(use_youtube)  * 100, 1)  AS youtube_use_pct,
-  ROUND(AVG(use_tiktok)   * 100, 1)  AS tiktok_use_pct
+  ROUND(SUM(use_facebook * weight) / SUM(weight) * 100, 1) AS facebook_use_pct,
+  ROUND(SUM(use_twitter  * weight) / SUM(weight) * 100, 1) AS twitter_use_pct,
+  ROUND(SUM(use_youtube  * weight) / SUM(weight) * 100, 1) AS youtube_use_pct,
+  ROUND(SUM(use_tiktok   * weight) / SUM(weight) * 100, 1) AS tiktok_use_pct
 FROM `social_media_demographics.panel_data_indexed`;

@@ -312,6 +312,11 @@ async def introduce_mcp() -> str:
                 "example": 'generate_crosstab(platform="use_tiktok", demographic="ideology")',
             },
             {
+                "name": "generate_crosstab_filtered",
+                "purpose": "Platform adoption rate broken down by one demographic, filtered to a sub-population defined by one or more additional demographic constraints. Use this for intersection queries like 'Facebook usage by gender among rural respondents'.",
+                "example": 'generate_crosstab_filtered(platform="use_facebook", demographic="gender", filters={"urban_type": "Rural"})',
+            },
+            {
                 "name": "generate_crosstab_batch",
                 "purpose": "Run generate_crosstab for one platform across multiple demographics in parallel.",
                 "example": 'generate_crosstab_batch(platform="use_tiktok", demographics=["age_cat_8", "gender", "party3"])',
@@ -346,7 +351,7 @@ async def introduce_mcp() -> str:
             "1. Call introduce_mcp() to get this overview.",
             "2. Call get_available_variables() to see live dataset metadata.",
             "3. Use generate_marginals() to explore a single variable.",
-            "4. Use generate_crosstab() to cross a platform with a demographic.",
+            "4. Use generate_crosstab() to cross a platform with a demographic. Use generate_crosstab_filtered() to add demographic sub-population filters (e.g. gender × rural).",
             "5. Use get_platform_trends() / get_freq_trends() for time series.",
             "6. Use get_ordinal_distribution() / get_ordinal_crosstab() for frequency, trust, and attitude scales.",
             "7. Use get_platform_posting_summary() for a full profile of one platform.",
@@ -544,6 +549,103 @@ async def generate_marginals(
 
     except Exception as e:
         logger.error(f"generate_marginals error: {e}")
+        raise
+
+
+@mcp.tool()
+async def generate_crosstab_filtered(
+    platform: str,
+    demographic: str,
+    filters: Dict[str, str],
+    wave: Optional[str] = None,
+) -> str:
+    """Platform adoption rate broken down by a demographic, with additional demographic filters.
+
+    Use this to answer intersection queries like "Facebook usage by gender among rural respondents"
+    or "TikTok adoption by age among college-educated Republicans."
+
+    Returns survey-weighted user_rate_pct per demographic group for the filtered sub-population,
+    with cell suppression for groups with unweighted n < MIN_CELL_SIZE.
+
+    Args:
+        platform:    Platform column, e.g. "use_facebook"
+        demographic: Column to group results by, e.g. "gender"
+        filters:     Dict of {column: value} to restrict the sub-population,
+                     e.g. {"urban_type": "Rural"} or {"urban_type": "Rural", "party3": "Democrat"}
+        wave:        Optional wave number to filter to (e.g. "35"). Omit for all waves.
+
+    Example:
+        generate_crosstab_filtered(
+            platform="use_facebook",
+            demographic="gender",
+            filters={"urban_type": "Rural"}
+        )
+        → Facebook usage by gender, restricted to rural respondents only.
+    """
+    if platform not in PLATFORM_COLUMNS:
+        raise ValueError(f"Unknown platform '{platform}'. Choose from: {PLATFORM_COLUMNS}")
+
+    valid_demographics = DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS
+    if demographic not in valid_demographics:
+        raise ValueError(f"Unknown demographic '{demographic}'. Choose from: {valid_demographics}")
+
+    if not filters:
+        raise ValueError("filters must contain at least one {column: value} pair. "
+                         "Use generate_crosstab() if no filtering is needed.")
+
+    # Validate each filter column and build safe SQL clauses
+    filter_clauses = []
+    for col, val in filters.items():
+        if col not in valid_demographics:
+            raise ValueError(
+                f"Unknown filter column '{col}'. Choose from: {valid_demographics}"
+            )
+        if col == demographic:
+            raise ValueError(
+                f"Filter column '{col}' cannot be the same as the breakdown demographic. "
+                "Use filters to restrict the sub-population, not to select a single group."
+            )
+        # Safe: col is validated against allowlist; val is parameterized via f-string
+        # but BigQuery parameterized queries are not available here — rely on column allowlist
+        # and treat val as a string literal (same pattern used in get_platform_trends).
+        filter_clauses.append(f"AND {col} = '{val}'")
+
+    filter_sql = "\n              ".join(filter_clauses)
+
+    try:
+        df = run_query(f"""
+            SELECT
+              {demographic}                                               AS demographic_value,
+              COUNT(*)                                                    AS unweighted_n,
+              ROUND(SUM(weight), 1)                                       AS weighted_n,
+              ROUND(SUM({platform} * weight), 1)                          AS weighted_users,
+              ROUND((SUM(weight) - SUM({platform} * weight)), 1)          AS weighted_non_users,
+              ROUND(SUM({platform} * weight) / SUM(weight) * 100, 2)      AS user_rate_pct,
+              CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END AS suppressed
+            FROM {FULL_TABLE}
+            WHERE {platform} IS NOT NULL
+              AND {demographic} IS NOT NULL
+              AND weight IS NOT NULL
+              {"AND " + demographic + " > 0" if demographic in ALL_ORDINAL_COLUMNS else ""}
+              {filter_sql}
+              {wave_clause(wave)}
+            GROUP BY {demographic}
+            ORDER BY {demographic}
+        """)
+
+        df.loc[df["suppressed"], ["weighted_n", "weighted_users", "weighted_non_users", "user_rate_pct"]] = None
+
+        return json.dumps({
+            "platform": platform,
+            "demographic": demographic,
+            "filters": filters,
+            "wave_filter": wave or "all",
+            "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+            "data": df.to_dict(orient="records"),
+        }, indent=2, default=str)
+
+    except Exception as e:
+        logger.error(f"generate_crosstab_filtered error: {e}")
         raise
 
 

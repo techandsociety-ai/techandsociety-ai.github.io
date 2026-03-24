@@ -20,8 +20,8 @@ AS SELECT
   urban_type,
   race,
 
-  -- Survey weight (placeholder 1.0 until real weights file is available)
-  1.0 AS weight,
+  -- Survey weight (from panel data)
+  CAST(weight AS FLOAT64) AS weight,
 
   -- Attitudinal / behavioral demographics (ordinal; -99 = skipped/refused)
   CAST(ideology   AS INT64) as ideology,

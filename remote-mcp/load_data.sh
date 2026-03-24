@@ -10,7 +10,7 @@ source ../.env
 
 GCP_PROJECT="${GCP_PROJECT:-chip50}"
 DATASET_NAME="${DATASET_NAME:-social_media_demographics}"
-DATA_FILE="${DATA_FILE:-../data/export_CHIP50_SocialMedia_vars_2026_03_20_23_57.csv}"
+DATA_FILE="${DATA_FILE:-../data/export_CHIP50_SocialMedia_vars_2026_03_23_22_27.csv}"
 RAW_TABLE="${DATASET_NAME}.panel_data"
 
 echo "==================================="

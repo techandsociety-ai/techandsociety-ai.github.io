@@ -32,7 +32,8 @@ DATASET_NAME = os.getenv("DATASET_NAME", "social_media_demographics")
 TABLE_NAME   = os.getenv("TABLE_NAME", "panel_data_indexed")
 MIN_CELL_SIZE = int(os.getenv("MIN_CELL_SIZE", "30"))
 
-FULL_TABLE = f"`{GCP_PROJECT}.{DATASET_NAME}.{TABLE_NAME}`"
+FULL_TABLE       = f"`{GCP_PROJECT}.{DATASET_NAME}.{TABLE_NAME}`"
+WAVE_DATES_TABLE = f"`{GCP_PROJECT}.{DATASET_NAME}.wave_dates`"
 
 # ── Schema constants (mirrors real CSV structure) ───────────────────────────
 
@@ -624,17 +625,19 @@ async def get_platform_trends(
     try:
         df = run_query(f"""
             SELECT
-              wave,
-              COUNT(*)                                                 AS unweighted_n,
-              ROUND(SUM(weight), 1)                                    AS weighted_n,
-              ROUND(SUM({platform} * weight), 1)                       AS weighted_users,
-              ROUND(SUM({platform} * weight) / SUM(weight) * 100, 2)  AS user_rate_pct
-            FROM {FULL_TABLE}
-            WHERE {platform} IS NOT NULL
-              AND weight IS NOT NULL
+              t.wave,
+              wd.midpoint_date,
+              COUNT(*)                                                   AS unweighted_n,
+              ROUND(SUM(t.weight), 1)                                    AS weighted_n,
+              ROUND(SUM(t.{platform} * t.weight), 1)                     AS weighted_users,
+              ROUND(SUM(t.{platform} * t.weight) / SUM(t.weight) * 100, 2) AS user_rate_pct
+            FROM {FULL_TABLE} t
+            LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
+            WHERE t.{platform} IS NOT NULL
+              AND t.weight IS NOT NULL
               {demo_filter}
-            GROUP BY wave
-            ORDER BY CAST(wave AS FLOAT64)
+            GROUP BY t.wave, wd.midpoint_date
+            ORDER BY CAST(t.wave AS FLOAT64)
         """)
 
         return json.dumps({
@@ -799,17 +802,19 @@ async def get_freq_trends(
     try:
         df = run_query(f"""
             SELECT
-              wave,
-              COUNT(*)                                                   AS unweighted_n,
-              ROUND(SUM(weight), 1)                                      AS weighted_n,
-              ROUND(SUM({freq_col} * weight) / SUM(weight), 3)          AS weighted_mean_freq
-            FROM {FULL_TABLE}
-            WHERE {freq_col} IS NOT NULL
-              AND {freq_col} > 0
-              AND weight IS NOT NULL
+              t.wave,
+              wd.midpoint_date,
+              COUNT(*)                                                     AS unweighted_n,
+              ROUND(SUM(t.weight), 1)                                      AS weighted_n,
+              ROUND(SUM(t.{freq_col} * t.weight) / SUM(t.weight), 3)      AS weighted_mean_freq
+            FROM {FULL_TABLE} t
+            LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
+            WHERE t.{freq_col} IS NOT NULL
+              AND t.{freq_col} > 0
+              AND t.weight IS NOT NULL
               {demo_filter}
-            GROUP BY wave
-            ORDER BY CAST(wave AS FLOAT64)
+            GROUP BY t.wave, wd.midpoint_date
+            ORDER BY CAST(t.wave AS FLOAT64)
         """)
 
         return json.dumps({

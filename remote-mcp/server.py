@@ -1080,25 +1080,71 @@ def _fetch_regression_data(
     return run_query(sql)
 
 
+def _resolve_reference_level(col: str, available: List[str], requested: Optional[str]) -> str:
+    """Return the reference level to use for a categorical column.
+
+    If *requested* is provided and exists in *available*, use it.
+    Otherwise fall back to the alphabetically first category and emit a warning
+    when the requested level was not found.
+    """
+    if requested is not None:
+        if requested in available:
+            return requested
+        logger.warning(
+            f"Requested reference level '{requested}' not found in '{col}' "
+            f"(available: {available}). Falling back to alphabetically first."
+        )
+    return available[0] if available else "first"
+
+
 def _encode_predictors(
-    df: pd.DataFrame, predictors: List[str]
-) -> tuple[pd.DataFrame, List[str]]:
+    df: pd.DataFrame,
+    predictors: List[str],
+    reference_levels: Optional[Dict[str, str]] = None,
+) -> tuple[pd.DataFrame, List[str], List[str]]:
     """Dummy-encode categorical predictors; pass numeric ones through.
 
-    Returns (X DataFrame, list of encoding notes).
+    Args:
+        df: Data frame with all predictor columns present.
+        predictors: Ordered list of predictor column names.
+        reference_levels: Optional mapping of {column_name: reference_category}.
+            When provided for a categorical column the specified category is used
+            as the dropped (reference) level.  Unknown categories fall back to
+            the alphabetically first value with a logged warning.
+
+    Returns:
+        (X DataFrame, encoding notes, warning messages)
     """
+    if reference_levels is None:
+        reference_levels = {}
     notes: List[str] = []
+    warnings: List[str] = []
     frames: List[pd.DataFrame] = []
     for col in predictors:
         if col in _CATEGORICAL_COLUMNS:
-            dummies = pd.get_dummies(df[col], prefix=col, drop_first=True, dtype=float)
             sorted_cats = sorted(df[col].dropna().unique())
-            ref = sorted_cats[0] if sorted_cats else "first"
+            requested_ref = reference_levels.get(col)
+            ref = _resolve_reference_level(col, sorted_cats, requested_ref)
+
+            if requested_ref is not None and requested_ref not in sorted_cats:
+                warnings.append(
+                    f"Reference level '{requested_ref}' not found for '{col}'. "
+                    f"Available categories: {sorted_cats}. "
+                    f"Falling back to '{ref}'."
+                )
+
+            # Put the reference level first so drop_first=True always drops it.
+            other_cats = [c for c in sorted_cats if c != ref]
+            ordered_cats = [ref] + other_cats
+            cat_series = pd.Categorical(df[col], categories=ordered_cats)
+            dummies = pd.get_dummies(cat_series, prefix=col, drop_first=True, dtype=float)
+            dummies.index = df.index
+
             notes.append(f"'{col}' dummy-encoded (reference category: '{ref}')")
             frames.append(dummies)
         else:
             frames.append(df[[col]].astype(float))
-    return pd.concat(frames, axis=1), notes
+    return pd.concat(frames, axis=1), notes, warnings
 
 
 @mcp.tool()
@@ -1106,6 +1152,7 @@ async def run_ols_regression(
     outcome: str,
     predictors: List[str],
     wave: Optional[str] = None,
+    reference_levels: Optional[Dict[str, str]] = None,
 ) -> str:
     """Run a weighted OLS regression of a continuous/ordinal outcome on one or more predictors.
 
@@ -1120,10 +1167,18 @@ async def run_ols_regression(
         predictors: One or more independent variables. Demographics are
             dummy-encoded automatically; ordinal columns enter as numeric.
         wave: Optional — restrict to a single survey wave.
+        reference_levels: Optional mapping of {column_name: reference_category}
+            for categorical predictors. Specifies which category to use as the
+            baseline (dropped) level in dummy encoding. For example,
+            {"gender": "Male", "race_cat_5": "White"} makes Male and White the
+            reference categories. When omitted, the alphabetically first
+            category is used. Unknown category values fall back to the
+            alphabetically first with a warning in the response.
 
     Returns:
         JSON with: weighted coefficients, std errors, t-stats, p-values,
         95% CIs, R², adjusted R², F-statistic, AIC, BIC.
+        Any reference-level warnings are included in the 'notes' field.
     """
     all_cols = [outcome] + predictors
     invalid = [c for c in all_cols if c not in _ALL_REGRESSION_COLUMNS]
@@ -1152,7 +1207,7 @@ async def run_ols_regression(
 
     y = df[outcome].astype(float)
     weights = df["weight"].astype(float)
-    X_df, enc_notes = _encode_predictors(df, predictors)
+    X_df, enc_notes, ref_warnings = _encode_predictors(df, predictors, reference_levels)
     X = sm.add_constant(X_df, has_constant="add")
 
     try:
@@ -1176,7 +1231,7 @@ async def run_ols_regression(
             "significant_05": p < 0.05,
         })
 
-    notes = enc_notes + [
+    notes = enc_notes + ref_warnings + [
         "Survey weights applied via Weighted Least Squares (WLS).",
         "Standard errors are model-based (not design-based); interpret accordingly.",
     ]
@@ -1187,6 +1242,7 @@ async def run_ols_regression(
         "model_type": "OLS (Weighted Least Squares)",
         "outcome": outcome,
         "predictors_specified": predictors,
+        "reference_levels_requested": reference_levels,
         "wave": wave,
         "n_observations": int(len(df)),
         "weighted_n": round(float(weights.sum()), 1),
@@ -1208,6 +1264,7 @@ async def run_logistic_regression(
     outcome: str,
     predictors: List[str],
     wave: Optional[str] = None,
+    reference_levels: Optional[Dict[str, str]] = None,
 ) -> str:
     """Run a weighted logistic regression of a binary outcome on one or more predictors.
 
@@ -1223,10 +1280,18 @@ async def run_logistic_regression(
         predictors: One or more independent variables. Demographics are
             dummy-encoded automatically; ordinal columns enter as numeric.
         wave: Optional — restrict to a single survey wave.
+        reference_levels: Optional mapping of {column_name: reference_category}
+            for categorical predictors. Specifies which category to use as the
+            baseline (dropped) level in dummy encoding. For example,
+            {"gender": "Male", "race_cat_5": "White"} makes Male and White the
+            reference categories. When omitted, the alphabetically first
+            category is used. Unknown category values fall back to the
+            alphabetically first with a warning in the response.
 
     Returns:
         JSON with: log-odds, odds ratios, std errors, z-stats, p-values,
         95% CIs (log-odds and OR scale), McFadden pseudo-R², AIC, BIC.
+        Any reference-level warnings are included in the 'notes' field.
     """
     all_cols = [outcome] + predictors
     invalid = [c for c in all_cols if c not in _ALL_REGRESSION_COLUMNS]
@@ -1261,7 +1326,7 @@ async def run_logistic_regression(
     if not unique_vals.issubset({0.0, 1.0}):
         return json.dumps({"error": f"Outcome '{outcome}' has non-binary values: {sorted(unique_vals)[:10]}."})
 
-    X_df, enc_notes = _encode_predictors(df, predictors)
+    X_df, enc_notes, ref_warnings = _encode_predictors(df, predictors, reference_levels)
     X = sm.add_constant(X_df, has_constant="add")
 
     try:
@@ -1299,7 +1364,7 @@ async def run_logistic_regression(
     llnull = float(model.llnull)
     pseudo_r2 = round(1.0 - (llf / llnull), 6) if llnull != 0 else None
 
-    notes = enc_notes + [
+    notes = enc_notes + ref_warnings + [
         "Survey weights applied via GLM freq_weights (analytic/aweights).",
         "Odds ratio interpretation: OR > 1 = higher odds, OR < 1 = lower odds vs reference.",
         "Standard errors are model-based (not design-based); interpret accordingly.",
@@ -1311,6 +1376,7 @@ async def run_logistic_regression(
         "model_type": "Logistic Regression (Weighted GLM, Binomial/logit)",
         "outcome": outcome,
         "predictors_specified": predictors,
+        "reference_levels_requested": reference_levels,
         "wave": wave,
         "n_observations": int(len(df)),
         "weighted_n": round(float(weights.sum()), 1),

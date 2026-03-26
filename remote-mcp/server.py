@@ -13,7 +13,9 @@ import logging
 import asyncio
 from typing import Any, Dict, List, Optional
 
+import numpy as np
 import pandas as pd
+import statsmodels.api as sm
 from google.cloud import bigquery
 
 from fastmcp import FastMCP
@@ -202,6 +204,31 @@ ALL_ORDINAL_COLUMNS = (
 # All binary columns beyond the core use_* set
 ALL_BINARY_COLUMNS = SM_POST_COLUMNS + POL_NEWS_COLUMNS
 
+# ── Regression column sets ───────────────────────────────────────────────────
+
+# Ordinal columns that encode -99 for skipped/refused (must filter before modelling)
+_SENTINEL_COLUMNS: set[str] = set(ALL_ORDINAL_COLUMNS)
+
+# Demographic columns treated as unordered categories → dummy-encoded in models
+_CATEGORICAL_COLUMNS: set[str] = set(DEMOGRAPHIC_COLUMNS)
+
+# Universe of columns valid as outcome or predictor in regression tools
+_ALL_REGRESSION_COLUMNS: set[str] = set(
+    DEMOGRAPHIC_COLUMNS
+    + PLATFORM_COLUMNS
+    + ATTITUDINAL_COLUMNS
+    + FREQ_COLUMNS
+    + TRUST_COLUMNS
+    + POL_POST_COLUMNS
+    + POL_TRUST_COLUMNS
+    + PHQ9_COLUMNS
+    + SM_POST_COLUMNS
+    + POL_NEWS_COLUMNS
+)
+
+# Binary-outcome columns (valid for logistic regression)
+_BINARY_COLUMNS: set[str] = set(PLATFORM_COLUMNS + SM_POST_COLUMNS + POL_NEWS_COLUMNS)
+
 # ── BigQuery client (lazy) ──────────────────────────────────────────────────
 
 _bq_client: Optional[bigquery.Client] = None
@@ -347,6 +374,16 @@ async def introduce_mcp() -> str:
                 "purpose": "All key metrics for one platform in a single call: adoption, frequency, trust, political posting, posting variants.",
                 "example": 'get_platform_posting_summary(platform="twitter")',
             },
+            {
+                "name": "run_ols_regression",
+                "purpose": "Weighted OLS regression for a continuous/ordinal outcome. Tests whether observed differences are statistically significant while controlling for covariates. Returns coefficients, std errors, p-values, 95% CIs, R², F-stat, AIC/BIC.",
+                "example": 'run_ols_regression(outcome="ideology", predictors=["use_twitter", "age_cat_8", "education_cat"])',
+            },
+            {
+                "name": "run_logistic_regression",
+                "purpose": "Weighted logistic regression for a binary outcome (platform use, sm_post_*, pol_news_*). Returns log-odds, odds ratios, p-values, 95% CIs, McFadden pseudo-R², AIC/BIC.",
+                "example": 'run_logistic_regression(outcome="use_tiktok", predictors=["age_cat_8", "gender", "ideology", "party3"])',
+            },
         ],
         "quick_start": [
             "1. Call introduce_mcp() to get this overview.",
@@ -357,6 +394,7 @@ async def introduce_mcp() -> str:
             "6. Use get_ordinal_distribution() / get_ordinal_crosstab() for frequency, trust, and attitude scales.",
             "7. Use get_platform_posting_summary() for a full profile of one platform.",
             "8. Use the _batch variants to run multiple queries in parallel.",
+            "9. Use run_ols_regression() or run_logistic_regression() to test whether differences are statistically meaningful while controlling for other variables.",
         ],
     }, indent=2)
 
@@ -1013,6 +1051,279 @@ async def get_platform_posting_summary(
     await asyncio.gather(*tasks)
 
     return json.dumps(results, indent=2, default=str)
+
+
+# ── Regression helpers ───────────────────────────────────────────────────────
+
+def _fetch_regression_data(
+    outcome: str,
+    predictors: List[str],
+    wave: Optional[str],
+) -> pd.DataFrame:
+    """Pull individual-level rows needed for a regression from BigQuery."""
+    cols = [outcome] + predictors
+    select_cols = ", ".join(cols) + ", weight"
+
+    not_null = " AND ".join(f"{c} IS NOT NULL" for c in cols + ["weight"])
+
+    sentinel_clauses = " ".join(
+        f"AND {c} > 0" for c in cols if c in _SENTINEL_COLUMNS
+    )
+
+    sql = f"""
+        SELECT {select_cols}
+        FROM {FULL_TABLE}
+        WHERE {not_null}
+          {sentinel_clauses}
+          {wave_clause(wave)}
+    """
+    return run_query(sql)
+
+
+def _encode_predictors(
+    df: pd.DataFrame, predictors: List[str]
+) -> tuple[pd.DataFrame, List[str]]:
+    """Dummy-encode categorical predictors; pass numeric ones through.
+
+    Returns (X DataFrame, list of encoding notes).
+    """
+    notes: List[str] = []
+    frames: List[pd.DataFrame] = []
+    for col in predictors:
+        if col in _CATEGORICAL_COLUMNS:
+            dummies = pd.get_dummies(df[col], prefix=col, drop_first=True, dtype=float)
+            sorted_cats = sorted(df[col].dropna().unique())
+            ref = sorted_cats[0] if sorted_cats else "first"
+            notes.append(f"'{col}' dummy-encoded (reference category: '{ref}')")
+            frames.append(dummies)
+        else:
+            frames.append(df[[col]].astype(float))
+    return pd.concat(frames, axis=1), notes
+
+
+@mcp.tool()
+async def run_ols_regression(
+    outcome: str,
+    predictors: List[str],
+    wave: Optional[str] = None,
+) -> str:
+    """Run a weighted OLS regression of a continuous/ordinal outcome on one or more predictors.
+
+    Fits outcome ~ predictor1 + predictor2 + ... using Weighted Least Squares
+    (WLS) with survey weights, so estimates are population-representative.
+    Categorical demographic predictors are automatically dummy-encoded.
+
+    Args:
+        outcome: Dependent variable — any ordinal or continuous column
+            (attitudinal, freq, trust, phq9, pol_trust, etc.).
+            For binary outcomes (platform use) use run_logistic_regression().
+        predictors: One or more independent variables. Demographics are
+            dummy-encoded automatically; ordinal columns enter as numeric.
+        wave: Optional — restrict to a single survey wave.
+
+    Returns:
+        JSON with: weighted coefficients, std errors, t-stats, p-values,
+        95% CIs, R², adjusted R², F-statistic, AIC, BIC.
+    """
+    all_cols = [outcome] + predictors
+    invalid = [c for c in all_cols if c not in _ALL_REGRESSION_COLUMNS]
+    if invalid:
+        return json.dumps({
+            "error": f"Unknown columns: {invalid}. Call get_available_variables() to see valid column names."
+        })
+    if outcome in _CATEGORICAL_COLUMNS:
+        return json.dumps({
+            "error": (
+                f"'{outcome}' is a nominal categorical variable and is not appropriate as an OLS outcome. "
+                "Use a continuous or ordinal outcome, or run_logistic_regression() for binary outcomes."
+            )
+        })
+
+    try:
+        df = await asyncio.get_event_loop().run_in_executor(
+            None, _fetch_regression_data, outcome, predictors, wave
+        )
+    except Exception as e:
+        logger.error(f"run_ols_regression data fetch error: {e}")
+        return json.dumps({"error": str(e)})
+
+    if len(df) < 50:
+        return json.dumps({"error": f"Too few observations ({len(df)}) after filters — cannot fit model."})
+
+    y = df[outcome].astype(float)
+    weights = df["weight"].astype(float)
+    X_df, enc_notes = _encode_predictors(df, predictors)
+    X = sm.add_constant(X_df, has_constant="add")
+
+    try:
+        model = sm.WLS(y, X, weights=weights).fit()
+    except Exception as e:
+        logger.error(f"run_ols_regression fit error: {e}")
+        return json.dumps({"error": f"Model fitting failed: {e}"})
+
+    ci = model.conf_int(alpha=0.05)
+    coefficients = []
+    for term in model.params.index:
+        p = float(model.pvalues[term])
+        coefficients.append({
+            "term": term,
+            "estimate": round(float(model.params[term]), 6),
+            "std_error": round(float(model.bse[term]), 6),
+            "t_stat": round(float(model.tvalues[term]), 4),
+            "p_value": round(p, 6),
+            "ci_lower_95": round(float(ci.loc[term, 0]), 6),
+            "ci_upper_95": round(float(ci.loc[term, 1]), 6),
+            "significant_05": p < 0.05,
+        })
+
+    notes = enc_notes + [
+        "Survey weights applied via Weighted Least Squares (WLS).",
+        "Standard errors are model-based (not design-based); interpret accordingly.",
+    ]
+    if any(c in _SENTINEL_COLUMNS for c in all_cols):
+        notes.append("Rows with -99 (skipped/refused) excluded from all ordinal columns.")
+
+    return json.dumps({
+        "model_type": "OLS (Weighted Least Squares)",
+        "outcome": outcome,
+        "predictors_specified": predictors,
+        "wave": wave,
+        "n_observations": int(len(df)),
+        "weighted_n": round(float(weights.sum()), 1),
+        "model_fit": {
+            "r_squared": round(float(model.rsquared), 6),
+            "adj_r_squared": round(float(model.rsquared_adj), 6),
+            "f_statistic": round(float(model.fvalue), 4) if model.fvalue is not None else None,
+            "f_pvalue": round(float(model.f_pvalue), 6) if model.f_pvalue is not None else None,
+            "aic": round(float(model.aic), 2),
+            "bic": round(float(model.bic), 2),
+        },
+        "coefficients": coefficients,
+        "notes": notes,
+    }, indent=2, default=str)
+
+
+@mcp.tool()
+async def run_logistic_regression(
+    outcome: str,
+    predictors: List[str],
+    wave: Optional[str] = None,
+) -> str:
+    """Run a weighted logistic regression of a binary outcome on one or more predictors.
+
+    Fits outcome ~ predictor1 + predictor2 + ... using a survey-weighted GLM
+    (Binomial family, logit link) so estimates are population-representative.
+    Categorical demographic predictors are automatically dummy-encoded.
+    Returns both log-odds coefficients and odds ratios.
+
+    Args:
+        outcome: Binary dependent variable (0/1). Platform use columns
+            (use_facebook, use_tiktok, etc.) and sm_post_* / pol_news_* columns.
+            For ordinal/continuous outcomes use run_ols_regression().
+        predictors: One or more independent variables. Demographics are
+            dummy-encoded automatically; ordinal columns enter as numeric.
+        wave: Optional — restrict to a single survey wave.
+
+    Returns:
+        JSON with: log-odds, odds ratios, std errors, z-stats, p-values,
+        95% CIs (log-odds and OR scale), McFadden pseudo-R², AIC, BIC.
+    """
+    all_cols = [outcome] + predictors
+    invalid = [c for c in all_cols if c not in _ALL_REGRESSION_COLUMNS]
+    if invalid:
+        return json.dumps({
+            "error": f"Unknown columns: {invalid}. Call get_available_variables() to see valid column names."
+        })
+    if outcome not in _BINARY_COLUMNS:
+        return json.dumps({
+            "error": (
+                f"'{outcome}' is not a recognised binary (0/1) column. "
+                "Logistic regression requires a binary outcome (platform use, sm_post_*, pol_news_*). "
+                "For ordinal/continuous outcomes use run_ols_regression()."
+            )
+        })
+
+    try:
+        df = await asyncio.get_event_loop().run_in_executor(
+            None, _fetch_regression_data, outcome, predictors, wave
+        )
+    except Exception as e:
+        logger.error(f"run_logistic_regression data fetch error: {e}")
+        return json.dumps({"error": str(e)})
+
+    if len(df) < 50:
+        return json.dumps({"error": f"Too few observations ({len(df)}) after filters — cannot fit model."})
+
+    y = df[outcome].astype(float)
+    weights = df["weight"].astype(float)
+
+    unique_vals = set(y.dropna().unique())
+    if not unique_vals.issubset({0.0, 1.0}):
+        return json.dumps({"error": f"Outcome '{outcome}' has non-binary values: {sorted(unique_vals)[:10]}."})
+
+    X_df, enc_notes = _encode_predictors(df, predictors)
+    X = sm.add_constant(X_df, has_constant="add")
+
+    try:
+        model = sm.GLM(
+            y, X,
+            family=sm.families.Binomial(),
+            freq_weights=weights,
+        ).fit()
+    except Exception as e:
+        logger.error(f"run_logistic_regression fit error: {e}")
+        return json.dumps({"error": f"Model fitting failed: {e}"})
+
+    ci = model.conf_int(alpha=0.05)
+    coefficients = []
+    for term in model.params.index:
+        p = float(model.pvalues[term])
+        lo = float(model.params[term])
+        ci_lo = float(ci.loc[term, 0])
+        ci_hi = float(ci.loc[term, 1])
+        coefficients.append({
+            "term": term,
+            "log_odds": round(lo, 6),
+            "odds_ratio": round(float(np.exp(lo)), 6),
+            "std_error": round(float(model.bse[term]), 6),
+            "z_stat": round(float(model.tvalues[term]), 4),
+            "p_value": round(p, 6),
+            "ci_lower_95_log_odds": round(ci_lo, 6),
+            "ci_upper_95_log_odds": round(ci_hi, 6),
+            "ci_lower_95_OR": round(float(np.exp(ci_lo)), 6),
+            "ci_upper_95_OR": round(float(np.exp(ci_hi)), 6),
+            "significant_05": p < 0.05,
+        })
+
+    llf = float(model.llf)
+    llnull = float(model.llnull)
+    pseudo_r2 = round(1.0 - (llf / llnull), 6) if llnull != 0 else None
+
+    notes = enc_notes + [
+        "Survey weights applied via GLM freq_weights (analytic/aweights).",
+        "Odds ratio interpretation: OR > 1 = higher odds, OR < 1 = lower odds vs reference.",
+        "Standard errors are model-based (not design-based); interpret accordingly.",
+    ]
+    if any(c in _SENTINEL_COLUMNS for c in all_cols):
+        notes.append("Rows with -99 (skipped/refused) excluded from all ordinal columns.")
+
+    return json.dumps({
+        "model_type": "Logistic Regression (Weighted GLM, Binomial/logit)",
+        "outcome": outcome,
+        "predictors_specified": predictors,
+        "wave": wave,
+        "n_observations": int(len(df)),
+        "weighted_n": round(float(weights.sum()), 1),
+        "model_fit": {
+            "pseudo_r_squared_mcfadden": pseudo_r2,
+            "log_likelihood": round(llf, 4),
+            "null_log_likelihood": round(llnull, 4),
+            "aic": round(float(model.aic), 2),
+            "bic": round(float(model.bic), 2),
+        },
+        "coefficients": coefficients,
+        "notes": notes,
+    }, indent=2, default=str)
 
 
 if __name__ == "__main__":

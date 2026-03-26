@@ -8,4 +8,6 @@ dependencies = [
     "google-cloud-bigquery>=3.17.2",
     "db-dtypes>=1.2.0",
     "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "statsmodels>=0.14.0",
 ]

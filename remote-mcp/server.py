@@ -3,7 +3,7 @@
 Remote MCP Server for CHIP50 Social Media Demographics Analysis
 Deployed on Google Cloud Run with Streamable HTTP transport
 
-Data: CHIP50 panel survey, waves 14-35, N=583,532 responses
+Data: CHIP50 panel survey data across multiple waves
 Platform usage is binary (1=uses platform, 0=does not, NULL=not asked that wave)
 """
 
@@ -248,10 +248,18 @@ def run_query(sql: str) -> pd.DataFrame:
 
 
 def wave_clause(wave: Optional[str]) -> str:
-    """Build a WHERE clause fragment for wave filtering."""
+    """Build a WHERE clause fragment for wave filtering.
+
+    Accepts integer or float wave values (e.g. '35' or '35.1').
+    Uses FLOAT64 cast to handle both integer-stored and float-stored wave columns.
+    """
     if not wave:
         return ""
-    return f"AND wave = {int(wave)}"
+    try:
+        float(wave)  # validate numeric — prevents SQL injection
+    except ValueError:
+        raise ValueError(f"Invalid wave '{wave}': must be a number (e.g. '35' or '35.1').")
+    return f"AND CAST(wave AS FLOAT64) = {float(wave)}"
 
 
 # ── Auth (toggle with DISABLE_AUTH env var on Cloud Run) ─────────────────────
@@ -311,6 +319,13 @@ async def introduce_mcp() -> str:
                 "suppression": f"Cells with n<{MIN_CELL_SIZE} are suppressed for respondent privacy.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health screening measures. Only population-level aggregates are returned.",
                 "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+.",
+            },
+            "problematic_waves": {
+                "35.1": (
+                    "Small sample wave. race_cat_5 (race/ethnicity) breakdowns are unavailable — "
+                    "all cells fall below the minimum cell size threshold and are suppressed. "
+                    "Use aggregate-level queries for this wave; demographic crosstabs by race may return no data."
+                ),
             },
         },
         "tools": [
@@ -376,13 +391,13 @@ async def introduce_mcp() -> str:
             },
             {
                 "name": "run_ols_regression",
-                "purpose": "Weighted OLS regression for a continuous/ordinal outcome. Tests whether observed differences are statistically significant while controlling for covariates. Returns coefficients, std errors, p-values, 95% CIs, R², F-stat, AIC/BIC.",
-                "example": 'run_ols_regression(outcome="ideology", predictors=["use_twitter", "age_cat_8", "education_cat"])',
+                "purpose": "OLS regression for a continuous/ordinal outcome. Survey-weighted by default (use_weights=True). Supports custom reference categories for categorical predictors via reference_categories. Returns coefficients, std errors, p-values, 95% CIs, R², F-stat, AIC/BIC.",
+                "example": 'run_ols_regression(outcome="ideology", predictors=["use_twitter", "age_cat_8", "education_cat"], reference_categories={"party3": "Independent"})',
             },
             {
                 "name": "run_logistic_regression",
-                "purpose": "Weighted logistic regression for a binary outcome (platform use, sm_post_*, pol_news_*). Returns log-odds, odds ratios, p-values, 95% CIs, McFadden pseudo-R², AIC/BIC.",
-                "example": 'run_logistic_regression(outcome="use_tiktok", predictors=["age_cat_8", "gender", "ideology", "party3"])',
+                "purpose": "Logistic regression for a binary outcome (platform use, sm_post_*, pol_news_*). Survey-weighted by default (use_weights=True). Supports custom reference categories via reference_categories. Returns log-odds, odds ratios, p-values, 95% CIs, McFadden pseudo-R², AIC/BIC.",
+                "example": 'run_logistic_regression(outcome="use_tiktok", predictors=["age_cat_8", "gender", "ideology", "party3"], reference_categories={"party3": "Democrat"}, use_weights=False)',
             },
         ],
         "quick_start": [
@@ -408,7 +423,10 @@ async def get_available_variables() -> str:
               COUNT(*)           AS total_rows,
               COUNT(DISTINCT id) AS unique_respondents,
               COUNT(DISTINCT wave) AS wave_count,
-              STRING_AGG(DISTINCT CAST(wave AS STRING) ORDER BY CAST(wave AS STRING)) AS waves
+              STRING_AGG(
+                DISTINCT FORMAT('%g', CAST(wave AS FLOAT64))
+                ORDER BY CAST(wave AS FLOAT64)
+              ) AS waves
             FROM {FULL_TABLE}
         """)
         row = result.iloc[0]
@@ -435,6 +453,13 @@ async def get_available_variables() -> str:
                 "weights": "All rates are survey-weighted using the 'weight' column.",
                 "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",
+            },
+            "problematic_waves": {
+                "35.1": (
+                    "Small sample wave. race_cat_5 (race/ethnicity) breakdowns are unavailable — "
+                    "all cells fall below the minimum cell size threshold and are suppressed. "
+                    "Use aggregate-level queries for this wave; demographic crosstabs by race may return no data."
+                ),
             },
         }, indent=2)
 
@@ -1153,11 +1178,12 @@ async def run_ols_regression(
     predictors: List[str],
     wave: Optional[str] = None,
     reference_levels: Optional[Dict[str, str]] = None,
+    use_weights: bool = True,
 ) -> str:
-    """Run a weighted OLS regression of a continuous/ordinal outcome on one or more predictors.
+    """Run an OLS regression of a continuous/ordinal outcome on one or more predictors.
 
     Fits outcome ~ predictor1 + predictor2 + ... using Weighted Least Squares
-    (WLS) with survey weights, so estimates are population-representative.
+    (WLS) with survey weights by default, so estimates are population-representative.
     Categorical demographic predictors are automatically dummy-encoded.
 
     Args:
@@ -1174,9 +1200,11 @@ async def run_ols_regression(
             reference categories. When omitted, the alphabetically first
             category is used. Unknown category values fall back to the
             alphabetically first with a warning in the response.
+        use_weights: If True (default), applies survey weights via WLS for
+            population-representative estimates. Set to False for unweighted OLS.
 
     Returns:
-        JSON with: weighted coefficients, std errors, t-stats, p-values,
+        JSON with: coefficients, std errors, t-stats, p-values,
         95% CIs, R², adjusted R², F-statistic, AIC, BIC.
         Any reference-level warnings are included in the 'notes' field.
     """
@@ -1211,7 +1239,10 @@ async def run_ols_regression(
     X = sm.add_constant(X_df, has_constant="add")
 
     try:
-        model = sm.WLS(y, X, weights=weights).fit()
+        if use_weights:
+            model = sm.WLS(y, X, weights=weights).fit()
+        else:
+            model = sm.OLS(y, X).fit()
     except Exception as e:
         logger.error(f"run_ols_regression fit error: {e}")
         return json.dumps({"error": f"Model fitting failed: {e}"})
@@ -1231,15 +1262,21 @@ async def run_ols_regression(
             "significant_05": p < 0.05,
         })
 
+    weight_note = (
+        "Survey weights applied via Weighted Least Squares (WLS)."
+        if use_weights else
+        "Unweighted OLS — estimates are NOT survey-weighted and may not be population-representative."
+    )
     notes = enc_notes + ref_warnings + [
-        "Survey weights applied via Weighted Least Squares (WLS).",
+        weight_note,
         "Standard errors are model-based (not design-based); interpret accordingly.",
     ]
     if any(c in _SENTINEL_COLUMNS for c in all_cols):
         notes.append("Rows with -99 (skipped/refused) excluded from all ordinal columns.")
 
+    model_type = "OLS (Weighted Least Squares)" if use_weights else "OLS (Unweighted)"
     return json.dumps({
-        "model_type": "OLS (Weighted Least Squares)",
+        "model_type": model_type,
         "outcome": outcome,
         "predictors_specified": predictors,
         "reference_levels_requested": reference_levels,
@@ -1265,11 +1302,12 @@ async def run_logistic_regression(
     predictors: List[str],
     wave: Optional[str] = None,
     reference_levels: Optional[Dict[str, str]] = None,
+    use_weights: bool = True,
 ) -> str:
-    """Run a weighted logistic regression of a binary outcome on one or more predictors.
+    """Run a logistic regression of a binary outcome on one or more predictors.
 
     Fits outcome ~ predictor1 + predictor2 + ... using a survey-weighted GLM
-    (Binomial family, logit link) so estimates are population-representative.
+    (Binomial family, logit link) by default so estimates are population-representative.
     Categorical demographic predictors are automatically dummy-encoded.
     Returns both log-odds coefficients and odds ratios.
 
@@ -1287,6 +1325,8 @@ async def run_logistic_regression(
             reference categories. When omitted, the alphabetically first
             category is used. Unknown category values fall back to the
             alphabetically first with a warning in the response.
+        use_weights: If True (default), applies survey weights via GLM freq_weights
+            for population-representative estimates. Set to False for unweighted logit.
 
     Returns:
         JSON with: log-odds, odds ratios, std errors, z-stats, p-values,
@@ -1330,11 +1370,17 @@ async def run_logistic_regression(
     X = sm.add_constant(X_df, has_constant="add")
 
     try:
-        model = sm.GLM(
-            y, X,
-            family=sm.families.Binomial(),
-            freq_weights=weights,
-        ).fit()
+        if use_weights:
+            model = sm.GLM(
+                y, X,
+                family=sm.families.Binomial(),
+                freq_weights=weights,
+            ).fit()
+        else:
+            model = sm.GLM(
+                y, X,
+                family=sm.families.Binomial(),
+            ).fit()
     except Exception as e:
         logger.error(f"run_logistic_regression fit error: {e}")
         return json.dumps({"error": f"Model fitting failed: {e}"})
@@ -1364,16 +1410,26 @@ async def run_logistic_regression(
     llnull = float(model.llnull)
     pseudo_r2 = round(1.0 - (llf / llnull), 6) if llnull != 0 else None
 
+    weight_note = (
+        "Survey weights applied via GLM freq_weights (analytic/aweights)."
+        if use_weights else
+        "Unweighted logit — estimates are NOT survey-weighted and may not be population-representative."
+    )
     notes = enc_notes + ref_warnings + [
-        "Survey weights applied via GLM freq_weights (analytic/aweights).",
+        weight_note,
         "Odds ratio interpretation: OR > 1 = higher odds, OR < 1 = lower odds vs reference.",
         "Standard errors are model-based (not design-based); interpret accordingly.",
     ]
     if any(c in _SENTINEL_COLUMNS for c in all_cols):
         notes.append("Rows with -99 (skipped/refused) excluded from all ordinal columns.")
 
+    model_type = (
+        "Logistic Regression (Weighted GLM, Binomial/logit)"
+        if use_weights else
+        "Logistic Regression (Unweighted GLM, Binomial/logit)"
+    )
     return json.dumps({
-        "model_type": "Logistic Regression (Weighted GLM, Binomial/logit)",
+        "model_type": model_type,
         "outcome": outcome,
         "predictors_specified": predictors,
         "reference_levels_requested": reference_levels,

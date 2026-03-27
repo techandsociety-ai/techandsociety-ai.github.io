@@ -251,7 +251,7 @@ def wave_clause(wave: Optional[str]) -> str:
     """Build a WHERE clause fragment for wave filtering."""
     if not wave:
         return ""
-    return f"AND wave = '{wave}'"
+    return f"AND wave = {int(wave)}"
 
 
 # ── Auth (toggle with DISABLE_AUTH env var on Cloud Run) ─────────────────────

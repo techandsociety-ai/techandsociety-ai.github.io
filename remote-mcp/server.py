@@ -408,7 +408,7 @@ async def get_available_variables() -> str:
               COUNT(*)           AS total_rows,
               COUNT(DISTINCT id) AS unique_respondents,
               COUNT(DISTINCT wave) AS wave_count,
-              STRING_AGG(DISTINCT CAST(wave AS STRING) ORDER BY CAST(wave AS STRING)) AS waves
+              ARRAY_TO_STRING(ARRAY(SELECT DISTINCT CAST(wave AS STRING) FROM {FULL_TABLE} ORDER BY CAST(wave AS FLOAT64)), ', ') AS waves
             FROM {FULL_TABLE}
         """)
         row = result.iloc[0]

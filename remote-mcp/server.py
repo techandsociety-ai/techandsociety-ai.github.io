@@ -425,9 +425,9 @@ async def get_available_variables() -> str:
               COUNT(DISTINCT wave) AS wave_count,
               ARRAY_TO_STRING(
                 ARRAY(
-                  SELECT DISTINCT FORMAT('%g', CAST(wave AS FLOAT64))
-                  FROM {FULL_TABLE}
-                  ORDER BY CAST(wave AS FLOAT64)
+                  SELECT FORMAT('%g', wave_f)
+                  FROM (SELECT DISTINCT CAST(wave AS FLOAT64) AS wave_f FROM {FULL_TABLE})
+                  ORDER BY wave_f
                 ), ', '
               ) AS waves
             FROM {FULL_TABLE}

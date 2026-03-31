@@ -491,6 +491,24 @@ async def introduce_mcp() -> str:
                 "example": 'get_platform_posting_summary(platform="twitter")',
             },
             {
+                "name": "generate_marginals_by_wave",
+                "purpose": (
+                    "Distribution of ONE variable across ALL waves in a single query. "
+                    "Use instead of calling generate_marginals() 37 times. "
+                    "Works for demographics, platforms, ordinal columns, and binary columns."
+                ),
+                "example": 'generate_marginals_by_wave(variable="race_cat_5")',
+            },
+            {
+                "name": "generate_crosstab_by_wave",
+                "purpose": (
+                    "Platform adoption rate by demographic group across ALL waves in a single query. "
+                    "Use instead of calling generate_crosstab() once per wave. "
+                    "Returns the full wave × demographic matrix."
+                ),
+                "example": 'generate_crosstab_by_wave(platform="use_twitter", demographic="party3")',
+            },
+            {
                 "name": "get_wave_metadata",
                 "purpose": (
                     "Wave-level metadata: respondent counts, field dates, field-period length, "
@@ -520,8 +538,9 @@ async def introduce_mcp() -> str:
             "2. Call get_available_variables() to see live dataset metadata.",
             "3. Use generate_marginals() to explore a single variable.",
             "4. Use generate_crosstab() to cross a platform with a demographic. Use generate_crosstab_filtered() to add demographic sub-population filters (e.g. gender × rural).",
-            "5. Use get_wave_metadata() to see respondent counts, field dates, and which questions were asked per wave — especially useful before querying a specific wave.",
-            "5b. Use get_platform_trends() / get_freq_trends() for time series.",
+            "5. Use get_wave_metadata() to see respondent counts, field dates, and which questions were asked per wave.",
+            "5b. Use get_platform_trends() / get_freq_trends() for platform adoption/frequency time series.",
+            "5c. Use generate_marginals_by_wave() to get a variable's distribution across ALL waves in one call (e.g. race_cat_5 per wave). Use generate_crosstab_by_wave() for platform × demographic across all waves. Both replace looping through 37 waves.",
             "6. Use get_ordinal_distribution() / get_ordinal_crosstab() for frequency, trust, and attitude scales.",
             "7. Use get_platform_posting_summary() for a full profile of one platform.",
             "8. Use the _batch variants to run multiple queries in parallel.",
@@ -764,6 +783,196 @@ async def generate_marginals(
 
     except Exception as e:
         logger.error(f"generate_marginals error: {e}")
+        raise
+
+
+@mcp.tool()
+async def generate_marginals_by_wave(variable: str) -> str:
+    """Distribution of a single variable broken down by wave — one query, all waves.
+
+    Use this instead of calling generate_marginals() 37 times.
+    Returns the weighted distribution of the variable for every wave in a single call.
+
+    For demographic/categorical variables: weighted % per category per wave.
+    For platform (binary) variables: weighted adoption rate per wave.
+
+    Args:
+        variable: Any demographic, platform, or ordinal column —
+                  e.g. "race_cat_5", "use_tiktok", "ideology", "phq9_1"
+    """
+    all_valid = (
+        DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS + PLATFORM_COLUMNS +
+        ALL_ORDINAL_COLUMNS + ALL_BINARY_COLUMNS
+    )
+    if variable not in all_valid:
+        raise ValueError(
+            f"Unknown variable '{variable}'. Call get_available_variables() to see valid names."
+        )
+
+    is_binary = variable in PLATFORM_COLUMNS or variable in ALL_BINARY_COLUMNS
+
+    try:
+        if is_binary:
+            df = run_query(f"""
+                SELECT
+                  CAST(t.wave AS FLOAT64)                                       AS wave,
+                  wd.midpoint_date,
+                  COUNT(*)                                                       AS unweighted_n,
+                  ROUND(SUM(t.weight), 1)                                        AS weighted_n,
+                  ROUND(SUM(t.{variable} * t.weight), 1)                         AS weighted_users,
+                  ROUND(SUM(t.{variable} * t.weight) / SUM(t.weight) * 100, 2)   AS user_rate_pct
+                FROM {FULL_TABLE} t
+                LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
+                WHERE t.{variable} IS NOT NULL
+                  AND t.weight IS NOT NULL
+                GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date
+                ORDER BY CAST(t.wave AS FLOAT64)
+            """)
+
+            return json.dumps({
+                "variable": variable,
+                "type": "platform_by_wave",
+                "column_definitions": COLUMN_DEFINITIONS,
+                "interpretation_note": (
+                    "unweighted_n = raw respondent headcount per wave (reliability check only). "
+                    "user_rate_pct = WEIGHTED, population-representative adoption rate per wave."
+                ),
+                "data": df.to_dict(orient="records"),
+            }, indent=2, default=str)
+
+        else:
+            sentinel_filter = f"AND t.{variable} > 0" if variable in ALL_ORDINAL_COLUMNS else ""
+            df = run_query(f"""
+                SELECT
+                  CAST(t.wave AS FLOAT64)                                             AS wave,
+                  wd.midpoint_date,
+                  t.{variable}                                                         AS value,
+                  COUNT(*)                                                             AS unweighted_n,
+                  ROUND(SUM(t.weight), 1)                                              AS weighted_n,
+                  ROUND(
+                    SUM(t.weight) * 100.0 /
+                    SUM(SUM(t.weight)) OVER (PARTITION BY CAST(t.wave AS FLOAT64)),
+                  2)                                                                   AS pct,
+                  CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END        AS suppressed
+                FROM {FULL_TABLE} t
+                LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
+                WHERE t.{variable} IS NOT NULL
+                  AND t.weight IS NOT NULL
+                  {sentinel_filter}
+                GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date, t.{variable}
+                ORDER BY CAST(t.wave AS FLOAT64), t.{variable}
+            """)
+
+            df.loc[df["suppressed"], ["weighted_n", "pct"]] = None
+
+            scale_labels = None
+            if variable.startswith("freq_"):
+                scale_labels = FREQ_SCALE_LABELS
+            elif variable.startswith("sm_trust_") or variable.startswith("pol_trust_"):
+                scale_labels = TRUST_SCALE_LABELS
+            elif variable == "ideology":
+                scale_labels = IDEOLOGY_SCALE_LABELS
+
+            return json.dumps({
+                "variable": variable,
+                "type": "demographic_by_wave",
+                "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+                "scale_labels": scale_labels,
+                "column_definitions": COLUMN_DEFINITIONS,
+                "interpretation_note": (
+                    "unweighted_n = raw respondent headcount per wave/category (reliability check only). "
+                    "pct = WEIGHTED, population-representative percentage within each wave. "
+                    "pct sums to 100 within each wave, not across waves."
+                ),
+                "data": df.to_dict(orient="records"),
+            }, indent=2, default=str)
+
+    except Exception as e:
+        logger.error(f"generate_marginals_by_wave error: {e}")
+        raise
+
+
+@mcp.tool()
+async def generate_crosstab_by_wave(
+    platform: str,
+    demographic: str,
+) -> str:
+    """Platform adoption rate by demographic group, across all waves — one query.
+
+    Use this instead of calling generate_crosstab() once per wave.
+    Returns the full wave × demographic breakdown in a single BigQuery call,
+    enabling trend analysis broken down by demographic group.
+
+    Args:
+        platform:    Platform column, e.g. "use_twitter", "use_tiktok"
+        demographic: Demographic column, e.g. "race_cat_5", "party3", "age_cat_8"
+    """
+    if platform not in PLATFORM_COLUMNS:
+        raise ValueError(f"Unknown platform '{platform}'. Choose from: {PLATFORM_COLUMNS}")
+    valid_demographics = DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS
+    if demographic not in valid_demographics:
+        raise ValueError(f"Unknown demographic '{demographic}'. Choose from: {valid_demographics}")
+
+    try:
+        df = run_query(f"""
+            SELECT
+              CAST(t.wave AS FLOAT64)                                                AS wave,
+              wd.midpoint_date,
+              t.{demographic}                                                         AS demographic_value,
+              COUNT(*)                                                               AS unweighted_n,
+              ROUND(SUM(t.weight), 1)                                                AS weighted_n,
+              ROUND(SUM(t.{platform} * t.weight), 1)                                 AS weighted_users,
+              ROUND(SUM(t.{platform} * t.weight) / SUM(t.weight) * 100, 2)           AS user_rate_pct,
+              CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END           AS suppressed
+            FROM {FULL_TABLE} t
+            LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
+            WHERE t.{platform} IS NOT NULL
+              AND t.{demographic} IS NOT NULL
+              AND t.weight IS NOT NULL
+              {"AND t." + demographic + " > 0" if demographic in ALL_ORDINAL_COLUMNS else ""}
+            GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date, t.{demographic}
+            ORDER BY CAST(t.wave AS FLOAT64), t.{demographic}
+        """)
+
+        df.loc[df["suppressed"], ["weighted_n", "weighted_users", "user_rate_pct"]] = None
+
+        # Detect wave gaps (same logic as get_platform_trends)
+        all_waves_df = run_query(f"""
+            SELECT DISTINCT CAST(wave AS FLOAT64) AS wave_num FROM {FULL_TABLE} ORDER BY wave_num
+        """)
+        all_wave_set  = {int(w) for w in all_waves_df["wave_num"].tolist()}
+        data_wave_set = {int(float(r["wave"])) for r in df.to_dict(orient="records")}
+        missing_waves = sorted(all_wave_set - data_wave_set)
+
+        response: dict = {
+            "platform": platform,
+            "demographic": demographic,
+            "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+            "column_definitions": COLUMN_DEFINITIONS,
+            "interpretation_note": (
+                "unweighted_n = raw respondent headcount per wave/group (reliability check only). "
+                "user_rate_pct = WEIGHTED, population-representative adoption rate. "
+                "Each row is one wave × demographic_value combination."
+            ),
+            "data": df.to_dict(orient="records"),
+        }
+        if missing_waves:
+            response["missing_waves"] = missing_waves
+            response["gap_warning"] = (
+                f"Waves {missing_waves} exist in the panel but have no data for '{platform}'. "
+                "Do NOT interpolate across these gaps."
+            )
+        key_events = PLATFORM_KEY_EVENTS.get(platform, [])
+        if key_events:
+            response["key_events"] = key_events
+            response["annotation_instruction"] = (
+                "REQUIRED: annotate trend charts with vertical dashed lines at waves in 'key_events'."
+            )
+
+        return json.dumps(response, indent=2, default=str)
+
+    except Exception as e:
+        logger.error(f"generate_crosstab_by_wave error: {e}")
         raise
 
 

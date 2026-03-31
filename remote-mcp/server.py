@@ -491,6 +491,20 @@ async def introduce_mcp() -> str:
                 "example": 'get_platform_posting_summary(platform="twitter")',
             },
             {
+                "name": "get_wave_metadata",
+                "purpose": (
+                    "Wave-level metadata: respondent counts, field dates, field-period length, "
+                    "wave size category, and per-wave flags showing which platforms and variable "
+                    "groups (PHQ-9, institutional trust, ideology, etc.) were actually fielded. "
+                    "Call without arguments for a panel-wide coverage overview, or pass a wave "
+                    "number to inspect a specific wave before querying it."
+                ),
+                "example": (
+                    'get_wave_metadata()            # all waves\n'
+                    'get_wave_metadata(wave="37")   # single wave detail'
+                ),
+            },
+            {
                 "name": "run_ols_regression",
                 "purpose": "OLS regression for a continuous/ordinal outcome. Survey-weighted by default (use_weights=True). Supports custom reference categories for categorical predictors via reference_categories. Returns coefficients, std errors, p-values, 95% CIs, R², F-stat, AIC/BIC.",
                 "example": 'run_ols_regression(outcome="ideology", predictors=["use_twitter", "age_cat_8", "education_cat"], reference_categories={"party3": "Independent"})',
@@ -506,7 +520,8 @@ async def introduce_mcp() -> str:
             "2. Call get_available_variables() to see live dataset metadata.",
             "3. Use generate_marginals() to explore a single variable.",
             "4. Use generate_crosstab() to cross a platform with a demographic. Use generate_crosstab_filtered() to add demographic sub-population filters (e.g. gender × rural).",
-            "5. Use get_platform_trends() / get_freq_trends() for time series.",
+            "5. Use get_wave_metadata() to see respondent counts, field dates, and which questions were asked per wave — especially useful before querying a specific wave.",
+            "5b. Use get_platform_trends() / get_freq_trends() for time series.",
             "6. Use get_ordinal_distribution() / get_ordinal_crosstab() for frequency, trust, and attitude scales.",
             "7. Use get_platform_posting_summary() for a full profile of one platform.",
             "8. Use the _batch variants to run multiple queries in parallel.",
@@ -1327,6 +1342,181 @@ async def get_platform_posting_summary(
     await asyncio.gather(*tasks)
 
     return json.dumps(results, indent=2, default=str)
+
+
+@mcp.tool()
+async def get_wave_metadata(wave: Optional[str] = None) -> str:
+    """Wave-level metadata: respondent counts, field dates, and which questions were asked.
+
+    Use this before querying a specific wave to understand what data is available,
+    or call without arguments to get a panel-wide coverage overview.
+
+    Returns per wave:
+      - Unweighted and weighted respondent counts
+      - Field start/end dates, midpoint date, and field-period length
+      - Wave size category (full / medium / small)
+      - Which of the 20 platforms were asked
+      - Which variable groups were fielded (PHQ-9, institutional trust, ideology, etc.)
+
+    Args:
+        wave: Optional wave number (e.g. "37"). Omit to get all waves.
+    """
+    # Build WHERE — validate wave to prevent SQL injection
+    where_parts = ["1=1"]
+    if wave:
+        try:
+            float(wave)
+        except ValueError:
+            raise ValueError(f"Invalid wave '{wave}': must be numeric.")
+        where_parts.append(f"CAST(t.wave AS FLOAT64) = {float(wave)}")
+    where_sql = "WHERE " + " AND ".join(where_parts)
+
+    try:
+        df = run_query(f"""
+            SELECT
+              CAST(t.wave AS FLOAT64)              AS wave,
+              wd.start_date,
+              wd.end_date,
+              wd.midpoint_date,
+              wd.size                              AS wave_size_category,
+              wd.n                                 AS official_n,
+              COUNT(*)                             AS unweighted_n,
+              ROUND(SUM(t.weight), 0)              AS weighted_n,
+
+              -- ── Platform questions asked (NULL = not fielded this wave) ──
+              COUNTIF(t.use_facebook  IS NOT NULL) AS n_facebook,
+              COUNTIF(t.use_instagram IS NOT NULL) AS n_instagram,
+              COUNTIF(t.use_youtube   IS NOT NULL) AS n_youtube,
+              COUNTIF(t.use_twitter   IS NOT NULL) AS n_twitter,
+              COUNTIF(t.use_tiktok    IS NOT NULL) AS n_tiktok,
+              COUNTIF(t.use_snapchat  IS NOT NULL) AS n_snapchat,
+              COUNTIF(t.use_linkedin  IS NOT NULL) AS n_linkedin,
+              COUNTIF(t.use_reddit    IS NOT NULL) AS n_reddit,
+              COUNTIF(t.use_whatsapp  IS NOT NULL) AS n_whatsapp,
+              COUNTIF(t.use_messenger IS NOT NULL) AS n_messenger,
+              COUNTIF(t.use_pinterest IS NOT NULL) AS n_pinterest,
+              COUNTIF(t.use_tumblr    IS NOT NULL) AS n_tumblr,
+              COUNTIF(t.use_gab       IS NOT NULL) AS n_gab,
+              COUNTIF(t.use_parler    IS NOT NULL) AS n_parler,
+              COUNTIF(t.use_4chan     IS NOT NULL) AS n_4chan,
+              COUNTIF(t.use_truth     IS NOT NULL) AS n_truth,
+              COUNTIF(t.use_mastodon  IS NOT NULL) AS n_mastodon,
+              COUNTIF(t.use_threads   IS NOT NULL) AS n_threads,
+              COUNTIF(t.use_bluesky   IS NOT NULL) AS n_bluesky,
+              COUNTIF(t.use_post      IS NOT NULL) AS n_post,
+
+              -- ── Variable group coverage (representative column per group) ──
+              COUNTIF(t.freq_facebook IS NOT NULL
+                AND t.freq_facebook > 0)                     AS n_freq,
+              COUNTIF(t.sm_trust_facebook IS NOT NULL
+                AND t.sm_trust_facebook > 0)                 AS n_trust,
+              COUNTIF(t.sm_post_pol_facebook IS NOT NULL
+                AND t.sm_post_pol_facebook > 0)              AS n_pol_post,
+              COUNTIF(t.sm_post_facebook_1 IS NOT NULL)      AS n_posting_variants,
+              COUNTIF(t.pol_news2_2 IS NOT NULL)             AS n_pol_news,
+              COUNTIF(t.phq9_1 IS NOT NULL
+                AND t.phq9_1 > 0)                            AS n_phq9,
+              COUNTIF(t.pol_trust_science IS NOT NULL
+                AND t.pol_trust_science > 0)                 AS n_pol_trust,
+              COUNTIF(t.ideology IS NOT NULL
+                AND t.ideology > 0)                          AS n_ideology,
+              COUNTIF(t.economy IS NOT NULL
+                AND t.economy > 0)                           AS n_economy,
+              COUNTIF(t.voted20 IS NOT NULL
+                AND t.voted20 > 0)                           AS n_voted20,
+              COUNTIF(t.voted24 IS NOT NULL
+                AND t.voted24 > 0)                           AS n_voted24,
+              COUNTIF(t.trump_win IS NOT NULL
+                AND t.trump_win > 0)                         AS n_trump_win,
+              COUNTIF(t.conspiracy_1 IS NOT NULL
+                AND t.conspiracy_1 > 0)                      AS n_conspiracy
+
+            FROM {FULL_TABLE} t
+            LEFT JOIN {WAVE_DATES_TABLE} wd
+              ON CAST(t.wave AS FLOAT64) = wd.wave_num
+            {where_sql}
+            GROUP BY
+              CAST(t.wave AS FLOAT64),
+              wd.start_date, wd.end_date, wd.midpoint_date,
+              wd.size, wd.n
+            ORDER BY CAST(t.wave AS FLOAT64)
+        """)
+
+        # Map coverage count columns → readable platform names
+        platform_cols = [
+            "facebook", "instagram", "youtube", "twitter", "tiktok",
+            "snapchat", "linkedin", "reddit", "whatsapp", "messenger",
+            "pinterest", "tumblr", "gab", "parler", "4chan",
+            "truth", "mastodon", "threads", "bluesky", "post",
+        ]
+        variable_group_cols = {
+            "usage_frequency":        "n_freq",
+            "platform_trust":         "n_trust",
+            "political_posting_freq": "n_pol_post",
+            "posting_variants":       "n_posting_variants",
+            "political_news_sources": "n_pol_news",
+            "phq9_mental_health":     "n_phq9",
+            "institutional_trust":    "n_pol_trust",
+            "ideology":               "n_ideology",
+            "economy_sentiment":      "n_economy",
+            "voted_2020":             "n_voted20",
+            "voted_2024":             "n_voted24",
+            "trump_win_expectation":  "n_trump_win",
+            "conspiracy_beliefs":     "n_conspiracy",
+        }
+
+        waves_out = []
+        for _, row in df.iterrows():
+            platforms_asked     = [p for p in platform_cols if (row.get(f"n_{p}") or 0) > 0]
+            platforms_not_asked = [p for p in platform_cols if (row.get(f"n_{p}") or 0) == 0]
+
+            variable_groups = {
+                label: bool((row.get(col) or 0) > 0)
+                for label, col in variable_group_cols.items()
+            }
+
+            # Field period length
+            field_days = None
+            if pd.notna(row.get("start_date")) and pd.notna(row.get("end_date")):
+                try:
+                    field_days = (
+                        pd.to_datetime(row["end_date"]) -
+                        pd.to_datetime(row["start_date"])
+                    ).days
+                except Exception:
+                    pass
+
+            waves_out.append({
+                "wave":               row["wave"],
+                "start_date":         str(row["start_date"])   if pd.notna(row.get("start_date"))   else None,
+                "end_date":           str(row["end_date"])     if pd.notna(row.get("end_date"))     else None,
+                "midpoint_date":      str(row["midpoint_date"])if pd.notna(row.get("midpoint_date"))else None,
+                "field_period_days":  field_days,
+                "wave_size_category": row.get("wave_size_category"),
+                "unweighted_n":       int(row["unweighted_n"]),
+                "weighted_n":         int(row["weighted_n"]),
+                "official_n":         int(row["official_n"]) if pd.notna(row.get("official_n")) else None,
+                "platforms_asked":    platforms_asked,
+                "platforms_not_asked": platforms_not_asked,
+                "n_platforms_asked":  len(platforms_asked),
+                "variable_groups_asked": variable_groups,
+            })
+
+        return json.dumps({
+            "wave_filter": wave or "all",
+            "n_waves_returned": len(waves_out),
+            "interpretation_note": (
+                "unweighted_n = raw respondent count from the main data table. "
+                "official_n = sample size from the wave tracking spreadsheet (authoritative). "
+                "weighted_n = sum of survey weights (population-representative total). "
+                "variable_groups_asked = True if the question group was fielded that wave."
+            ),
+            "waves": waves_out,
+        }, indent=2, default=str)
+
+    except Exception as e:
+        logger.error(f"get_wave_metadata error: {e}")
+        raise
 
 
 # ── Regression helpers ───────────────────────────────────────────────────────

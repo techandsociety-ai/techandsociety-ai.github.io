@@ -851,7 +851,7 @@ async def generate_marginals_by_wave(variable: str) -> str:
                   ROUND(SUM(t.weight), 1)                                              AS weighted_n,
                   ROUND(
                     SUM(t.weight) * 100.0 /
-                    SUM(SUM(t.weight)) OVER (PARTITION BY t.wave),
+                    SUM(SUM(t.weight)) OVER (PARTITION BY CAST(t.wave AS STRING)),
                   2)                                                                   AS pct,
                   CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END        AS suppressed
                 FROM {FULL_TABLE} t
@@ -859,7 +859,7 @@ async def generate_marginals_by_wave(variable: str) -> str:
                 WHERE t.{variable} IS NOT NULL
                   AND t.weight IS NOT NULL
                   {sentinel_filter}
-                GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date, t.{variable}
+                GROUP BY CAST(t.wave AS FLOAT64), CAST(t.wave AS STRING), wd.midpoint_date, t.{variable}
                 ORDER BY CAST(t.wave AS FLOAT64), t.{variable}
             """)
 

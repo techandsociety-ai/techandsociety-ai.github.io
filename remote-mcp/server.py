@@ -851,7 +851,7 @@ async def generate_marginals_by_wave(variable: str) -> str:
                   ROUND(SUM(t.weight), 1)                                              AS weighted_n,
                   ROUND(
                     SUM(t.weight) * 100.0 /
-                    SUM(SUM(t.weight)) OVER (PARTITION BY CAST(t.wave AS FLOAT64)),
+                    SUM(SUM(t.weight)) OVER (PARTITION BY t.wave),
                   2)                                                                   AS pct,
                   CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END        AS suppressed
                 FROM {FULL_TABLE} t

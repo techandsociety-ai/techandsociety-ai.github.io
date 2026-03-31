@@ -843,24 +843,31 @@ async def generate_marginals_by_wave(variable: str) -> str:
         else:
             sentinel_filter = f"AND t.{variable} > 0" if variable in ALL_ORDINAL_COLUMNS else ""
             df = run_query(f"""
+                WITH agg AS (
+                  SELECT
+                    CAST(t.wave AS FLOAT64)                                          AS wave,
+                    wd.midpoint_date,
+                    t.{variable}                                                      AS value,
+                    COUNT(*)                                                          AS unweighted_n,
+                    ROUND(SUM(t.weight), 1)                                           AS weighted_n,
+                    CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END     AS suppressed
+                  FROM {FULL_TABLE} t
+                  LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
+                  WHERE t.{variable} IS NOT NULL
+                    AND t.weight IS NOT NULL
+                    {sentinel_filter}
+                  GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date, t.{variable}
+                )
                 SELECT
-                  CAST(t.wave AS FLOAT64)                                             AS wave,
-                  wd.midpoint_date,
-                  t.{variable}                                                         AS value,
-                  COUNT(*)                                                             AS unweighted_n,
-                  ROUND(SUM(t.weight), 1)                                              AS weighted_n,
-                  ROUND(
-                    SUM(t.weight) * 100.0 /
-                    SUM(SUM(t.weight)) OVER (PARTITION BY CAST(t.wave AS STRING)),
-                  2)                                                                   AS pct,
-                  CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END        AS suppressed
-                FROM {FULL_TABLE} t
-                LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
-                WHERE t.{variable} IS NOT NULL
-                  AND t.weight IS NOT NULL
-                  {sentinel_filter}
-                GROUP BY CAST(t.wave AS FLOAT64), CAST(t.wave AS STRING), wd.midpoint_date, t.{variable}
-                ORDER BY CAST(t.wave AS FLOAT64), t.{variable}
+                  wave,
+                  midpoint_date,
+                  value,
+                  unweighted_n,
+                  weighted_n,
+                  ROUND(weighted_n * 100.0 / SUM(weighted_n) OVER (PARTITION BY wave), 2) AS pct,
+                  suppressed
+                FROM agg
+                ORDER BY wave, value
             """)
 
             df.loc[df["suppressed"], ["weighted_n", "pct"]] = None

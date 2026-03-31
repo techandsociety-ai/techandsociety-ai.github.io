@@ -229,6 +229,107 @@ _ALL_REGRESSION_COLUMNS: set[str] = set(
 # Binary-outcome columns (valid for logistic regression)
 _BINARY_COLUMNS: set[str] = set(PLATFORM_COLUMNS + SM_POST_COLUMNS + POL_NEWS_COLUMNS)
 
+# ── Key historical events for trend annotation ───────────────────────────────
+# Injected into get_platform_trends / get_freq_trends responses.
+# Claude must annotate trend charts with vertical dashed lines at these waves.
+
+PLATFORM_KEY_EVENTS = {
+    "use_twitter": [
+        {
+            "wave": 25,
+            "approx_date": "2022-10-27",
+            "event": "Elon Musk acquisition of Twitter/X",
+            "chart_annotation": (
+                "Draw a vertical dashed line at Wave 25 on ALL Twitter/X trend charts. "
+                "This is a critical inflection point — never omit this annotation."
+            ),
+        }
+    ],
+    "twitter": [
+        {
+            "wave": 25,
+            "approx_date": "2022-10-27",
+            "event": "Elon Musk acquisition of Twitter/X",
+            "chart_annotation": (
+                "Draw a vertical dashed line at Wave 25 on ALL Twitter/X trend charts. "
+                "This is a critical inflection point — never omit this annotation."
+            ),
+        }
+    ],
+}
+
+# ── Column definitions ────────────────────────────────────────────────────────
+# Included in every tool response so Claude always labels columns correctly.
+# The most common user confusion: seeing unweighted_n next to a weighted %
+# and assuming both are from the same weighting scheme.
+
+COLUMN_DEFINITIONS = {
+    "unweighted_n": (
+        "Raw respondent count — the actual number of survey participants in this cell. "
+        "Use ONLY to assess data reliability and cell suppression risk. "
+        "Do NOT present as a population estimate or use to compute percentages."
+    ),
+    "weighted_n": (
+        "Population-weighted count — adjusted for survey design weights to represent "
+        "the U.S. adult population. Use for population-representative totals."
+    ),
+    "weighted_users": (
+        "Population-weighted count of platform users (WEIGHTED — population-representative)."
+    ),
+    "weighted_non_users": (
+        "Population-weighted count of non-users (WEIGHTED — population-representative)."
+    ),
+    "user_rate_pct": (
+        "Platform adoption rate — WEIGHTED, population-representative percentage. "
+        "Always label this as 'weighted %' or '% (weighted)' when presenting to users. "
+        "Never present alongside unweighted_n without clearly distinguishing the two."
+    ),
+    "pct": (
+        "Population-weighted percentage — WEIGHTED, population-representative. "
+        "Always label as 'weighted %' when presenting to users."
+    ),
+    "weighted_mean": (
+        "Population-weighted mean score — WEIGHTED, population-representative. "
+        "Always label as 'weighted mean' when presenting to users."
+    ),
+    "weighted_mean_freq": (
+        "Population-weighted mean usage frequency on the 1–6 ordinal scale "
+        "(1=never, 2=rarely, 3=sometimes, 4=often, 5=daily, 6=almost constantly). "
+        "WEIGHTED, population-representative."
+    ),
+    "weighted_mean_trust": (
+        "Population-weighted mean trust score on the 1–4 ordinal scale "
+        "(1=not at all, 2=not much, 3=somewhat, 4=a lot). "
+        "WEIGHTED, population-representative."
+    ),
+}
+
+FREQ_SCALE_LABELS = {
+    1: "Never",
+    2: "Rarely",
+    3: "Sometimes",
+    4: "Often",
+    5: "Daily",
+    6: "Almost constantly",
+}
+
+TRUST_SCALE_LABELS = {
+    1: "Not at all",
+    2: "Not much",
+    3: "Somewhat",
+    4: "A lot",
+}
+
+IDEOLOGY_SCALE_LABELS = {
+    1: "Very liberal",
+    2: "Liberal",
+    3: "Somewhat liberal",
+    4: "Moderate",
+    5: "Somewhat conservative",
+    6: "Conservative",
+    7: "Very conservative",
+}
+
 # ── BigQuery client (lazy) ──────────────────────────────────────────────────
 
 _bq_client: Optional[bigquery.Client] = None
@@ -453,9 +554,24 @@ async def get_available_variables() -> str:
             "notes": {
                 "platform_usage": "Binary (1=uses, 0=does not). late_platforms have NULL in earlier waves.",
                 "ordinal_sentinel": "All ordinal columns use -99 for skipped/refused responses — excluded automatically.",
-                "weights": "All rates are survey-weighted using the 'weight' column.",
+                "weights": (
+                    "All rates, percentages, and means are WEIGHTED using the survey 'weight' column. "
+                    "unweighted_n fields are raw respondent headcounts for reliability checks only — "
+                    "never use unweighted_n to compute percentages or present as population estimates."
+                ),
                 "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",
+                "missing_platform_waves": (
+                    "Some waves exist in the panel but platform questions were not asked. "
+                    "get_platform_trends and get_freq_trends will return a 'missing_waves' field "
+                    "listing these gaps. Do NOT interpolate across missing waves in trend charts — "
+                    "show explicit breaks."
+                ),
+                "key_events": (
+                    "get_platform_trends and get_freq_trends include a 'key_events' field for platforms "
+                    "with major historical inflection points (e.g., Twitter Wave 25 = Musk acquisition Oct 2022). "
+                    "Always annotate trend charts with vertical dashed lines at these events."
+                ),
             },
             "problematic_waves": {
                 "35.1": (
@@ -522,6 +638,12 @@ async def generate_crosstab(
             "demographic": demographic,
             "wave_filter": wave or "all",
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+            "column_definitions": COLUMN_DEFINITIONS,
+            "interpretation_note": (
+                "unweighted_n = raw respondent headcount — for reliability checks only, NOT a population estimate. "
+                "user_rate_pct = WEIGHTED adoption rate — population-representative. "
+                "When presenting a table, label the N column as 'Unweighted N' and the rate column as '% (weighted)'."
+            ),
             "data": df.to_dict(orient="records"),
         }, indent=2, default=str)
 
@@ -581,6 +703,11 @@ async def generate_marginals(
                 "variable": variable,
                 "type": "platform",
                 "wave_filter": wave or "all",
+                "column_definitions": COLUMN_DEFINITIONS,
+                "interpretation_note": (
+                    "unweighted_n = raw respondent headcount (reliability check only). "
+                    "user_rate_pct = WEIGHTED, population-representative adoption rate."
+                ),
                 "data": df.to_dict(orient="records"),
             }, indent=2, default=str)
 
@@ -611,6 +738,12 @@ async def generate_marginals(
                 "type": "demographic",
                 "wave_filter": wave or "all",
                 "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+                "column_definitions": COLUMN_DEFINITIONS,
+                "interpretation_note": (
+                    "unweighted_n = raw respondent headcount (reliability check only). "
+                    "pct = WEIGHTED, population-representative percentage. "
+                    "Label clearly when presenting to users."
+                ),
                 "data": df.to_dict(orient="records"),
             }, indent=2, default=str)
 
@@ -708,6 +841,12 @@ async def generate_crosstab_filtered(
             "filters": filters,
             "wave_filter": wave or "all",
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+            "column_definitions": COLUMN_DEFINITIONS,
+            "interpretation_note": (
+                "unweighted_n = raw respondent headcount (reliability check only). "
+                "user_rate_pct = WEIGHTED, population-representative adoption rate for the filtered sub-population. "
+                "Label clearly when presenting to users."
+            ),
             "data": df.to_dict(orient="records"),
         }, indent=2, default=str)
 
@@ -808,11 +947,47 @@ async def get_platform_trends(
             ORDER BY CAST(t.wave AS FLOAT64)
         """)
 
-        return json.dumps({
+        # Detect waves that exist in the panel but are absent for this platform.
+        # These are genuine data gaps (question not asked that wave) — not missing rows.
+        all_waves_df = run_query(f"""
+            SELECT DISTINCT CAST(wave AS FLOAT64) AS wave_num
+            FROM {FULL_TABLE}
+            ORDER BY wave_num
+        """)
+        all_wave_set  = {int(w) for w in all_waves_df["wave_num"].tolist()}
+        data_wave_set = {int(float(r["wave"])) for r in df.to_dict(orient="records")}
+        missing_waves = sorted(all_wave_set - data_wave_set)
+
+        response: dict = {
             "platform": platform,
             "demographic_filter": f"{demographic}={demographic_value}" if demographic else None,
+            "column_definitions": COLUMN_DEFINITIONS,
+            "interpretation_note": (
+                "unweighted_n = raw respondent headcount (reliability check only). "
+                "user_rate_pct = WEIGHTED, population-representative adoption rate. "
+                "Always label these distinctly when presenting results to users."
+            ),
             "data": df.to_dict(orient="records"),
-        }, indent=2, default=str)
+        }
+
+        if missing_waves:
+            response["missing_waves"] = missing_waves
+            response["gap_warning"] = (
+                f"Waves {missing_waves} exist in the CHIP50 panel but have no data for "
+                f"'{platform}' — the question was likely not fielded those waves. "
+                "Do NOT interpolate or connect data points across these gaps in charts. "
+                "Show them as explicit breaks or missing markers."
+            )
+
+        key_events = PLATFORM_KEY_EVENTS.get(platform, [])
+        if key_events:
+            response["key_events"] = key_events
+            response["annotation_instruction"] = (
+                "REQUIRED: Annotate trend charts for this platform with vertical dashed lines "
+                "at every wave listed in 'key_events'. Do not skip these annotations."
+            )
+
+        return json.dumps(response, indent=2, default=str)
 
     except Exception as e:
         logger.error(f"get_platform_trends error: {e}")
@@ -863,11 +1038,27 @@ async def get_ordinal_distribution(
 
         df.loc[df["suppressed"], ["weighted_n", "pct"]] = None
 
+        # Attach scale labels if applicable
+        scale_labels = None
+        if column.startswith("freq_"):
+            scale_labels = FREQ_SCALE_LABELS
+        elif column.startswith("sm_trust_") or column.startswith("pol_trust_"):
+            scale_labels = TRUST_SCALE_LABELS
+        elif column == "ideology":
+            scale_labels = IDEOLOGY_SCALE_LABELS
+
         return json.dumps({
             "column": column,
             "type": "ordinal_distribution",
             "wave_filter": wave or "all",
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+            "scale_labels": scale_labels,
+            "column_definitions": COLUMN_DEFINITIONS,
+            "interpretation_note": (
+                "unweighted_n = raw respondent headcount (reliability check only). "
+                "pct = WEIGHTED, population-representative percentage. "
+                "Always label as 'weighted %' when presenting to users."
+            ),
             "data": df.to_dict(orient="records"),
         }, indent=2, default=str)
 
@@ -924,11 +1115,26 @@ async def get_ordinal_crosstab(
 
         df.loc[df["suppressed"], ["weighted_n", "weighted_mean"]] = None
 
+        scale_labels = None
+        if column.startswith("freq_"):
+            scale_labels = FREQ_SCALE_LABELS
+        elif column.startswith("sm_trust_") or column.startswith("pol_trust_"):
+            scale_labels = TRUST_SCALE_LABELS
+        elif column == "ideology":
+            scale_labels = IDEOLOGY_SCALE_LABELS
+
         return json.dumps({
             "column": column,
             "demographic": demographic,
             "wave_filter": wave or "all",
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+            "scale_labels": scale_labels,
+            "column_definitions": COLUMN_DEFINITIONS,
+            "interpretation_note": (
+                "unweighted_n = raw respondent headcount (reliability check only). "
+                "weighted_mean = WEIGHTED, population-representative mean. "
+                "Always label as 'weighted mean' when presenting to users."
+            ),
             "data": df.to_dict(orient="records"),
         }, indent=2, default=str)
 
@@ -985,13 +1191,47 @@ async def get_freq_trends(
             ORDER BY CAST(t.wave AS FLOAT64)
         """)
 
-        return json.dumps({
+        all_waves_df = run_query(f"""
+            SELECT DISTINCT CAST(wave AS FLOAT64) AS wave_num
+            FROM {FULL_TABLE}
+            ORDER BY wave_num
+        """)
+        all_wave_set  = {int(w) for w in all_waves_df["wave_num"].tolist()}
+        data_wave_set = {int(float(r["wave"])) for r in df.to_dict(orient="records")}
+        missing_waves = sorted(all_wave_set - data_wave_set)
+
+        response: dict = {
             "platform": platform,
             "freq_column": freq_col,
             "demographic_filter": f"{demographic}={demographic_value}" if demographic else None,
             "scale_note": "Frequency scale 1–6 (1=never, 6=several times a day)",
+            "scale_labels": FREQ_SCALE_LABELS,
+            "column_definitions": COLUMN_DEFINITIONS,
+            "interpretation_note": (
+                "unweighted_n = raw respondent headcount (reliability check only). "
+                "weighted_mean_freq = WEIGHTED, population-representative mean frequency. "
+                "Always label these distinctly when presenting results to users."
+            ),
             "data": df.to_dict(orient="records"),
-        }, indent=2, default=str)
+        }
+
+        if missing_waves:
+            response["missing_waves"] = missing_waves
+            response["gap_warning"] = (
+                f"Waves {missing_waves} exist in the CHIP50 panel but have no frequency data for "
+                f"'{platform}' — the question was likely not fielded those waves. "
+                "Do NOT interpolate across these gaps. Show as explicit breaks in charts."
+            )
+
+        key_events = PLATFORM_KEY_EVENTS.get(platform, [])
+        if key_events:
+            response["key_events"] = key_events
+            response["annotation_instruction"] = (
+                "REQUIRED: Annotate trend charts for this platform with vertical dashed lines "
+                "at every wave listed in 'key_events'. Do not skip these annotations."
+            )
+
+        return json.dumps(response, indent=2, default=str)
 
     except Exception as e:
         logger.error(f"get_freq_trends error: {e}")
@@ -1024,7 +1264,15 @@ async def get_platform_posting_summary(
             f"Choose from: {[c.replace('use_', '') for c in PLATFORM_COLUMNS]}"
         )
 
-    results: dict = {"platform": platform, "wave_filter": wave or "all"}
+    results: dict = {
+        "platform": platform,
+        "wave_filter": wave or "all",
+        "column_definitions": COLUMN_DEFINITIONS,
+        "interpretation_note": (
+            "All rates and means are WEIGHTED, population-representative estimates. "
+            "unweighted_n fields are raw respondent headcounts for reliability checks only."
+        ),
+    }
 
     async def _query(label: str, sql: str):
         try:

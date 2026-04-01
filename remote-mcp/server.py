@@ -864,7 +864,7 @@ async def generate_marginals_by_wave(variable: str) -> str:
                   value,
                   unweighted_n,
                   weighted_n,
-                  ROUND(weighted_n * 100.0 / SUM(weighted_n) OVER (PARTITION BY wave), 2) AS pct,
+                  ROUND(weighted_n * 100.0 / SUM(weighted_n) OVER (PARTITION BY CAST(wave AS STRING)), 2) AS pct,
                   suppressed
                 FROM agg
                 ORDER BY wave, value

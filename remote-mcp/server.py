@@ -1737,10 +1737,31 @@ async def get_wave_metadata(wave: Optional[str] = None) -> str:
 
 # ── Regression helpers ───────────────────────────────────────────────────────
 
+def _build_filter_clauses(filters: Dict[str, List]) -> str:
+    """Convert a {column: [values]} dict into SQL AND … IN (…) clauses.
+
+    String values are single-quoted; values that parse as numbers are unquoted.
+    Single-quotes inside string values are escaped.
+    """
+    clauses = []
+    for col, values in filters.items():
+        quoted = []
+        for v in values:
+            try:
+                float(v)
+                quoted.append(str(v))
+            except (TypeError, ValueError):
+                safe = str(v).replace("'", "\\'")
+                quoted.append(f"'{safe}'")
+        clauses.append(f"{col} IN ({', '.join(quoted)})")
+    return "AND " + " AND ".join(clauses)
+
+
 def _fetch_regression_data(
     outcome: str,
     predictors: List[str],
     wave: Optional[str],
+    filters: Optional[Dict[str, List]] = None,
 ) -> pd.DataFrame:
     """Pull individual-level rows needed for a regression from BigQuery."""
     cols = [outcome] + predictors
@@ -1752,12 +1773,15 @@ def _fetch_regression_data(
         f"AND {c} > 0" for c in cols if c in _SENTINEL_COLUMNS
     )
 
+    filter_clauses = _build_filter_clauses(filters) if filters else ""
+
     sql = f"""
         SELECT {select_cols}
         FROM {FULL_TABLE}
         WHERE {not_null}
           {sentinel_clauses}
           {wave_clause(wave)}
+          {filter_clauses}
     """
     return run_query(sql)
 
@@ -1871,6 +1895,7 @@ async def run_ols_regression(
     wave: Optional[str] = None,
     reference_levels: Optional[Dict[str, str]] = None,
     use_weights: bool = True,
+    filters: Optional[Dict[str, List[str]]] = None,
 ) -> str:
     """Run an OLS regression of a continuous/ordinal outcome on one or more predictors.
 
@@ -1894,6 +1919,13 @@ async def run_ols_regression(
             alphabetically first with a warning in the response.
         use_weights: If True (default), applies survey weights via WLS for
             population-representative estimates. Set to False for unweighted OLS.
+        filters: Optional subgroup filter applied before fitting. A mapping of
+            {column_name: [allowed_values]}. Rows where the column value is NOT
+            in the list are dropped before the model is fit. Example:
+            {"age_cat_8": ["18-24", "25-34"]} restricts to the two youngest
+            age groups. {"gender": ["Female"], "party3": ["Democrat"]} restricts
+            to female Democrats. Filter columns do not need to appear in predictors.
+            Call get_available_variables() to see valid column names and values.
 
     Returns:
         JSON with: coefficients, std errors, t-stats, p-values,
@@ -1906,6 +1938,12 @@ async def run_ols_regression(
         return json.dumps({
             "error": f"Unknown columns: {invalid}. Call get_available_variables() to see valid column names."
         })
+    if filters:
+        invalid_filters = [c for c in filters if c not in _ALL_REGRESSION_COLUMNS]
+        if invalid_filters:
+            return json.dumps({
+                "error": f"Unknown filter columns: {invalid_filters}. Call get_available_variables() to see valid column names."
+            })
     if outcome in _CATEGORICAL_COLUMNS:
         return json.dumps({
             "error": (
@@ -1916,7 +1954,7 @@ async def run_ols_regression(
 
     try:
         df = await asyncio.get_event_loop().run_in_executor(
-            None, _fetch_regression_data, outcome, predictors, wave
+            None, _fetch_regression_data, outcome, predictors, wave, filters
         )
     except Exception as e:
         logger.error(f"run_ols_regression data fetch error: {e}")
@@ -1966,6 +2004,7 @@ async def run_ols_regression(
         "outcome": outcome,
         "predictors_specified": predictors,
         "reference_levels_requested": reference_levels,
+        "subgroup_filters": filters,
         "wave": wave,
         "n_observations": int(len(df)),
         "weighted_n": round(float(weights.sum()), 1),
@@ -1989,6 +2028,7 @@ async def run_logistic_regression(
     wave: Optional[str] = None,
     reference_levels: Optional[Dict[str, str]] = None,
     use_weights: bool = True,
+    filters: Optional[Dict[str, List[str]]] = None,
 ) -> str:
     """Run a logistic regression of a binary outcome on one or more predictors.
 
@@ -2013,6 +2053,13 @@ async def run_logistic_regression(
             alphabetically first with a warning in the response.
         use_weights: If True (default), applies survey weights via GLM freq_weights
             for population-representative estimates. Set to False for unweighted logit.
+        filters: Optional subgroup filter applied before fitting. A mapping of
+            {column_name: [allowed_values]}. Rows where the column value is NOT
+            in the list are dropped before the model is fit. Example:
+            {"age_cat_8": ["18-24", "25-34"]} restricts to the two youngest
+            age groups. {"gender": ["Female"], "party3": ["Democrat"]} restricts
+            to female Democrats. Filter columns do not need to appear in predictors.
+            Call get_available_variables() to see valid column names and values.
 
     Returns:
         JSON with: log-odds, odds ratios, std errors, z-stats, p-values,
@@ -2025,6 +2072,12 @@ async def run_logistic_regression(
         return json.dumps({
             "error": f"Unknown columns: {invalid}. Call get_available_variables() to see valid column names."
         })
+    if filters:
+        invalid_filters = [c for c in filters if c not in _ALL_REGRESSION_COLUMNS]
+        if invalid_filters:
+            return json.dumps({
+                "error": f"Unknown filter columns: {invalid_filters}. Call get_available_variables() to see valid column names."
+            })
     if outcome not in _BINARY_COLUMNS:
         return json.dumps({
             "error": (
@@ -2036,7 +2089,7 @@ async def run_logistic_regression(
 
     try:
         df = await asyncio.get_event_loop().run_in_executor(
-            None, _fetch_regression_data, outcome, predictors, wave
+            None, _fetch_regression_data, outcome, predictors, wave, filters
         )
     except Exception as e:
         logger.error(f"run_logistic_regression data fetch error: {e}")
@@ -2106,6 +2159,7 @@ async def run_logistic_regression(
         "outcome": outcome,
         "predictors_specified": predictors,
         "reference_levels_requested": reference_levels,
+        "subgroup_filters": filters,
         "wave": wave,
         "n_observations": int(len(df)),
         "weighted_n": round(float(weights.sum()), 1),

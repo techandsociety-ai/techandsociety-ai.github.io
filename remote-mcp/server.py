@@ -1829,6 +1829,41 @@ def _encode_predictors(
     return pd.concat(frames, axis=1), notes, warnings
 
 
+def _fit_ols(
+    df: pd.DataFrame,
+    outcome: str,
+    predictors: List[str],
+    reference_levels: Optional[Dict[str, str]],
+    use_weights: bool,
+):
+    """Encode predictors and fit OLS/WLS. Runs in a thread executor."""
+    y = df[outcome].astype(float)
+    weights = df["weight"].astype(float)
+    X_df, enc_notes, ref_warnings = _encode_predictors(df, predictors, reference_levels)
+    X = sm.add_constant(X_df, has_constant="add")
+    model = sm.WLS(y, X, weights=weights).fit() if use_weights else sm.OLS(y, X).fit()
+    return model, y, weights, enc_notes, ref_warnings
+
+
+def _fit_logistic(
+    df: pd.DataFrame,
+    outcome: str,
+    predictors: List[str],
+    reference_levels: Optional[Dict[str, str]],
+    use_weights: bool,
+):
+    """Encode predictors and fit logistic GLM. Runs in a thread executor."""
+    y = df[outcome].astype(float)
+    weights = df["weight"].astype(float)
+    X_df, enc_notes, ref_warnings = _encode_predictors(df, predictors, reference_levels)
+    X = sm.add_constant(X_df, has_constant="add")
+    if use_weights:
+        model = sm.GLM(y, X, family=sm.families.Binomial(), freq_weights=weights).fit()
+    else:
+        model = sm.GLM(y, X, family=sm.families.Binomial()).fit()
+    return model, y, weights, enc_notes, ref_warnings
+
+
 @mcp.tool()
 async def run_ols_regression(
     outcome: str,
@@ -1890,16 +1925,10 @@ async def run_ols_regression(
     if len(df) < 50:
         return json.dumps({"error": f"Too few observations ({len(df)}) after filters — cannot fit model."})
 
-    y = df[outcome].astype(float)
-    weights = df["weight"].astype(float)
-    X_df, enc_notes, ref_warnings = _encode_predictors(df, predictors, reference_levels)
-    X = sm.add_constant(X_df, has_constant="add")
-
     try:
-        if use_weights:
-            model = sm.WLS(y, X, weights=weights).fit()
-        else:
-            model = sm.OLS(y, X).fit()
+        model, y, weights, enc_notes, ref_warnings = await asyncio.get_event_loop().run_in_executor(
+            None, _fit_ols, df, outcome, predictors, reference_levels, use_weights
+        )
     except Exception as e:
         logger.error(f"run_ols_regression fit error: {e}")
         return json.dumps({"error": f"Model fitting failed: {e}"})
@@ -2016,28 +2045,15 @@ async def run_logistic_regression(
     if len(df) < 50:
         return json.dumps({"error": f"Too few observations ({len(df)}) after filters — cannot fit model."})
 
-    y = df[outcome].astype(float)
-    weights = df["weight"].astype(float)
-
-    unique_vals = set(y.dropna().unique())
-    if not unique_vals.issubset({0.0, 1.0}):
+    # Binary check before handing off to executor
+    unique_vals = set(df[outcome].dropna().unique())
+    if not unique_vals.issubset({0.0, 1.0, 0, 1}):
         return json.dumps({"error": f"Outcome '{outcome}' has non-binary values: {sorted(unique_vals)[:10]}."})
 
-    X_df, enc_notes, ref_warnings = _encode_predictors(df, predictors, reference_levels)
-    X = sm.add_constant(X_df, has_constant="add")
-
     try:
-        if use_weights:
-            model = sm.GLM(
-                y, X,
-                family=sm.families.Binomial(),
-                freq_weights=weights,
-            ).fit()
-        else:
-            model = sm.GLM(
-                y, X,
-                family=sm.families.Binomial(),
-            ).fit()
+        model, y, weights, enc_notes, ref_warnings = await asyncio.get_event_loop().run_in_executor(
+            None, _fit_logistic, df, outcome, predictors, reference_levels, use_weights
+        )
     except Exception as e:
         logger.error(f"run_logistic_regression fit error: {e}")
         return json.dumps({"error": f"Model fitting failed: {e}"})

@@ -49,10 +49,10 @@ jobs:
             --platform managed \
             --region "$REGION" \
             --allow-unauthenticated \
-            --update-env-vars "GCP_PROJECT=$GCP_PROJECT,DATASET_NAME=social_media_demographics,MIN_CELL_SIZE=30,FASTMCP_HOME=/fastmcp-storage,GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" \
-            --remove-env-vars "DISABLE_AUTH" \
-            --add-volume "name=fastmcp-storage,type=cloud-storage,bucket=chip50-fastmcp-oauth" \
-            --add-volume-mount "volume=fastmcp-storage,mount-path=/fastmcp-storage" \
+            --update-env-vars "GCP_PROJECT=$GCP_PROJECT,DATASET_NAME=social_media_demographics,MIN_CELL_SIZE=30,GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+            --remove-env-vars "DISABLE_AUTH,FASTMCP_HOME" \
+            --clear-volumes \
+            --clear-volume-mounts \
             --execution-environment gen2 \
             --memory 2Gi \
             --cpu 2 \

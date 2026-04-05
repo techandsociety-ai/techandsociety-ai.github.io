@@ -424,11 +424,13 @@ async def introduce_mcp() -> str:
             "pol_news_columns": POL_NEWS_COLUMNS,
             "pol_trust_columns": POL_TRUST_COLUMNS,
             "phq9_columns": PHQ9_COLUMNS,
+            "ozempic_columns": OZEMPIC_COLUMNS,
             "notes": {
                 "platform_usage": "Binary (1=uses, 0=does not). late_platforms (truth, mastodon, post, threads, bluesky) have NULLs in earlier waves.",
                 "ordinal_sentinel": "All ordinal columns use -99 for skipped/refused — excluded automatically from all queries.",
                 "suppression": f"Cells with n<{MIN_CELL_SIZE} are suppressed for respondent privacy.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health screening measures. Only population-level aggregates are returned.",
+                "ozempic_coverage": "Ozempic columns only available from wave 35+.",
                 "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+.",
             },
             "problematic_waves": {
@@ -591,6 +593,7 @@ async def get_available_variables() -> str:
             "pol_news_columns": POL_NEWS_COLUMNS,
             "pol_trust_columns": POL_TRUST_COLUMNS,
             "phq9_columns": PHQ9_COLUMNS,
+            "ozempic_columns": OZEMPIC_COLUMNS,
             "total_rows": int(row["total_rows"]),
             "unique_respondents": int(row["unique_respondents"]),
             "wave_count": int(row["wave_count"]),
@@ -631,23 +634,11 @@ async def get_available_variables() -> str:
         raise
 
 
-@mcp.tool()
-async def generate_crosstab(
+async def _generate_crosstab_impl(
     platform: str,
     demographic: str,
     wave: Optional[str] = None,
 ) -> str:
-    """Platform adoption rate broken down by a demographic variable.
-
-    Returns survey-weighted user_rate_pct (population-representative % using the platform)
-    per demographic group, with cell suppression for groups with unweighted n < MIN_CELL_SIZE.
-    All rates and counts use the respondent survey weight for population-representative estimates.
-
-    Args:
-        platform:    Column name, e.g. "use_twitter", "use_tiktok"
-        demographic: Column name, e.g. "age_cat_8", "party3", "gender"
-        wave:        Optional wave number to filter to (e.g. "35"). Omit for all waves.
-    """
     if platform not in PLATFORM_COLUMNS:
         raise ValueError(f"Unknown platform '{platform}'. Choose from: {PLATFORM_COLUMNS}")
     valid_demographics = DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS
@@ -697,19 +688,29 @@ async def generate_crosstab(
 
 
 @mcp.tool()
-async def generate_marginals(
+async def generate_crosstab(
+    platform: str,
+    demographic: str,
+    wave: Optional[str] = None,
+) -> str:
+    """Platform adoption rate broken down by a demographic variable.
+
+    Returns survey-weighted user_rate_pct (population-representative % using the platform)
+    per demographic group, with cell suppression for groups with unweighted n < MIN_CELL_SIZE.
+    All rates and counts use the respondent survey weight for population-representative estimates.
+
+    Args:
+        platform:    Column name, e.g. "use_twitter", "use_tiktok"
+        demographic: Column name, e.g. "age_cat_8", "party3", "gender"
+        wave:        Optional wave number to filter to (e.g. "35"). Omit for all waves.
+    """
+    return await _generate_crosstab_impl(platform, demographic, wave)
+
+
+async def _generate_marginals_impl(
     variable: str,
     wave: Optional[str] = None,
 ) -> str:
-    """Distribution for a single variable (demographic or platform).
-
-    For demographics: count and % per category.
-    For platforms: overall adoption rate (% using the platform).
-
-    Args:
-        variable: Demographic column (e.g. "age_cat_8") or platform column (e.g. "use_twitter")
-        wave:     Optional wave number to filter to. Omit for all waves.
-    """
     all_valid = (
         DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS + PLATFORM_COLUMNS +
         ALL_ORDINAL_COLUMNS + ALL_BINARY_COLUMNS
@@ -794,6 +795,23 @@ async def generate_marginals(
     except Exception as e:
         logger.error(f"generate_marginals error: {e}")
         raise
+
+
+@mcp.tool()
+async def generate_marginals(
+    variable: str,
+    wave: Optional[str] = None,
+) -> str:
+    """Distribution for a single variable (demographic or platform).
+
+    For demographics: count and % per category.
+    For platforms: overall adoption rate (% using the platform).
+
+    Args:
+        variable: Demographic column (e.g. "age_cat_8") or platform column (e.g. "use_twitter")
+        wave:     Optional wave number to filter to. Omit for all waves.
+    """
+    return await _generate_marginals_impl(variable, wave)
 
 
 @mcp.tool()
@@ -1109,7 +1127,7 @@ async def generate_crosstab_batch(
         demographics: List of demographic columns
         wave:         Optional wave filter
     """
-    tasks = [generate_crosstab(platform, d, wave) for d in demographics]
+    tasks = [_generate_crosstab_impl(platform, d, wave) for d in demographics]
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
     return json.dumps({
@@ -1133,7 +1151,7 @@ async def generate_marginals_batch(
         variables: List of demographic or platform column names
         wave:      Optional wave filter
     """
-    tasks = [generate_marginals(v, wave) for v in variables]
+    tasks = [_generate_marginals_impl(v, wave) for v in variables]
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
     return json.dumps({

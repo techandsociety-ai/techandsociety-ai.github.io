@@ -381,7 +381,10 @@ else:
         client_id=os.getenv("GOOGLE_CLIENT_ID"),
         client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
         base_url=os.getenv("SERVICE_URL", "http://localhost:8080"),
-        allowed_client_redirect_uris=["https://claude.ai/api/mcp/auth_callback"],
+        allowed_client_redirect_uris=[
+            "https://claude.ai/api/mcp/auth_callback",
+            "http://localhost",
+        ],
         require_authorization_consent=False,
     )
 

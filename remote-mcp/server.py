@@ -384,7 +384,8 @@ else:
         base_url=os.getenv("SERVICE_URL", "http://localhost:8080"),
         allowed_client_redirect_uris=[
             "https://claude.ai/api/mcp/auth_callback",
-            "http://localhost",
+            "http://localhost:*",
+            "http://127.0.0.1:*",
         ],
         client_storage=MemoryStore(),
         require_authorization_consent=False,

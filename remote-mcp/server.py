@@ -20,6 +20,7 @@ from google.cloud import bigquery
 
 from fastmcp import FastMCP
 from fastmcp.server.auth.providers.google import GoogleProvider
+from key_value.aio.stores.memory import MemoryStore
 
 # Configure logging
 logging.basicConfig(
@@ -385,6 +386,7 @@ else:
             "https://claude.ai/api/mcp/auth_callback",
             "http://localhost",
         ],
+        client_storage=MemoryStore(),
         require_authorization_consent=False,
     )
 

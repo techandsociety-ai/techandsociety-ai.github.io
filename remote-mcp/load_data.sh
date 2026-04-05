@@ -10,7 +10,8 @@ source ../.env
 
 GCP_PROJECT="${GCP_PROJECT:-chip50}"
 DATASET_NAME="${DATASET_NAME:-social_media_demographics}"
-DATA_FILE="${DATA_FILE:-../data/export_CHIP50_SocialMedia_vars_2026_03_23_22_27.csv}"
+# Accept path as first positional arg, then DATA_FILE env var, then default
+DATA_FILE="${1:-${DATA_FILE:-../data/export_CHIP50_SocialMedia_vars_2026_03_23_22_27.csv}}"
 RAW_TABLE="${DATASET_NAME}.panel_data"
 
 echo "==================================="

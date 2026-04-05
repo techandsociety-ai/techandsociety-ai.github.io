@@ -213,7 +213,11 @@ AS SELECT
   CAST(sm_post_snapchat_1  AS INT64) as sm_post_snapchat_1,
   CAST(sm_post_snapchat_2  AS INT64) as sm_post_snapchat_2,
   CAST(sm_post_snapchat_3  AS INT64) as sm_post_snapchat_3
-FROM `social_media_demographics.panel_data`;
+FROM `social_media_demographics.panel_data`
+-- Exclude national sub-sample waves (Size != 'full' per Wave to Dates.xlsx).
+-- Waves 4, 6, 8 = small; 11, 12 = medium; 15 = small.
+-- All analyses should use full-size waves only.
+WHERE CAST(wave AS STRING) NOT IN ('4', '6', '8', '11', '12', '15');
 
 -- Validation summary
 SELECT

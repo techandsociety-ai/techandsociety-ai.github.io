@@ -212,7 +212,14 @@ AS SELECT
   CAST(sm_post_post_3      AS INT64) as sm_post_post_3,
   CAST(sm_post_snapchat_1  AS INT64) as sm_post_snapchat_1,
   CAST(sm_post_snapchat_2  AS INT64) as sm_post_snapchat_2,
-  CAST(sm_post_snapchat_3  AS INT64) as sm_post_snapchat_3
+  CAST(sm_post_snapchat_3  AS INT64) as sm_post_snapchat_3,
+
+  -- Ozempic / GLP-1 questions (wave 35+; ordinal; -99 = skipped/refused; NULL = not asked)
+  CAST(ozempic        AS INT64)   as ozempic,       -- 1=never heard, 2=heard not used, 3=used past, 4=currently using, 5=prescribed not yet started
+  CAST(ozempic_why    AS INT64)   as ozempic_why,   -- 1=weight loss, 4=diabetes, 5=other
+  CAST(ozempic_time_1 AS INT64)   as ozempic_time_1,-- months currently using (0–10+)
+  CAST(ozempic_time_2 AS INT64)   as ozempic_time_2,-- months since stopped (0–11+)
+  CAST(ozempic_wt     AS FLOAT64) as ozempic_wt     -- ozempic subsample weight (not an analysis variable)
 FROM `social_media_demographics.panel_data`
 -- Exclude national sub-sample waves (Size != 'full' per Wave to Dates.xlsx).
 -- Waves 4, 6, 8 = small; 11, 12 = medium; 15 = small.

@@ -195,10 +195,19 @@ PHQ9_COLUMNS = [
     "phq9_7", "phq9_8", "phq9_9", "phq9_10", "phq9_11", "phq9_12",
 ]
 
+# Ozempic / GLP-1 questions (wave 35+; ordinal; -99 = skipped/refused)
+# ozempic_wt is a subsample weight, not an analysis variable — excluded here.
+OZEMPIC_COLUMNS = [
+    "ozempic",       # awareness/use: 1=never heard, 2=heard not used, 3=used past, 4=using, 5=prescribed not yet
+    "ozempic_why",   # reason for use: 1=weight loss, 4=diabetes, 5=other
+    "ozempic_time_1",  # months using (0–10+)
+    "ozempic_time_2",  # months since stopped (0–11+)
+]
+
 # All ordinal column groups (exclude -99 sentinel in queries with col > 0)
 ALL_ORDINAL_COLUMNS = (
     ATTITUDINAL_COLUMNS + FREQ_COLUMNS + TRUST_COLUMNS +
-    POL_POST_COLUMNS + POL_TRUST_COLUMNS + PHQ9_COLUMNS
+    POL_POST_COLUMNS + POL_TRUST_COLUMNS + PHQ9_COLUMNS + OZEMPIC_COLUMNS
 )
 
 # All binary columns beyond the core use_* set

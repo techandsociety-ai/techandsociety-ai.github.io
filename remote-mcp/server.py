@@ -199,11 +199,15 @@ PHQ9_COLUMNS = [
 # Ozempic / GLP-1 questions (wave 35+; ordinal; -99 = skipped/refused)
 # ozempic_wt is a subsample weight, not an analysis variable — excluded here.
 OZEMPIC_COLUMNS = [
-    "ozempic",       # awareness/use: 1=never heard, 2=heard not used, 3=used past, 4=using, 5=prescribed not yet
-    "ozempic_why",   # reason for use: 1=weight loss, 4=diabetes, 5=other
-    "ozempic_time_1",  # months using (0–10+)
-    "ozempic_time_2",  # months since stopped (0–11+)
+    "ozempic",         # GLP-1/Ozempic status: 1=currently taking, 2=previously took/stopped, 3=considering/interested, 4=not taking/no interest, 5=don't know/unsure
+    "ozempic_why",     # reason for use: 1=weight loss, 4=diabetes, 5=other
+    "ozempic_time_1",  # months using (0–10+, continuous)
+    "ozempic_time_2",  # months since stopped (0–11+, continuous)
 ]
+
+# Categorical ordinal columns where per-category distribution (not mean) is meaningful.
+# Use get_categorical_crosstab() instead of get_ordinal_crosstab() for these.
+CATEGORICAL_ORDINAL_COLUMNS = ["ozempic", "ozempic_why"]
 
 # All ordinal column groups (exclude -99 sentinel in queries with col > 0)
 ALL_ORDINAL_COLUMNS = (
@@ -338,6 +342,20 @@ IDEOLOGY_SCALE_LABELS = {
     5: "Somewhat conservative",
     6: "Conservative",
     7: "Very conservative",
+}
+
+OZEMPIC_SCALE_LABELS = {
+    1: "Currently taking",
+    2: "Previously took / stopped",
+    3: "Considering / interested",
+    4: "Not taking / no interest",
+    5: "Don't know / unsure",
+}
+
+OZEMPIC_WHY_SCALE_LABELS = {
+    1: "Weight loss",
+    4: "Diabetes / blood sugar",
+    5: "Other reason",
 }
 
 # ── BigQuery client (lazy) ──────────────────────────────────────────────────
@@ -497,6 +515,16 @@ async def introduce_mcp() -> str:
                 "name": "get_ordinal_crosstab",
                 "purpose": "Weighted mean of an ordinal variable broken down by a demographic — e.g. mean Twitter trust by party.",
                 "example": 'get_ordinal_crosstab(column="sm_trust_twitter", demographic="party3")',
+            },
+            {
+                "name": "get_categorical_crosstab",
+                "purpose": (
+                    "Weighted % distribution of a categorical variable broken down by a demographic. "
+                    "Use for 'ozempic' and 'ozempic_why' — columns where response categories are nominal "
+                    "and a mean is not meaningful. Returns pct_within_demo for every response category "
+                    "within each demographic group. Example: share currently taking Ozempic by party."
+                ),
+                "example": 'get_categorical_crosstab(column="ozempic", demographic="party3", wave="35")',
             },
             {
                 "name": "get_freq_trends",
@@ -1405,6 +1433,100 @@ async def get_ordinal_crosstab(
 
     except Exception as e:
         logger.error(f"get_ordinal_crosstab error: {e}")
+        raise
+
+
+@mcp.tool()
+async def get_categorical_crosstab(
+    column: str,
+    demographic: str,
+    wave: Optional[str] = None,
+) -> str:
+    """Weighted % distribution of a categorical variable broken down by a demographic group.
+
+    Use this for columns where response categories are nominal/categorical rather than
+    a true ordinal scale — specifically the ozempic status and ozempic_why columns.
+    Returns the share of each response category within every demographic group,
+    so you can answer questions like "What share of Republicans are currently taking Ozempic?"
+    or "How does Ozempic consideration vary by age group?"
+
+    Unlike get_ordinal_crosstab() (which returns a single weighted mean per group),
+    this returns a full distribution: one row per demographic × response-category combination.
+
+    Valid columns:
+        "ozempic"      — GLP-1/Ozempic status (1–5 scale; available wave 35+)
+        "ozempic_why"  — Primary reason for use (codes 1, 4, 5; available wave 35+,
+                         only among current/past users)
+
+    Args:
+        column:      "ozempic" or "ozempic_why"
+        demographic: Demographic or attitudinal column — e.g. "party3", "age_cat_8", "gender"
+        wave:        Optional wave filter (e.g. "35"). Omit for all waves.
+                     Note: ozempic data is only available from wave 35 onward.
+    """
+    if column not in CATEGORICAL_ORDINAL_COLUMNS:
+        raise ValueError(
+            f"Column '{column}' is not supported by get_categorical_crosstab(). "
+            f"Valid columns: {CATEGORICAL_ORDINAL_COLUMNS}. "
+            f"For other ordinal columns use get_ordinal_crosstab()."
+        )
+    valid_demographics = DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS
+    if demographic not in valid_demographics:
+        raise ValueError(f"Unknown demographic '{demographic}'. Choose from: {valid_demographics}")
+
+    demo_sentinel = f"AND {demographic} > 0" if demographic in ALL_ORDINAL_COLUMNS else ""
+
+    scale_labels = OZEMPIC_SCALE_LABELS if column == "ozempic" else OZEMPIC_WHY_SCALE_LABELS
+
+    try:
+        df = run_query(f"""
+            SELECT
+              {demographic}                                                             AS demographic_value,
+              {column}                                                                  AS response_value,
+              COUNT(*)                                                                  AS unweighted_n,
+              ROUND(SUM(weight), 1)                                                     AS weighted_n,
+              ROUND(
+                SUM(weight) * 100.0
+                / SUM(SUM(weight)) OVER (PARTITION BY {demographic}),
+                2
+              )                                                                         AS pct_within_demo,
+              CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END            AS suppressed
+            FROM {FULL_TABLE}
+            WHERE {column} IS NOT NULL
+              AND {column} > 0
+              AND {demographic} IS NOT NULL
+              AND weight IS NOT NULL
+              {demo_sentinel}
+              {wave_clause(wave)}
+            GROUP BY {demographic}, {column}
+            ORDER BY {demographic}, {column}
+        """)
+
+        df.loc[df["suppressed"], ["weighted_n", "pct_within_demo"]] = None
+
+        # Attach human-readable response labels
+        df["response_label"] = df["response_value"].map(scale_labels)
+
+        return json.dumps({
+            "column": column,
+            "demographic": demographic,
+            "wave_filter": wave or "all",
+            "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+            "ozempic_coverage_note": "ozempic columns are only available from wave 35 onward.",
+            "scale_labels": scale_labels,
+            "column_definitions": COLUMN_DEFINITIONS,
+            "interpretation_note": (
+                "Each row is one demographic_value × response_value combination. "
+                "pct_within_demo = WEIGHTED % of that demographic group giving this response — "
+                "rows sum to ~100% within each demographic_value. "
+                "unweighted_n = raw respondent headcount (reliability check only). "
+                "Always label pct_within_demo as 'weighted %' when presenting to users."
+            ),
+            "data": df.to_dict(orient="records"),
+        }, indent=2, default=str)
+
+    except Exception as e:
+        logger.error(f"get_categorical_crosstab error: {e}")
         raise
 
 

@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 GCP_PROJECT  = os.getenv("GCP_PROJECT", "chip50")
 DATASET_NAME = os.getenv("DATASET_NAME", "social_media_demographics")
 TABLE_NAME   = os.getenv("TABLE_NAME", "panel_data_indexed")
-MIN_CELL_SIZE = int(os.getenv("MIN_CELL_SIZE", "30"))
+MIN_CELL_SIZE = int(os.getenv("MIN_CELL_SIZE", "10"))
 
 FULL_TABLE       = f"`{GCP_PROJECT}.{DATASET_NAME}.{TABLE_NAME}`"
 WAVE_DATES_TABLE = f"`{GCP_PROJECT}.{DATASET_NAME}.wave_dates`"
@@ -675,9 +675,8 @@ async def _generate_crosstab_impl(
 ) -> str:
     if platform not in PLATFORM_COLUMNS:
         raise ValueError(f"Unknown platform '{platform}'. Choose from: {PLATFORM_COLUMNS}")
-    valid_demographics = DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS
-    if demographic not in valid_demographics:
-        raise ValueError(f"Unknown demographic '{demographic}'. Choose from: {valid_demographics}")
+    if demographic not in _ALL_REGRESSION_COLUMNS:
+        raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
     try:
         df = run_query(f"""
@@ -978,9 +977,8 @@ async def generate_crosstab_by_wave(
     """
     if platform not in PLATFORM_COLUMNS:
         raise ValueError(f"Unknown platform '{platform}'. Choose from: {PLATFORM_COLUMNS}")
-    valid_demographics = DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS
-    if demographic not in valid_demographics:
-        raise ValueError(f"Unknown demographic '{demographic}'. Choose from: {valid_demographics}")
+    if demographic not in _ALL_REGRESSION_COLUMNS:
+        raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
     try:
         df = run_query(f"""
@@ -1078,9 +1076,8 @@ async def generate_crosstab_filtered(
     if platform not in PLATFORM_COLUMNS:
         raise ValueError(f"Unknown platform '{platform}'. Choose from: {PLATFORM_COLUMNS}")
 
-    valid_demographics = DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS
-    if demographic not in valid_demographics:
-        raise ValueError(f"Unknown demographic '{demographic}'. Choose from: {valid_demographics}")
+    if demographic not in _ALL_REGRESSION_COLUMNS:
+        raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
     if not filters:
         raise ValueError("filters must contain at least one {column: value} pair. "
@@ -1089,9 +1086,9 @@ async def generate_crosstab_filtered(
     # Validate each filter column and build safe SQL clauses
     filter_clauses = []
     for col, val in filters.items():
-        if col not in valid_demographics:
+        if col not in _ALL_REGRESSION_COLUMNS:
             raise ValueError(
-                f"Unknown filter column '{col}'. Choose from: {valid_demographics}"
+                f"Unknown filter column '{col}'. Call get_available_variables() to see valid names."
             )
         if col == demographic:
             raise ValueError(
@@ -1218,8 +1215,8 @@ async def get_platform_trends(
 
     demo_filter = ""
     if demographic and demographic_value:
-        if demographic not in DEMOGRAPHIC_COLUMNS:
-            raise ValueError(f"Unknown demographic '{demographic}'")
+        if demographic not in _ALL_REGRESSION_COLUMNS:
+            raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
         demo_filter = f"AND {demographic} = '{demographic_value}'"
 
     try:
@@ -1381,9 +1378,8 @@ async def get_ordinal_crosstab(
     """
     if column not in ALL_ORDINAL_COLUMNS:
         raise ValueError(f"Unknown ordinal column '{column}'. Choose from: {ALL_ORDINAL_COLUMNS}")
-    valid_demographics = DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS
-    if demographic not in valid_demographics:
-        raise ValueError(f"Unknown demographic '{demographic}'. Choose from: {valid_demographics}")
+    if demographic not in _ALL_REGRESSION_COLUMNS:
+        raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
     demo_sentinel = f"AND {demographic} > 0" if demographic in ALL_ORDINAL_COLUMNS else ""
 
@@ -1470,9 +1466,8 @@ async def get_categorical_crosstab(
             f"Valid columns: {CATEGORICAL_ORDINAL_COLUMNS}. "
             f"For other ordinal columns use get_ordinal_crosstab()."
         )
-    valid_demographics = DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS
-    if demographic not in valid_demographics:
-        raise ValueError(f"Unknown demographic '{demographic}'. Choose from: {valid_demographics}")
+    if demographic not in _ALL_REGRESSION_COLUMNS:
+        raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
     demo_sentinel = f"AND {demographic} > 0" if demographic in ALL_ORDINAL_COLUMNS else ""
 
@@ -1556,8 +1551,8 @@ async def get_freq_trends(
 
     demo_filter = ""
     if demographic and demographic_value:
-        if demographic not in DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS:
-            raise ValueError(f"Unknown demographic '{demographic}'")
+        if demographic not in _ALL_REGRESSION_COLUMNS:
+            raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
         demo_filter = f"AND {demographic} = '{demographic_value}'"
 
     try:

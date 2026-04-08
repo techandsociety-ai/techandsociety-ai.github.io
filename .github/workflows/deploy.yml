@@ -49,8 +49,8 @@ jobs:
             --platform managed \
             --region "$REGION" \
             --allow-unauthenticated \
-            --update-env-vars "GCP_PROJECT=$GCP_PROJECT,DATASET_NAME=social_media_demographics,MIN_CELL_SIZE=10,GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" \
-            --remove-env-vars "DISABLE_AUTH,FASTMCP_HOME" \
+            --update-env-vars "GCP_PROJECT=$GCP_PROJECT,DATASET_NAME=social_media_demographics,MIN_CELL_SIZE=10,GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }},DISABLE_AUTH=true" \
+            --remove-env-vars "FASTMCP_HOME" \
             --clear-volumes \
             --clear-volume-mounts \
             --execution-environment gen2 \

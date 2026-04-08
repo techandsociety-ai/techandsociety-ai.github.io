@@ -402,6 +402,7 @@ else:
         base_url=os.getenv("SERVICE_URL", "http://localhost:8080"),
         allowed_client_redirect_uris=[
             "https://claude.ai/api/mcp/auth_callback",
+            "https://codex.openai.com/api/mcp/auth_callback",
             "http://localhost:*",
             "http://127.0.0.1:*",
         ],

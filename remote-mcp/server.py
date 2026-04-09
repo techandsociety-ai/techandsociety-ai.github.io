@@ -467,10 +467,10 @@ async def introduce_mcp() -> str:
                 "ordinal_sentinel": "All ordinal columns use -99 for skipped/refused — excluded automatically from all queries.",
                 "suppression": f"Cells with n<{MIN_CELL_SIZE} are suppressed for respondent privacy.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health screening measures. Only population-level aggregates are returned.",
-                "ozempic_coverage": "Ozempic columns only available from wave 35+.",
+                "ozempic_coverage": "Ozempic columns only available in wave 35 (not fielded in later waves). Always specify wave='35' when querying ozempic variables.",
                 "ozempic_regression": "ozempic, ozempic_why, ozempic_time_1, ozempic_time_2 are valid regression outcomes/predictors.",
                 "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors only.",
-                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+.",
+                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35.",
             },
             "problematic_waves": {
                 "35.1": (
@@ -656,9 +656,9 @@ async def get_available_variables() -> str:
                     "unweighted_n fields are raw respondent headcounts for reliability checks only — "
                     "never use unweighted_n to compute percentages or present as population estimates."
                 ),
-                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+.",
+                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35.",
                 "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Use as predictors in regression.",
-                "ozempic_regression": "ozempic and ozempic_time_1/2 are valid OLS regression outcomes (wave 35+). ozempic_why is also valid. All use -99 sentinel filtering.",
+                "ozempic_regression": "ozempic and ozempic_time_1/2 are valid OLS regression outcomes (wave 35 only). ozempic_why is also valid. Always use wave='35'. All use -99 sentinel filtering.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",
                 "missing_platform_waves": (
                     "Some waves exist in the panel but platform questions were not asked. "

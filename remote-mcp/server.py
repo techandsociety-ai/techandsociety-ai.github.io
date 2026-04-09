@@ -226,7 +226,7 @@ ALL_ORDINAL_COLUMNS = (
 )
 
 # All binary columns beyond the core use_* set
-ALL_BINARY_COLUMNS = SM_POST_COLUMNS + POL_NEWS_COLUMNS + RACE_BOOLEAN_COLUMNS
+ALL_BINARY_COLUMNS = SM_POST_COLUMNS + POL_NEWS_COLUMNS
 
 # ── Regression column sets ───────────────────────────────────────────────────
 
@@ -253,7 +253,7 @@ _ALL_REGRESSION_COLUMNS: set[str] = set(
 )
 
 # Binary-outcome columns (valid for logistic regression)
-_BINARY_COLUMNS: set[str] = set(PLATFORM_COLUMNS + SM_POST_COLUMNS + POL_NEWS_COLUMNS + RACE_BOOLEAN_COLUMNS)
+_BINARY_COLUMNS: set[str] = set(PLATFORM_COLUMNS + SM_POST_COLUMNS + POL_NEWS_COLUMNS)
 
 # ── Key historical events for trend annotation ───────────────────────────────
 # Injected into get_platform_trends / get_freq_trends responses.
@@ -469,7 +469,7 @@ async def introduce_mcp() -> str:
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health screening measures. Only population-level aggregates are returned.",
                 "ozempic_coverage": "Ozempic columns only available from wave 35+.",
                 "ozempic_regression": "ozempic, ozempic_why, ozempic_time_1, ozempic_time_2 are valid regression outcomes/predictors.",
-                "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors or logistic outcomes.",
+                "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors only.",
                 "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+.",
             },
             "problematic_waves": {
@@ -657,7 +657,7 @@ async def get_available_variables() -> str:
                     "never use unweighted_n to compute percentages or present as population estimates."
                 ),
                 "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+.",
-                "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Use as predictors in regression or as logistic outcomes.",
+                "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Use as predictors in regression.",
                 "ozempic_regression": "ozempic and ozempic_time_1/2 are valid OLS regression outcomes (wave 35+). ozempic_why is also valid. All use -99 sentinel filtering.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",
                 "missing_platform_waves": (

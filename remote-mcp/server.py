@@ -1814,7 +1814,9 @@ async def get_wave_metadata(wave: Optional[str] = None) -> str:
               COUNTIF(t.trump_win IS NOT NULL
                 AND t.trump_win > 0)                         AS n_trump_win,
               COUNTIF(t.conspiracy_1 IS NOT NULL
-                AND t.conspiracy_1 > 0)                      AS n_conspiracy
+                AND t.conspiracy_1 > 0)                      AS n_conspiracy,
+              COUNTIF(t.ozempic IS NOT NULL
+                AND t.ozempic > 0)                           AS n_ozempic
 
             FROM {FULL_TABLE} t
             LEFT JOIN {WAVE_DATES_TABLE} wd
@@ -1848,6 +1850,7 @@ async def get_wave_metadata(wave: Optional[str] = None) -> str:
             "voted_2024":             "n_voted24",
             "trump_win_expectation":  "n_trump_win",
             "conspiracy_beliefs":     "n_conspiracy",
+            "ozempic":                "n_ozempic",
         }
 
         waves_out = []
@@ -1884,6 +1887,7 @@ async def get_wave_metadata(wave: Optional[str] = None) -> str:
                 "platforms_asked":    platforms_asked,
                 "platforms_not_asked": platforms_not_asked,
                 "n_platforms_asked":  len(platforms_asked),
+                "attitudes_only_wave": len(platforms_asked) == 0,
                 "variable_groups_asked": variable_groups,
             })
 

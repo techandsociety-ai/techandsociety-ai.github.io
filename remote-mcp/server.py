@@ -215,6 +215,12 @@ OZEMPIC_COLUMNS = [
     "ozempic_time_2",  # months since stopped (0–11+, continuous)
 ]
 
+# Ozempic columns appropriate as OLS regression outcomes/predictors.
+# ozempic and ozempic_why are excluded: their numeric codes have no linear
+# interpretation (ozempic: 1=taking→5=don't know; ozempic_why: non-contiguous codes 1,4,5).
+# Use ozempic_binary (derived) for logistic regression instead.
+OZEMPIC_REGRESSION_COLUMNS = ["ozempic_time_1", "ozempic_time_2"]
+
 # Categorical ordinal columns where per-category distribution (not mean) is meaningful.
 # Use get_categorical_crosstab() instead of get_ordinal_crosstab() for these.
 CATEGORICAL_ORDINAL_COLUMNS = ["ozempic", "ozempic_why"]
@@ -246,7 +252,7 @@ _ALL_REGRESSION_COLUMNS: set[str] = set(
     + POL_POST_COLUMNS
     + POL_TRUST_COLUMNS
     + PHQ9_COLUMNS
-    + OZEMPIC_COLUMNS
+    + OZEMPIC_REGRESSION_COLUMNS
     + SM_POST_COLUMNS
     + POL_NEWS_COLUMNS
     + RACE_BOOLEAN_COLUMNS
@@ -254,6 +260,20 @@ _ALL_REGRESSION_COLUMNS: set[str] = set(
 
 # Binary-outcome columns (valid for logistic regression)
 _BINARY_COLUMNS: set[str] = set(PLATFORM_COLUMNS + SM_POST_COLUMNS + POL_NEWS_COLUMNS)
+
+# Derived columns: computed on the fly in SQL from a source column.
+# Each entry: { "sql": <expression>, "source": <real column for NULL/sentinel checks> }
+_DERIVED_COLUMNS: dict[str, dict] = {
+    "ozempic_binary": {
+        "sql": "CASE WHEN ozempic IN (1, 2) THEN 1 ELSE 0 END",
+        "source": "ozempic",  # real column — used for NOT NULL + sentinel (>0) filtering
+        "description": "Binary GLP-1/Ozempic use: 1 = currently taking or previously took, 0 = all other categories (wave 35 only)",
+    },
+}
+
+# Register derived columns as valid regression columns and binary outcomes
+_ALL_REGRESSION_COLUMNS.update(_DERIVED_COLUMNS.keys())
+_BINARY_COLUMNS.update(_DERIVED_COLUMNS.keys())
 
 # ── Key historical events for trend annotation ───────────────────────────────
 # Injected into get_platform_trends / get_freq_trends responses.
@@ -644,6 +664,7 @@ async def get_available_variables() -> str:
             "phq9_columns": PHQ9_COLUMNS,
             "ozempic_columns": OZEMPIC_COLUMNS,
             "race_boolean_columns": RACE_BOOLEAN_COLUMNS,
+            "derived_columns": {k: v["description"] for k, v in _DERIVED_COLUMNS.items()},
             "total_rows": int(row["total_rows"]),
             "unique_respondents": int(row["unique_respondents"]),
             "wave_count": int(row["wave_count"]),
@@ -658,7 +679,7 @@ async def get_available_variables() -> str:
                 ),
                 "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35.",
                 "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Use as predictors in regression.",
-                "ozempic_regression": "ozempic and ozempic_time_1/2 are valid OLS regression outcomes (wave 35 only). ozempic_why is also valid. Always use wave='35'. All use -99 sentinel filtering.",
+                "ozempic_regression": "ozempic_binary (derived: currently taking or previously took vs. all others) is valid for logistic regression (wave 35 only). ozempic/ozempic_why/ozempic_time_* are valid OLS outcomes. Always use wave='35'.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",
                 "missing_platform_waves": (
                     "Some waves exist in the panel but platform questions were not asked. "
@@ -1938,12 +1959,24 @@ def _fetch_regression_data(
 ) -> pd.DataFrame:
     """Pull individual-level rows needed for a regression from BigQuery."""
     cols = [outcome] + predictors
-    select_cols = ", ".join(cols) + ", weight"
 
-    not_null = " AND ".join(f"{c} IS NOT NULL" for c in cols + ["weight"])
+    # Resolve derived columns: substitute SQL expressions in SELECT;
+    # use source column for NOT NULL and sentinel (>0) checks.
+    def _real_col(c: str) -> str:
+        return _DERIVED_COLUMNS[c]["source"] if c in _DERIVED_COLUMNS else c
+
+    def _select_expr(c: str) -> str:
+        if c in _DERIVED_COLUMNS:
+            return f"{_DERIVED_COLUMNS[c]['sql']} AS {c}"
+        return c
+
+    real_cols = [_real_col(c) for c in cols]
+    select_cols = ", ".join(_select_expr(c) for c in cols) + ", weight"
+
+    not_null = " AND ".join(f"{c} IS NOT NULL" for c in real_cols + ["weight"])
 
     sentinel_clauses = " ".join(
-        f"AND {c} > 0" for c in cols if c in _SENTINEL_COLUMNS
+        f"AND {c} > 0" for c in real_cols if c in _SENTINEL_COLUMNS
     )
 
     filter_clauses = _build_filter_clauses(filters) if filters else ""

@@ -196,6 +196,16 @@ PHQ9_COLUMNS = [
     "phq9_7", "phq9_8", "phq9_9", "phq9_10", "phq9_11", "phq9_12",
 ]
 
+# Race/ethnicity boolean flags (one-hot; 1=yes, 0=no; replaces race_cat_5)
+RACE_BOOLEAN_COLUMNS = [
+    "race_asian",
+    "race_black",
+    "race_hisp",
+    "race_natam",
+    "race_white",
+    "race_other",
+]
+
 # Ozempic / GLP-1 questions (wave 35+; ordinal; -99 = skipped/refused)
 # ozempic_wt is a subsample weight, not an analysis variable — excluded here.
 OZEMPIC_COLUMNS = [
@@ -216,7 +226,7 @@ ALL_ORDINAL_COLUMNS = (
 )
 
 # All binary columns beyond the core use_* set
-ALL_BINARY_COLUMNS = SM_POST_COLUMNS + POL_NEWS_COLUMNS
+ALL_BINARY_COLUMNS = SM_POST_COLUMNS + POL_NEWS_COLUMNS + RACE_BOOLEAN_COLUMNS
 
 # ── Regression column sets ───────────────────────────────────────────────────
 
@@ -236,12 +246,14 @@ _ALL_REGRESSION_COLUMNS: set[str] = set(
     + POL_POST_COLUMNS
     + POL_TRUST_COLUMNS
     + PHQ9_COLUMNS
+    + OZEMPIC_COLUMNS
     + SM_POST_COLUMNS
     + POL_NEWS_COLUMNS
+    + RACE_BOOLEAN_COLUMNS
 )
 
 # Binary-outcome columns (valid for logistic regression)
-_BINARY_COLUMNS: set[str] = set(PLATFORM_COLUMNS + SM_POST_COLUMNS + POL_NEWS_COLUMNS)
+_BINARY_COLUMNS: set[str] = set(PLATFORM_COLUMNS + SM_POST_COLUMNS + POL_NEWS_COLUMNS + RACE_BOOLEAN_COLUMNS)
 
 # ── Key historical events for trend annotation ───────────────────────────────
 # Injected into get_platform_trends / get_freq_trends responses.
@@ -449,12 +461,15 @@ async def introduce_mcp() -> str:
             "pol_trust_columns": POL_TRUST_COLUMNS,
             "phq9_columns": PHQ9_COLUMNS,
             "ozempic_columns": OZEMPIC_COLUMNS,
+            "race_boolean_columns": RACE_BOOLEAN_COLUMNS,
             "notes": {
                 "platform_usage": "Binary (1=uses, 0=does not). late_platforms (truth, mastodon, post, threads, bluesky) have NULLs in earlier waves.",
                 "ordinal_sentinel": "All ordinal columns use -99 for skipped/refused — excluded automatically from all queries.",
                 "suppression": f"Cells with n<{MIN_CELL_SIZE} are suppressed for respondent privacy.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health screening measures. Only population-level aggregates are returned.",
                 "ozempic_coverage": "Ozempic columns only available from wave 35+.",
+                "ozempic_regression": "ozempic, ozempic_why, ozempic_time_1, ozempic_time_2 are valid regression outcomes/predictors.",
+                "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors or logistic outcomes.",
                 "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+.",
             },
             "problematic_waves": {
@@ -628,6 +643,7 @@ async def get_available_variables() -> str:
             "pol_trust_columns": POL_TRUST_COLUMNS,
             "phq9_columns": PHQ9_COLUMNS,
             "ozempic_columns": OZEMPIC_COLUMNS,
+            "race_boolean_columns": RACE_BOOLEAN_COLUMNS,
             "total_rows": int(row["total_rows"]),
             "unique_respondents": int(row["unique_respondents"]),
             "wave_count": int(row["wave_count"]),
@@ -641,6 +657,8 @@ async def get_available_variables() -> str:
                     "never use unweighted_n to compute percentages or present as population estimates."
                 ),
                 "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+.",
+                "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Use as predictors in regression or as logistic outcomes.",
+                "ozempic_regression": "ozempic and ozempic_time_1/2 are valid OLS regression outcomes (wave 35+). ozempic_why is also valid. All use -99 sentinel filtering.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",
                 "missing_platform_waves": (
                     "Some waves exist in the panel but platform questions were not asked. "

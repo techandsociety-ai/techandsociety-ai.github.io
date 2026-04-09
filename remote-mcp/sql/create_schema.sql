@@ -20,6 +20,14 @@ AS SELECT
   urban_type,
   race,
 
+  -- Race/ethnicity boolean flags (0/1; replaces race_cat_5)
+  CAST(race_asian AS INT64) as race_asian,
+  CAST(race_black AS INT64) as race_black,
+  CAST(race_hisp  AS INT64) as race_hisp,
+  CAST(race_natam AS INT64) as race_natam,
+  CAST(race_white AS INT64) as race_white,
+  CAST(race_other AS INT64) as race_other,
+
   -- Survey weight (from panel data)
   CAST(weight AS FLOAT64) AS weight,
 

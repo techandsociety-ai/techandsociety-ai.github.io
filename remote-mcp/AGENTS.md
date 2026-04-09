@@ -132,10 +132,11 @@ This project implements a **REMOTE** Model Context Protocol (MCP) server, fundam
 - **BigQuery**: 10k+ row synthetic dataset
 
 ### Security
-- **API Key Authentication**: Custom middleware validates `Authorization` header
+- **OAuth Authentication**: Google OAuth — users connect via Claude Settings → Connectors
 - **HTTPS Only**: TLS encryption for all traffic
 - **Cell Suppression**: Privacy protection (n<10 suppressed)
 - **No PII Storage**: Only aggregated demographics
+- **Column Validation**: All tool inputs validated against `_ALL_REGRESSION_COLUMNS`; crosstab `demographic` accepts any variable in the full regression column set (not limited to DEMOGRAPHIC_COLUMNS)
 
 ## Data Flow
 
@@ -238,8 +239,10 @@ Stored locally in `claude_desktop_config.json`:
 
 ### Cloud Run Auto-Scaling
 
-- **Min Instances**: 0 (scales to zero when idle)
-- **Max Instances**: 10 (configurable)
+- **Min Instances**: 1 (always warm — no cold starts)
+- **Max Instances**: 1 (single instance)
+- **Memory**: 4Gi
+- **CPU**: 2
 - **Concurrency**: 80 requests per instance (default)
 - **CPU Allocation**: Only during request processing
 

@@ -2013,6 +2013,7 @@ def _encode_predictors(
     df: pd.DataFrame,
     predictors: List[str],
     reference_levels: Optional[Dict[str, str]] = None,
+    treat_as_categorical: Optional[List[str]] = None,
 ) -> tuple[pd.DataFrame, List[str], List[str]]:
     """Dummy-encode categorical predictors; pass numeric ones through.
 
@@ -2023,17 +2024,21 @@ def _encode_predictors(
             When provided for a categorical column the specified category is used
             as the dropped (reference) level.  Unknown categories fall back to
             the alphabetically first value with a logged warning.
+        treat_as_categorical: Optional list of ordinal column names to dummy-encode
+            rather than treat as continuous. Useful for freq_* or trust_* columns
+            where the numeric scale should not be assumed linear.
 
     Returns:
         (X DataFrame, encoding notes, warning messages)
     """
     if reference_levels is None:
         reference_levels = {}
+    _extra_categorical: set[str] = set(treat_as_categorical) if treat_as_categorical else set()
     notes: List[str] = []
     warnings: List[str] = []
     frames: List[pd.DataFrame] = []
     for col in predictors:
-        if col in _CATEGORICAL_COLUMNS:
+        if col in _CATEGORICAL_COLUMNS or col in _extra_categorical:
             sorted_cats = sorted(df[col].dropna().unique())
             requested_ref = reference_levels.get(col)
             ref = _resolve_reference_level(col, sorted_cats, requested_ref)
@@ -2065,11 +2070,12 @@ def _fit_ols(
     predictors: List[str],
     reference_levels: Optional[Dict[str, str]],
     use_weights: bool,
+    treat_as_categorical: Optional[List[str]] = None,
 ):
     """Encode predictors and fit OLS/WLS. Runs in a thread executor."""
     y = df[outcome].astype(float)
     weights = df["weight"].astype(float)
-    X_df, enc_notes, ref_warnings = _encode_predictors(df, predictors, reference_levels)
+    X_df, enc_notes, ref_warnings = _encode_predictors(df, predictors, reference_levels, treat_as_categorical)
     X = sm.add_constant(X_df, has_constant="add")
     model = sm.WLS(y, X, weights=weights).fit() if use_weights else sm.OLS(y, X).fit()
     return model, y, weights, enc_notes, ref_warnings
@@ -2081,11 +2087,12 @@ def _fit_logistic(
     predictors: List[str],
     reference_levels: Optional[Dict[str, str]],
     use_weights: bool,
+    treat_as_categorical: Optional[List[str]] = None,
 ):
     """Encode predictors and fit logistic GLM. Runs in a thread executor."""
     y = df[outcome].astype(float)
     weights = df["weight"].astype(float)
-    X_df, enc_notes, ref_warnings = _encode_predictors(df, predictors, reference_levels)
+    X_df, enc_notes, ref_warnings = _encode_predictors(df, predictors, reference_levels, treat_as_categorical)
     X = sm.add_constant(X_df, has_constant="add")
     if use_weights:
         model = sm.GLM(y, X, family=sm.families.Binomial(), freq_weights=weights).fit()
@@ -2102,6 +2109,7 @@ async def run_ols_regression(
     reference_levels: Optional[Dict[str, str]] = None,
     use_weights: bool = True,
     filters: Optional[Dict[str, List[str]]] = None,
+    treat_as_categorical: Optional[List[str]] = None,
 ) -> str:
     """Run an OLS regression of a continuous/ordinal outcome on one or more predictors.
 
@@ -2132,6 +2140,13 @@ async def run_ols_regression(
             age groups. {"gender": ["Female"], "party3": ["Democrat"]} restricts
             to female Democrats. Filter columns do not need to appear in predictors.
             Call get_available_variables() to see valid column names and values.
+        treat_as_categorical: Optional list of ordinal predictor columns to
+            dummy-encode rather than treat as continuous. Use this when the
+            ordinal scale should not be assumed linear — e.g. freq_* columns
+            (1=Never … 6=Almost constantly) or trust_* columns (1–4 scale).
+            Example: ["freq_facebook", "freq_instagram"] produces dummies for
+            each observed frequency value, with the lowest (reference) level
+            dropped unless overridden via reference_levels.
 
     Returns:
         JSON with: coefficients, std errors, t-stats, p-values,
@@ -2171,7 +2186,7 @@ async def run_ols_regression(
 
     try:
         model, y, weights, enc_notes, ref_warnings = await asyncio.get_event_loop().run_in_executor(
-            None, _fit_ols, df, outcome, predictors, reference_levels, use_weights
+            None, _fit_ols, df, outcome, predictors, reference_levels, use_weights, treat_as_categorical
         )
     except Exception as e:
         logger.error(f"run_ols_regression fit error: {e}")
@@ -2210,6 +2225,7 @@ async def run_ols_regression(
         "outcome": outcome,
         "predictors_specified": predictors,
         "reference_levels_requested": reference_levels,
+        "treat_as_categorical": treat_as_categorical,
         "subgroup_filters": filters,
         "wave": wave,
         "n_observations": int(len(df)),
@@ -2235,6 +2251,7 @@ async def run_logistic_regression(
     reference_levels: Optional[Dict[str, str]] = None,
     use_weights: bool = True,
     filters: Optional[Dict[str, List[str]]] = None,
+    treat_as_categorical: Optional[List[str]] = None,
 ) -> str:
     """Run a logistic regression of a binary outcome on one or more predictors.
 
@@ -2266,6 +2283,13 @@ async def run_logistic_regression(
             age groups. {"gender": ["Female"], "party3": ["Democrat"]} restricts
             to female Democrats. Filter columns do not need to appear in predictors.
             Call get_available_variables() to see valid column names and values.
+        treat_as_categorical: Optional list of ordinal predictor columns to
+            dummy-encode rather than treat as continuous. Use this when the
+            ordinal scale should not be assumed linear — e.g. freq_* columns
+            (1=Never … 6=Almost constantly) or trust_* columns (1–4 scale).
+            Example: ["freq_facebook"] produces dummies for each observed frequency
+            value, with the lowest (reference) level dropped unless overridden via
+            reference_levels.
 
     Returns:
         JSON with: log-odds, odds ratios, std errors, z-stats, p-values,
@@ -2311,7 +2335,7 @@ async def run_logistic_regression(
 
     try:
         model, y, weights, enc_notes, ref_warnings = await asyncio.get_event_loop().run_in_executor(
-            None, _fit_logistic, df, outcome, predictors, reference_levels, use_weights
+            None, _fit_logistic, df, outcome, predictors, reference_levels, use_weights, treat_as_categorical
         )
     except Exception as e:
         logger.error(f"run_logistic_regression fit error: {e}")
@@ -2365,6 +2389,7 @@ async def run_logistic_regression(
         "outcome": outcome,
         "predictors_specified": predictors,
         "reference_levels_requested": reference_levels,
+        "treat_as_categorical": treat_as_categorical,
         "subgroup_filters": filters,
         "wave": wave,
         "n_observations": int(len(df)),

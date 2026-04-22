@@ -489,7 +489,7 @@ async def introduce_mcp() -> str:
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health screening measures. Only population-level aggregates are returned.",
                 "ozempic_coverage": "Ozempic columns only available in wave 35 (not fielded in later waves). Always specify wave='35' when querying ozempic variables.",
                 "ozempic_regression": "ozempic, ozempic_why, ozempic_time_1, ozempic_time_2 are valid regression outcomes/predictors.",
-                "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors only.",
+                "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors and marginals (returns adoption rate, like platform columns).",
                 "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35.",
             },
             "problematic_waves": {
@@ -678,7 +678,7 @@ async def get_available_variables() -> str:
                     "never use unweighted_n to compute percentages or present as population estimates."
                 ),
                 "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35.",
-                "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Use as predictors in regression.",
+                "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors and in marginals/marginals_by_wave (returns adoption rate, like platform columns).",
                 "ozempic_regression": "ozempic_binary (derived: currently taking or previously took vs. all others) is valid for logistic regression (wave 35 only). ozempic/ozempic_why/ozempic_time_* are valid OLS outcomes. Always use wave='35'.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",
                 "missing_platform_waves": (
@@ -785,7 +785,7 @@ async def _generate_marginals_impl(
 ) -> str:
     all_valid = (
         DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS + PLATFORM_COLUMNS +
-        ALL_ORDINAL_COLUMNS + ALL_BINARY_COLUMNS
+        ALL_ORDINAL_COLUMNS + ALL_BINARY_COLUMNS + RACE_BOOLEAN_COLUMNS
     )
     if variable not in all_valid:
         raise ValueError(
@@ -794,11 +794,12 @@ async def _generate_marginals_impl(
             f"attitudinal: {ATTITUDINAL_COLUMNS}, "
             f"platforms: {PLATFORM_COLUMNS}, "
             f"ordinal: {ALL_ORDINAL_COLUMNS}, "
-            f"or binary: {ALL_BINARY_COLUMNS}"
+            f"binary: {ALL_BINARY_COLUMNS}, "
+            f"or race booleans: {RACE_BOOLEAN_COLUMNS}"
         )
 
-    # Binary columns: use_* and sm_post_*/pol_news2_* — compute adoption rate
-    is_binary = variable in PLATFORM_COLUMNS or variable in ALL_BINARY_COLUMNS
+    # Binary columns: use_* and sm_post_*/pol_news2_* and race booleans — compute adoption rate
+    is_binary = variable in PLATFORM_COLUMNS or variable in ALL_BINARY_COLUMNS or variable in RACE_BOOLEAN_COLUMNS
 
     try:
         if is_binary:
@@ -902,14 +903,14 @@ async def generate_marginals_by_wave(variable: str) -> str:
     """
     all_valid = (
         DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS + PLATFORM_COLUMNS +
-        ALL_ORDINAL_COLUMNS + ALL_BINARY_COLUMNS
+        ALL_ORDINAL_COLUMNS + ALL_BINARY_COLUMNS + RACE_BOOLEAN_COLUMNS
     )
     if variable not in all_valid:
         raise ValueError(
             f"Unknown variable '{variable}'. Call get_available_variables() to see valid names."
         )
 
-    is_binary = variable in PLATFORM_COLUMNS or variable in ALL_BINARY_COLUMNS
+    is_binary = variable in PLATFORM_COLUMNS or variable in ALL_BINARY_COLUMNS or variable in RACE_BOOLEAN_COLUMNS
 
     try:
         if is_binary:

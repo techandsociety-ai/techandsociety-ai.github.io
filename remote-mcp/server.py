@@ -537,6 +537,17 @@ async def introduce_mcp() -> str:
                 "example": 'generate_crosstab_batch(platform="use_tiktok", demographics=["age_cat_8", "gender", "party3"])',
             },
             {
+                "name": "generate_crosstab_multi",
+                "purpose": (
+                    "Variable broken down by the intersection of 2+ demographic dimensions — "
+                    "returns one row per unique cell for 2D heatmaps and interaction tables. "
+                    "Binary variables (platform use, race booleans) → adoption rate per cell. "
+                    "Ordinal variables (freq_*, trust_*, ideology, etc.) → weighted mean per cell. "
+                    "Use instead of running a regression just to get subgroup cell estimates."
+                ),
+                "example": 'generate_crosstab_multi(variable="use_tiktok", demographics=["gender", "party3"])',
+            },
+            {
                 "name": "get_platform_trends",
                 "purpose": "Binary platform adoption rate across waves (time series). Optionally filter to a demographic group.",
                 "example": 'get_platform_trends(platform="use_twitter", demographic="party3", demographic_value="Republican")',
@@ -1209,6 +1220,136 @@ async def generate_crosstab_batch(
             for d, r in zip(demographics, results)
         }
     }, indent=2)
+
+
+@mcp.tool()
+async def generate_crosstab_multi(
+    variable: str,
+    demographics: List[str],
+    wave: Optional[str] = None,
+) -> str:
+    """Variable broken down by the intersection of multiple demographic dimensions.
+
+    Returns one row per unique combination of all demographics. Use this for 2D
+    heatmaps and interaction tables that require more than one grouping variable.
+
+    For binary variables (platform use, race booleans): returns weighted adoption
+    rate per cell. For ordinal variables (freq_*, trust_*, ideology, etc.): returns
+    weighted mean per cell. This replaces running a regression just to get cell estimates.
+
+    Examples:
+        generate_crosstab_multi(variable="use_tiktok", demographics=["gender", "party3"])
+        → TikTok adoption rate for each gender × party combination.
+
+        generate_crosstab_multi(variable="freq_facebook", demographics=["age_cat_8", "gender"])
+        → Mean Facebook usage frequency for each age × gender cell.
+
+    Cell counts fall quickly with more dimensions. Keep to 2–3 demographics to avoid
+    excessive suppression. Cells with unweighted n < MIN_CELL_SIZE are suppressed.
+
+    Args:
+        variable:     The column to measure. Binary platform/race columns → adoption
+                      rate. Ordinal columns → weighted mean.
+        demographics: Two or more grouping columns, e.g. ["gender", "party3"].
+        wave:         Optional wave number to filter to. Omit for all waves.
+    """
+    valid_variables = set(PLATFORM_COLUMNS + RACE_BOOLEAN_COLUMNS + ALL_ORDINAL_COLUMNS)
+    if variable not in valid_variables:
+        raise ValueError(
+            f"Unknown variable '{variable}'. Must be a platform (use_*), race boolean, "
+            f"or ordinal column. Call get_available_variables() to see valid names."
+        )
+    if len(demographics) < 2:
+        raise ValueError(
+            "demographics must contain at least 2 columns. "
+            "Use generate_crosstab() or get_ordinal_crosstab() for a single grouping variable."
+        )
+    invalid = [d for d in demographics if d not in _ALL_REGRESSION_COLUMNS]
+    if invalid:
+        raise ValueError(f"Unknown columns: {invalid}. Call get_available_variables() to see valid names.")
+    if variable in demographics:
+        raise ValueError(f"variable '{variable}' cannot also appear in demographics.")
+
+    is_binary = variable in PLATFORM_COLUMNS or variable in RACE_BOOLEAN_COLUMNS
+    is_ordinal = variable in ALL_ORDINAL_COLUMNS
+
+    group_cols = ", ".join(demographics)
+    select_cols = ",\n              ".join(demographics)
+    null_filters = "\n              ".join(f"AND {d} IS NOT NULL" for d in demographics)
+    sentinel_filters = "\n              ".join(
+        f"AND {d} > 0" for d in demographics if d in _SENTINEL_COLUMNS
+    )
+    variable_sentinel = f"AND {variable} > 0" if is_ordinal else ""
+
+    if is_binary:
+        metric_select = (
+            f"ROUND(SUM({variable} * weight), 1)                          AS weighted_users,\n"
+            f"              ROUND((SUM(weight) - SUM({variable} * weight)), 1)          AS weighted_non_users,\n"
+            f"              ROUND(SUM({variable} * weight) / SUM(weight) * 100, 2)      AS user_rate_pct,"
+        )
+        suppress_cols = ["weighted_n", "weighted_users", "weighted_non_users", "user_rate_pct"]
+        result_type = "adoption_rate"
+    else:  # ordinal → weighted mean
+        metric_select = (
+            f"ROUND(SUM({variable} * weight) / SUM(weight), 3)            AS weighted_mean,"
+        )
+        suppress_cols = ["weighted_n", "weighted_mean"]
+        result_type = "weighted_mean"
+
+    scale_labels = None
+    if variable.startswith("freq_"):
+        scale_labels = FREQ_SCALE_LABELS
+    elif variable.startswith("sm_trust_") or variable.startswith("pol_trust_"):
+        scale_labels = TRUST_SCALE_LABELS
+    elif variable == "ideology":
+        scale_labels = IDEOLOGY_SCALE_LABELS
+
+    try:
+        df = run_query(f"""
+            SELECT
+              {select_cols},
+              COUNT(*)                                                    AS unweighted_n,
+              ROUND(SUM(weight), 1)                                       AS weighted_n,
+              {metric_select}
+              CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END AS suppressed
+            FROM {FULL_TABLE}
+            WHERE {variable} IS NOT NULL
+              AND weight IS NOT NULL
+              {variable_sentinel}
+              {null_filters}
+              {sentinel_filters}
+              {wave_clause(wave)}
+            GROUP BY {group_cols}
+            ORDER BY {group_cols}
+        """)
+
+        df.loc[df["suppressed"], suppress_cols] = None
+
+        return json.dumps({
+            "variable": variable,
+            "result_type": result_type,
+            "demographics": demographics,
+            "wave_filter": wave or "all",
+            "n_cells": int(len(df)),
+            "n_suppressed": int(df["suppressed"].sum()),
+            "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+            "scale_labels": scale_labels,
+            "column_definitions": COLUMN_DEFINITIONS,
+            "interpretation_note": (
+                "Each row is one unique combination of all demographic variables. "
+                + (
+                    "user_rate_pct = WEIGHTED adoption rate for that subgroup intersection."
+                    if is_binary else
+                    "weighted_mean = WEIGHTED mean of the variable for that subgroup intersection."
+                ) +
+                " unweighted_n = raw respondent headcount (reliability check only)."
+            ),
+            "data": df.to_dict(orient="records"),
+        }, indent=2, default=str)
+
+    except Exception as e:
+        logger.error(f"generate_crosstab_multi error: {e}")
+        raise
 
 
 @mcp.tool()

@@ -24,7 +24,7 @@ from google.cloud import storage as gcs
 
 from fastmcp import FastMCP
 from fastmcp.server.auth.providers.google import GoogleProvider
-from key_value.aio.stores.memory import MemoryStore
+from key_value.aio.stores.firestore import FirestoreStore
 
 # reportlab — optional; required only for generate_pdf_report
 try:
@@ -473,7 +473,7 @@ else:
             "http://localhost:*",
             "http://127.0.0.1:*",
         ],
-        client_storage=MemoryStore(),
+        client_storage=FirestoreStore(project=GCP_PROJECT, default_collection="mcp_oauth"),
         require_authorization_consent=False,
     )
 

@@ -11,16 +11,44 @@ import os
 import json
 import logging
 import asyncio
+import time
+from datetime import datetime, timezone, timedelta
+from io import BytesIO
 from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 from google.cloud import bigquery
+from google.cloud import storage as gcs
 
 from fastmcp import FastMCP
 from fastmcp.server.auth.providers.google import GoogleProvider
 from key_value.aio.stores.memory import MemoryStore
+
+# reportlab — optional; required only for generate_pdf_report
+try:
+    from reportlab.lib import colors as _rl_colors
+    from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+    from reportlab.lib.pagesizes import LETTER as _LETTER
+    from reportlab.lib.styles import ParagraphStyle as _PS
+    from reportlab.lib.units import inch as _inch
+    from reportlab.platypus import (
+        SimpleDocTemplate as _SimpleDocTemplate,
+        Paragraph as _Paragraph,
+        Spacer as _Spacer,
+        Table as _Table,
+        TableStyle as _TableStyle,
+        PageBreak as _PageBreak,
+        KeepTogether as _KeepTogether,
+        HRFlowable as _HRFlowable,
+        Image as _Image,
+    )
+    _REPORTLAB_AVAILABLE = True
+except ImportError:
+    _REPORTLAB_AVAILABLE = False
+
+_LOGO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chip50.png")
 
 # Configure logging
 logging.basicConfig(
@@ -30,10 +58,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Configuration
-GCP_PROJECT  = os.getenv("GCP_PROJECT", "chip50")
-DATASET_NAME = os.getenv("DATASET_NAME", "social_media_demographics")
-TABLE_NAME   = os.getenv("TABLE_NAME", "panel_data_indexed")
+GCP_PROJECT   = os.getenv("GCP_PROJECT", "chip50")
+DATASET_NAME  = os.getenv("DATASET_NAME", "social_media_demographics")
+TABLE_NAME    = os.getenv("TABLE_NAME", "panel_data_indexed")
 MIN_CELL_SIZE = int(os.getenv("MIN_CELL_SIZE", "10"))
+REPORTS_BUCKET = os.getenv("REPORTS_BUCKET", "chip50-reports")
 
 FULL_TABLE       = f"`{GCP_PROJECT}.{DATASET_NAME}.{TABLE_NAME}`"
 WAVE_DATES_TABLE = f"`{GCP_PROJECT}.{DATASET_NAME}.wave_dates`"
@@ -350,6 +379,13 @@ COLUMN_DEFINITIONS = {
     ),
 }
 
+# Compact note embedded in data responses instead of the full COLUMN_DEFINITIONS block.
+# Full definitions are available via introduce_mcp() and get_available_variables().
+NOTE_WEIGHTED = (
+    "All rates/means/pct are WEIGHTED (population-representative). "
+    "unweighted_n is raw headcount for reliability checks only — never use it to compute percentages."
+)
+
 FREQ_SCALE_LABELS = {
     1: "Never",
     2: "Rarely",
@@ -499,6 +535,7 @@ async def introduce_mcp() -> str:
                     "Use aggregate-level queries for this wave; demographic crosstabs by race may return no data."
                 ),
             },
+            "column_definitions": COLUMN_DEFINITIONS,
         },
         "tools": [
             {
@@ -623,6 +660,38 @@ async def introduce_mcp() -> str:
                 "name": "run_logistic_regression",
                 "purpose": "Logistic regression for a binary outcome (platform use, sm_post_*, pol_news_*). Survey-weighted by default (use_weights=True). Supports custom reference categories via reference_categories. Returns log-odds, odds ratios, p-values, 95% CIs, McFadden pseudo-R², AIC/BIC.",
                 "example": 'run_logistic_regression(outcome="use_tiktok", predictors=["age_cat_8", "gender", "ideology", "party3"], reference_categories={"party3": "Democrat"}, use_weights=False)',
+            },
+            {
+                "name": "generate_pdf_report",
+                "purpose": (
+                    "Generate a publication-quality PDF report from CHIP50 analysis results. "
+                    "Produces a title page, optional abstract, auto-generated methodology section "
+                    "(weighting, cell suppression, regression conventions), and user-defined sections "
+                    "with numbered tables following academic style. "
+                    "Returns the PDF as a base64-encoded string for local saving."
+                ),
+                "example": (
+                    'generate_pdf_report(\n'
+                    '  title="Social Media Platform Adoption: Wave 37",\n'
+                    '  subtitle="Demographic Breakdowns and Trends",\n'
+                    '  authors="CHIP50 Research Team",\n'
+                    '  abstract="This report summarizes platform adoption rates...\\n\\nKey findings...",\n'
+                    '  sections=[\n'
+                    '    {\n'
+                    '      "heading": "Facebook Adoption by Party",\n'
+                    '      "content": "Adoption rates vary substantially by party affiliation.",\n'
+                    '      "tables": [\n'
+                    '        {\n'
+                    '          "title": "Facebook Adoption Rate by Party Affiliation",\n'
+                    '          "column_headers": ["Party", "Adoption Rate (%)", "n (unweighted)"],\n'
+                    '          "rows": [["Democrat","72.3","1245"],["Republican","68.1","1102"]],\n'
+                    '          "notes": "Rates are population-weighted. Cells with n<10 are suppressed."\n'
+                    '        }\n'
+                    '      ]\n'
+                    '    }\n'
+                    '  ]\n'
+                    ')'
+                ),
             },
         ],
         "quick_start": [
@@ -756,7 +825,7 @@ async def _generate_crosstab_impl(
             "demographic": demographic,
             "wave_filter": wave or "all",
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
-            "column_definitions": COLUMN_DEFINITIONS,
+            "note": NOTE_WEIGHTED,
             "interpretation_note": (
                 "unweighted_n = raw respondent headcount — for reliability checks only, NOT a population estimate. "
                 "user_rate_pct = WEIGHTED adoption rate — population-representative. "
@@ -832,7 +901,7 @@ async def _generate_marginals_impl(
                 "variable": variable,
                 "type": "platform",
                 "wave_filter": wave or "all",
-                "column_definitions": COLUMN_DEFINITIONS,
+                "note": NOTE_WEIGHTED,
                 "interpretation_note": (
                     "unweighted_n = raw respondent headcount (reliability check only). "
                     "user_rate_pct = WEIGHTED, population-representative adoption rate."
@@ -867,7 +936,7 @@ async def _generate_marginals_impl(
                 "type": "demographic",
                 "wave_filter": wave or "all",
                 "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
-                "column_definitions": COLUMN_DEFINITIONS,
+                "note": NOTE_WEIGHTED,
                 "interpretation_note": (
                     "unweighted_n = raw respondent headcount (reliability check only). "
                     "pct = WEIGHTED, population-representative percentage. "
@@ -930,8 +999,6 @@ async def generate_marginals_by_wave(variable: str) -> str:
                   CAST(t.wave AS FLOAT64)                                       AS wave,
                   wd.midpoint_date,
                   COUNT(*)                                                       AS unweighted_n,
-                  ROUND(SUM(t.weight), 1)                                        AS weighted_n,
-                  ROUND(SUM(t.{variable} * t.weight), 1)                         AS weighted_users,
                   ROUND(SUM(t.{variable} * t.weight) / SUM(t.weight) * 100, 2)   AS user_rate_pct
                 FROM {FULL_TABLE} t
                 LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
@@ -944,7 +1011,7 @@ async def generate_marginals_by_wave(variable: str) -> str:
             return json.dumps({
                 "variable": variable,
                 "type": "platform_by_wave",
-                "column_definitions": COLUMN_DEFINITIONS,
+                "note": NOTE_WEIGHTED,
                 "interpretation_note": (
                     "unweighted_n = raw respondent headcount per wave (reliability check only). "
                     "user_rate_pct = WEIGHTED, population-representative adoption rate per wave."
@@ -997,7 +1064,7 @@ async def generate_marginals_by_wave(variable: str) -> str:
                 "type": "demographic_by_wave",
                 "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
                 "scale_labels": scale_labels,
-                "column_definitions": COLUMN_DEFINITIONS,
+                "note": NOTE_WEIGHTED,
                 "interpretation_note": (
                     "unweighted_n = raw respondent headcount per wave/category (reliability check only). "
                     "pct = WEIGHTED, population-representative percentage within each wave. "
@@ -1038,8 +1105,6 @@ async def generate_crosstab_by_wave(
               wd.midpoint_date,
               t.{demographic}                                                         AS demographic_value,
               COUNT(*)                                                               AS unweighted_n,
-              ROUND(SUM(t.weight), 1)                                                AS weighted_n,
-              ROUND(SUM(t.{platform} * t.weight), 1)                                 AS weighted_users,
               ROUND(SUM(t.{platform} * t.weight) / SUM(t.weight) * 100, 2)           AS user_rate_pct,
               CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END           AS suppressed
             FROM {FULL_TABLE} t
@@ -1052,7 +1117,7 @@ async def generate_crosstab_by_wave(
             ORDER BY CAST(t.wave AS FLOAT64), t.{demographic}
         """)
 
-        df.loc[df["suppressed"], ["weighted_n", "weighted_users", "user_rate_pct"]] = None
+        df.loc[df["suppressed"], ["user_rate_pct"]] = None
 
         # Detect wave gaps (same logic as get_platform_trends)
         all_waves_df = run_query(f"""
@@ -1066,7 +1131,7 @@ async def generate_crosstab_by_wave(
             "platform": platform,
             "demographic": demographic,
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
-            "column_definitions": COLUMN_DEFINITIONS,
+            "note": NOTE_WEIGHTED,
             "interpretation_note": (
                 "unweighted_n = raw respondent headcount per wave/group (reliability check only). "
                 "user_rate_pct = WEIGHTED, population-representative adoption rate. "
@@ -1182,7 +1247,7 @@ async def generate_crosstab_filtered(
             "filters": filters,
             "wave_filter": wave or "all",
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
-            "column_definitions": COLUMN_DEFINITIONS,
+            "note": NOTE_WEIGHTED,
             "interpretation_note": (
                 "unweighted_n = raw respondent headcount (reliability check only). "
                 "user_rate_pct = WEIGHTED, population-representative adoption rate for the filtered sub-population. "
@@ -1334,7 +1399,7 @@ async def generate_crosstab_multi(
             "n_suppressed": int(df["suppressed"].sum()),
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
             "scale_labels": scale_labels,
-            "column_definitions": COLUMN_DEFINITIONS,
+            "note": NOTE_WEIGHTED,
             "interpretation_note": (
                 "Each row is one unique combination of all demographic variables. "
                 + (
@@ -1406,8 +1471,6 @@ async def get_platform_trends(
               t.wave,
               wd.midpoint_date,
               COUNT(*)                                                   AS unweighted_n,
-              ROUND(SUM(t.weight), 1)                                    AS weighted_n,
-              ROUND(SUM(t.{platform} * t.weight), 1)                     AS weighted_users,
               ROUND(SUM(t.{platform} * t.weight) / SUM(t.weight) * 100, 2) AS user_rate_pct
             FROM {FULL_TABLE} t
             LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
@@ -1432,7 +1495,7 @@ async def get_platform_trends(
         response: dict = {
             "platform": platform,
             "demographic_filter": f"{demographic}={demographic_value}" if demographic else None,
-            "column_definitions": COLUMN_DEFINITIONS,
+            "note": NOTE_WEIGHTED,
             "interpretation_note": (
                 "unweighted_n = raw respondent headcount (reliability check only). "
                 "user_rate_pct = WEIGHTED, population-representative adoption rate. "
@@ -1524,7 +1587,7 @@ async def get_ordinal_distribution(
             "wave_filter": wave or "all",
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
             "scale_labels": scale_labels,
-            "column_definitions": COLUMN_DEFINITIONS,
+            "note": NOTE_WEIGHTED,
             "interpretation_note": (
                 "unweighted_n = raw respondent headcount (reliability check only). "
                 "pct = WEIGHTED, population-representative percentage. "
@@ -1599,7 +1662,7 @@ async def get_ordinal_crosstab(
             "wave_filter": wave or "all",
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
             "scale_labels": scale_labels,
-            "column_definitions": COLUMN_DEFINITIONS,
+            "note": NOTE_WEIGHTED,
             "interpretation_note": (
                 "unweighted_n = raw respondent headcount (reliability check only). "
                 "weighted_mean = WEIGHTED, population-representative mean. "
@@ -1690,7 +1753,7 @@ async def get_categorical_crosstab(
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
             "ozempic_coverage_note": "ozempic columns are only available from wave 35 onward.",
             "scale_labels": scale_labels,
-            "column_definitions": COLUMN_DEFINITIONS,
+            "note": NOTE_WEIGHTED,
             "interpretation_note": (
                 "Each row is one demographic_value × response_value combination. "
                 "pct_within_demo = WEIGHTED % of that demographic group giving this response — "
@@ -1742,7 +1805,6 @@ async def get_freq_trends(
               t.wave,
               wd.midpoint_date,
               COUNT(*)                                                     AS unweighted_n,
-              ROUND(SUM(t.weight), 1)                                      AS weighted_n,
               ROUND(SUM(t.{freq_col} * t.weight) / SUM(t.weight), 3)      AS weighted_mean_freq
             FROM {FULL_TABLE} t
             LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
@@ -1769,7 +1831,7 @@ async def get_freq_trends(
             "demographic_filter": f"{demographic}={demographic_value}" if demographic else None,
             "scale_note": "Frequency scale 1–6 (1=never, 6=several times a day)",
             "scale_labels": FREQ_SCALE_LABELS,
-            "column_definitions": COLUMN_DEFINITIONS,
+            "note": NOTE_WEIGHTED,
             "interpretation_note": (
                 "unweighted_n = raw respondent headcount (reliability check only). "
                 "weighted_mean_freq = WEIGHTED, population-representative mean frequency. "
@@ -1830,7 +1892,7 @@ async def get_platform_posting_summary(
     results: dict = {
         "platform": platform,
         "wave_filter": wave or "all",
-        "column_definitions": COLUMN_DEFINITIONS,
+        "note": NOTE_WEIGHTED,
         "interpretation_note": (
             "All rates and means are WEIGHTED, population-representative estimates. "
             "unweighted_n fields are raw respondent headcounts for reliability checks only."
@@ -2018,13 +2080,12 @@ async def get_wave_metadata(wave: Optional[str] = None) -> str:
 
         waves_out = []
         for _, row in df.iterrows():
-            platforms_asked     = [p for p in platform_cols if (row.get(f"n_{p}") or 0) > 0]
-            platforms_not_asked = [p for p in platform_cols if (row.get(f"n_{p}") or 0) == 0]
+            platforms_asked = [p for p in platform_cols if (row.get(f"n_{p}") or 0) > 0]
 
-            variable_groups = {
-                label: bool((row.get(col) or 0) > 0)
-                for label, col in variable_group_cols.items()
-            }
+            variable_groups_fielded = [
+                label for label, col in variable_group_cols.items()
+                if (row.get(col) or 0) > 0
+            ]
 
             # Field period length
             field_days = None
@@ -2047,11 +2108,10 @@ async def get_wave_metadata(wave: Optional[str] = None) -> str:
                 "unweighted_n":       int(row["unweighted_n"]),
                 "weighted_n":         int(row["weighted_n"]),
                 "official_n":         int(row["official_n"]) if pd.notna(row.get("official_n")) else None,
-                "platforms_asked":    platforms_asked,
-                "platforms_not_asked": platforms_not_asked,
-                "n_platforms_asked":  len(platforms_asked),
-                "attitudes_only_wave": len(platforms_asked) == 0,
-                "variable_groups_asked": variable_groups,
+                "platforms_asked":       platforms_asked,
+                "n_platforms_asked":     len(platforms_asked),
+                "attitudes_only_wave":   len(platforms_asked) == 0,
+                "variable_groups_fielded": variable_groups_fielded,
             })
 
         return json.dumps({
@@ -2546,6 +2606,371 @@ async def run_logistic_regression(
         "coefficients": coefficients,
         "notes": notes,
     }, indent=2, default=str)
+
+
+# ── PDF Report Generator ─────────────────────────────────────────────────────
+
+def _build_chip50_pdf(
+    title: str,
+    subtitle: Optional[str],
+    authors: Optional[str],
+    abstract: Optional[str],
+    sections: List[Dict[str, Any]],
+    include_methodology: bool,
+    buf: BytesIO,
+) -> int:
+    """Render the report into *buf* and return the number of tables produced."""
+
+    # ── Palette ───────────────────────────────────────────────────────────────
+    NAVY    = _rl_colors.Color(0.13, 0.24, 0.44)
+    NAVY_LT = _rl_colors.Color(0.22, 0.38, 0.62)
+    ROW_ALT = _rl_colors.Color(0.94, 0.96, 0.99)
+    RULE    = _rl_colors.Color(0.50, 0.50, 0.50)
+    WHITE   = _rl_colors.white
+    BLACK   = _rl_colors.black
+
+    PAGE_W, PAGE_H = _LETTER
+    MARGIN    = 1.15 * _inch
+    CONTENT_W = PAGE_W - 2 * MARGIN
+
+    # ── Running header / footer ───────────────────────────────────────────────
+    short_title = (title[:58] + "\u2026") if len(title) > 60 else title
+
+    def _on_first_page(canvas, doc):
+        pass  # title page — no header/footer chrome
+
+    def _on_later_pages(canvas, doc):
+        canvas.saveState()
+        canvas.setStrokeColor(NAVY)
+        canvas.setLineWidth(0.5)
+        # header rule + text
+        canvas.line(MARGIN, PAGE_H - 0.65 * _inch,
+                    PAGE_W - MARGIN, PAGE_H - 0.65 * _inch)
+        canvas.setFont("Times-Roman", 8)
+        canvas.setFillColor(NAVY)
+        canvas.drawString(MARGIN, PAGE_H - 0.54 * _inch,
+                          "CHIP50 Social Media Demographics Panel")
+        canvas.drawRightString(PAGE_W - MARGIN, PAGE_H - 0.54 * _inch, short_title)
+        # footer rule + text
+        canvas.line(MARGIN, 0.65 * _inch, PAGE_W - MARGIN, 0.65 * _inch)
+        canvas.setFont("Times-Roman", 8)
+        canvas.setFillColor(RULE)
+        canvas.drawString(MARGIN, 0.46 * _inch, "CHIP50 \u2022 Nanocentury AI")
+        canvas.drawRightString(PAGE_W - MARGIN, 0.46 * _inch, f"Page {doc.page}")
+        canvas.restoreState()
+
+    doc = _SimpleDocTemplate(
+        buf,
+        pagesize=_LETTER,
+        leftMargin=MARGIN, rightMargin=MARGIN,
+        topMargin=MARGIN,  bottomMargin=MARGIN,
+        title=title,
+        author=authors or "CHIP50 Panel",
+        subject="CHIP50 Social Media Demographics Report",
+        creator="CHIP50 MCP PDF Generator",
+    )
+
+    # ── Paragraph styles ──────────────────────────────────────────────────────
+    def _ps(name, **kw):
+        return _PS(name, **kw)
+
+    s_title = _ps("ChipTitle",
+        fontName="Times-Bold", fontSize=22, leading=28,
+        textColor=NAVY, alignment=TA_CENTER, spaceAfter=10)
+    s_subtitle = _ps("ChipSubtitle",
+        fontName="Times-Italic", fontSize=14, leading=18,
+        textColor=NAVY_LT, alignment=TA_CENTER, spaceAfter=6)
+    s_authors = _ps("ChipAuthors",
+        fontName="Times-Roman", fontSize=11, leading=14,
+        textColor=BLACK, alignment=TA_CENTER, spaceAfter=4)
+    s_date = _ps("ChipDate",
+        fontName="Times-Roman", fontSize=10, leading=13,
+        textColor=RULE, alignment=TA_CENTER, spaceAfter=20)
+    s_h1 = _ps("ChipH1",
+        fontName="Times-Bold", fontSize=14, leading=18,
+        textColor=NAVY, spaceBefore=18, spaceAfter=6)
+    s_body = _ps("ChipBody",
+        fontName="Times-Roman", fontSize=10.5, leading=15,
+        textColor=BLACK, alignment=TA_JUSTIFY, spaceAfter=8)
+    s_abstract = _ps("ChipAbstract",
+        fontName="Times-Italic", fontSize=10, leading=14,
+        textColor=BLACK, alignment=TA_JUSTIFY,
+        leftIndent=24, rightIndent=24, spaceAfter=10)
+    s_tbl_title = _ps("ChipTblTitle",
+        fontName="Times-Bold", fontSize=9.5, leading=12,
+        textColor=BLACK, spaceBefore=14, spaceAfter=3)
+    s_tbl_note = _ps("ChipTblNote",
+        fontName="Times-Italic", fontSize=8.5, leading=11,
+        textColor=RULE, spaceAfter=12)
+    # ── Table style factory ───────────────────────────────────────────────────
+    def _tbl_style(n_rows: int) -> _TableStyle:
+        cmds = [
+            ("BACKGROUND",    (0, 0), (-1, 0),  NAVY),
+            ("TEXTCOLOR",     (0, 0), (-1, 0),  WHITE),
+            ("FONTNAME",      (0, 0), (-1, 0),  "Times-Bold"),
+            ("FONTSIZE",      (0, 0), (-1, 0),  9),
+            ("TOPPADDING",    (0, 0), (-1, 0),  6),
+            ("BOTTOMPADDING", (0, 0), (-1, 0),  6),
+            ("FONTNAME",      (0, 1), (-1, -1), "Times-Roman"),
+            ("FONTSIZE",      (0, 1), (-1, -1), 9),
+            ("TOPPADDING",    (0, 1), (-1, -1), 4),
+            ("BOTTOMPADDING", (0, 1), (-1, -1), 4),
+            *[("BACKGROUND",  (0, r), (-1, r),  ROW_ALT)
+              for r in range(2, n_rows, 2)],
+            ("GRID",          (0, 0), (-1, -1), 0.3, RULE),
+            ("LINEBELOW",     (0, 0), (-1, 0),  0.8, NAVY),
+            ("ALIGN",         (0, 0), (-1, -1), "LEFT"),
+            ("VALIGN",        (0, 0), (-1, -1), "MIDDLE"),
+            ("LEFTPADDING",   (0, 0), (-1, -1), 7),
+            ("RIGHTPADDING",  (0, 0), (-1, -1), 7),
+        ]
+        return _TableStyle(cmds)
+
+    # ── Helper: cell paragraph styles ─────────────────────────────────────────
+    _s_th = _ps("TH", fontName="Times-Bold",   fontSize=9, textColor=WHITE, leading=11)
+    _s_td = _ps("TD", fontName="Times-Roman",  fontSize=9, textColor=BLACK, leading=11)
+
+    # ── Story ─────────────────────────────────────────────────────────────────
+    story: List[Any] = []
+    table_counter = [0]
+
+    # Title page
+    story.append(_Spacer(1, 1.4 * _inch))
+    if os.path.exists(_LOGO_PATH):
+        # 175×153 px source — render at 1.2 × 1.047 in (preserves aspect ratio)
+        logo_img = _Image(_LOGO_PATH, width=1.2 * _inch, height=round(1.2 * 153 / 175, 3) * _inch)
+        logo_img.hAlign = "CENTER"
+        story.append(logo_img)
+        story.append(_Spacer(1, 0.18 * _inch))
+    story.append(_HRFlowable(width="75%", color=NAVY, thickness=1.5, spaceAfter=22))
+    story.append(_Paragraph(title, s_title))
+    if subtitle:
+        story.append(_Paragraph(subtitle, s_subtitle))
+    if authors:
+        story.append(_Paragraph(authors, s_authors))
+    report_date = datetime.now(timezone.utc).strftime("%B %d, %Y")
+    story.append(_Paragraph(report_date, s_date))
+    story.append(_Spacer(1, 0.3 * _inch))
+    story.append(_HRFlowable(width="35%", color=NAVY_LT, thickness=0.5))
+    story.append(_Spacer(1, 0.18 * _inch))
+    story.append(_Paragraph(
+        "CHIP50 Social Media Demographics Panel<br/>"
+        "<font size='9' color='#888888'>Nanocentury AI</font>",
+        s_date,
+    ))
+    story.append(_PageBreak())
+
+    # Abstract
+    if abstract:
+        story.append(_Paragraph("Abstract", s_h1))
+        story.append(_HRFlowable(width="100%", color=NAVY, thickness=0.5, spaceAfter=10))
+        for para in abstract.strip().split("\n\n"):
+            if para.strip():
+                story.append(_Paragraph(para.strip(), s_abstract))
+        story.append(_Spacer(1, 0.15 * _inch))
+
+    # Methodology section
+    if include_methodology:
+        story.append(_Paragraph("Data &amp; Methodology", s_h1))
+        story.append(_HRFlowable(width="100%", color=NAVY, thickness=0.5, spaceAfter=10))
+        methodology_text = [
+            (
+                "The data presented in this report are drawn from the CHIP50 Social Media "
+                "Demographics Panel, a nationally representative online survey panel of U.S. "
+                "adults conducted by Nanocentury AI across multiple fielding waves."
+            ),
+            (
+                "Survey weights are applied throughout to adjust for design effects and ensure "
+                "population representativeness. All percentages and means reported in this "
+                "document are weighted population estimates unless otherwise indicated. "
+                "Unweighted respondent counts (<i>n</i>) are provided solely as an indicator "
+                "of statistical reliability and must not be interpreted as population estimates "
+                "or used to compute percentages."
+            ),
+            (
+                "Cells with fewer than 10 respondents are suppressed and reported as \u201c\u2014\u201d "
+                "to protect respondent privacy. Platform usage is measured as a binary indicator "
+                "(1\u202f=\u202fuses platform; 0\u202f=\u202fdoes not use platform). Ordinal "
+                "response scales encode \u221299 for skipped or refused responses; these values "
+                "are automatically excluded from all distributional and regression analyses."
+            ),
+            (
+                "Regression models employ survey-weighted estimation. OLS models report "
+                "coefficients with heteroskedasticity-consistent standard errors, "
+                "<i>R</i>\u00b2, <i>F</i>-statistic, and AIC/BIC. Logistic regression models "
+                "report log-odds coefficients, odds ratios, McFadden\u2019s pseudo-<i>R</i>\u00b2, "
+                "and AIC/BIC. Statistical significance is assessed at \u03b1\u202f=\u202f0.05."
+            ),
+        ]
+        for para in methodology_text:
+            story.append(_Paragraph(para, s_body))
+        story.append(_Spacer(1, 0.1 * _inch))
+
+    # User sections
+    for section in sections:
+        heading = section.get("heading", "")
+        content = section.get("content", "")
+        tables  = section.get("tables") or []
+
+        if heading:
+            story.append(_Paragraph(heading, s_h1))
+            story.append(_HRFlowable(width="100%", color=NAVY, thickness=0.5, spaceAfter=10))
+
+        if content:
+            for para in content.strip().split("\n\n"):
+                if para.strip():
+                    story.append(_Paragraph(para.strip(), s_body))
+
+        for tbl_def in tables:
+            col_headers = tbl_def.get("column_headers") or []
+            rows        = tbl_def.get("rows") or []
+            notes       = tbl_def.get("notes")
+            tbl_ttl     = tbl_def.get("title", "")
+
+            if not col_headers and not rows:
+                continue
+
+            table_counter[0] += 1
+            label = f"Table {table_counter[0]}."
+            if tbl_ttl:
+                label += f" {tbl_ttl}"
+
+            # Build cell data
+            data: List[List[Any]] = []
+            if col_headers:
+                data.append([_Paragraph(str(h), _s_th) for h in col_headers])
+            for row in rows:
+                data.append([_Paragraph(str(cell), _s_td) for cell in row])
+
+            if not data:
+                continue
+
+            n_cols = len(data[0])
+            # Column widths: first col ~30% wider than rest
+            if n_cols == 1:
+                col_widths = [CONTENT_W]
+            elif n_cols == 2:
+                col_widths = [CONTENT_W * 0.44, CONTENT_W * 0.56]
+            else:
+                first = CONTENT_W * 0.30
+                rest  = (CONTENT_W - first) / (n_cols - 1)
+                col_widths = [first] + [rest] * (n_cols - 1)
+
+            tbl = _Table(data, colWidths=col_widths, repeatRows=1)
+            tbl.setStyle(_tbl_style(len(data)))
+
+            block: List[Any] = [_Paragraph(label, s_tbl_title), tbl]
+            if notes:
+                block.append(_Paragraph(f"<i>Note.</i> {notes}", s_tbl_note))
+            story.append(_KeepTogether(block))
+
+        story.append(_Spacer(1, 0.08 * _inch))
+
+    doc.build(story, onFirstPage=_on_first_page, onLaterPages=_on_later_pages)
+    return table_counter[0]
+
+
+@mcp.tool()
+async def generate_pdf_report(
+    title: str,
+    sections: List[Dict[str, Any]],
+    subtitle: Optional[str] = None,
+    authors: Optional[str] = None,
+    abstract: Optional[str] = None,
+    include_methodology: bool = True,
+) -> str:
+    """Generate a formatted PDF report from CHIP50 analysis results.
+
+    Produces a publication-quality PDF following academic methodology reporting
+    standards: title page, abstract, auto-generated methodology section,
+    numbered tables with captions and footnotes, running page header/footer.
+
+    The PDF is uploaded to GCS and a signed download URL (valid 1 hour) is
+    returned. Download it with: curl -L "<download_url>" -o report.pdf
+
+    Parameters
+    ----------
+    title : str
+        Main report title (appears on title page and in the running header).
+    sections : list[dict]
+        Report body sections, in order. Each section dict supports:
+
+        - "heading" (str): Section heading displayed in bold navy.
+        - "content" (str): Narrative text. Separate paragraphs with \\n\\n.
+          Basic HTML tags (<i>, <b>) are supported.
+        - "tables" (list[dict]): Tables to embed after the section text.
+          Each table dict:
+            - "title" (str): Caption; auto-prefixed "Table N. <title>".
+            - "column_headers" (list[str]): Header row.
+            - "rows" (list[list[str]]): Data rows; all cells as strings.
+            - "notes" (str, optional): Footnote rendered below the table in
+              italic per APA style ("Note. ...").
+
+    subtitle : str, optional
+        Subtitle under the main title on the title page.
+    authors : str, optional
+        Author name(s) for the title page.
+    abstract : str, optional
+        Abstract / executive summary (paragraphs separated by \\n\\n).
+    include_methodology : bool, default True
+        Auto-include the CHIP50 methodology section (weighting, cell
+        suppression, ordinal sentinel, regression conventions).
+
+    Returns
+    -------
+    JSON with:
+    - download_url      : Signed GCS URL valid for 1 hour. Pass directly to
+                          curl or a browser to download the PDF.
+    - filename          : Suggested local filename for saving.
+    - tables_generated  : Count of numbered tables in the report.
+    - size_bytes        : PDF file size in bytes.
+    - expires_in        : Human-readable URL expiry ("1 hour").
+    """
+    if not _REPORTLAB_AVAILABLE:
+        raise RuntimeError(
+            "reportlab is not installed. Add 'reportlab>=4.2.0' to requirements.txt "
+            "and redeploy the service."
+        )
+
+    # Build PDF in memory
+    buf = BytesIO()
+    n_tables = _build_chip50_pdf(
+        title=title,
+        subtitle=subtitle,
+        authors=authors,
+        abstract=abstract,
+        sections=sections,
+        include_methodology=include_methodology,
+        buf=buf,
+    )
+    pdf_bytes = buf.getvalue()
+
+    # Derive a clean filename
+    date_stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    safe_title = "".join(c if c.isalnum() else "_" for c in title)[:40].strip("_")
+    filename   = f"chip50_{safe_title}_{date_stamp}.pdf"
+    gcs_key    = f"reports/{filename}"
+
+    # Upload to GCS
+    gcs_client = gcs.Client(project=GCP_PROJECT)
+    bucket     = gcs_client.bucket(REPORTS_BUCKET)
+    blob       = bucket.blob(gcs_key)
+    blob.upload_from_string(pdf_bytes, content_type="application/pdf")
+
+    # Generate a v4 signed URL valid for 1 hour
+    signed_url = blob.generate_signed_url(
+        version="v4",
+        expiration=timedelta(hours=1),
+        method="GET",
+    )
+
+    return json.dumps({
+        "download_url": signed_url,
+        "filename": filename,
+        "tables_generated": n_tables,
+        "size_bytes": len(pdf_bytes),
+        "expires_in": "1 hour",
+    }, indent=2)
 
 
 if __name__ == "__main__":

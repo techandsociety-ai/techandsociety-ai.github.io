@@ -589,8 +589,8 @@ async def introduce_mcp() -> str:
             },
             {
                 "name": "generate_crosstab",
-                "purpose": "Platform adoption rate broken down by a demographic or attitudinal variable.",
-                "example": 'generate_crosstab(platform="use_tiktok", demographic="ideology")',
+                "purpose": "Platform adoption rate broken down by ONE demographic or attitudinal variable. Use this for any question like 'TikTok use by race' or 'Facebook adoption by age'. This is the primary single-demographic breakdown tool.",
+                "example": 'generate_crosstab(platform="use_tiktok", demographic="race_cat_5")',
             },
             {
                 "name": "generate_crosstab_filtered",
@@ -874,7 +874,9 @@ async def generate_crosstab(
     demographic: str,
     wave: Optional[str] = None,
 ) -> str:
-    """Platform adoption rate broken down by a demographic variable.
+    """Platform adoption rate broken down by ONE demographic variable. Use this for any
+    single-demographic breakdown: 'TikTok use by race', 'Facebook by age', 'Twitter by party', etc.
+    This is the primary tool for platform × demographic analysis.
 
     Returns survey-weighted user_rate_pct (population-representative % using the platform)
     per demographic group, with cell suppression for groups with unweighted n < MIN_CELL_SIZE.
@@ -882,7 +884,7 @@ async def generate_crosstab(
 
     Args:
         platform:    Column name, e.g. "use_twitter", "use_tiktok"
-        demographic: Column name, e.g. "age_cat_8", "party3", "gender"
+        demographic: Column name, e.g. "age_cat_8", "party3", "gender", "race_cat_5"
         wave:        Optional wave number to filter to (e.g. "35"). Omit for all waves.
     """
     return await _generate_crosstab_impl(platform, demographic, wave)

@@ -24,6 +24,7 @@ from google.cloud import storage as gcs
 
 from fastmcp import FastMCP
 from fastmcp.server.auth.providers.google import GoogleProvider
+from fastmcp.server.auth.oauth_proxy.models import ProxyDCRClient
 from key_value.aio.stores.firestore import FirestoreStore
 
 # reportlab — optional; required only for generate_pdf_report
@@ -459,12 +460,40 @@ def wave_clause(wave: Optional[str]) -> str:
     return f"AND CAST(wave AS FLOAT64) = {float(wave)}"
 
 
+class AutoRegisteringGoogleProvider(GoogleProvider):
+    """GoogleProvider that auto-registers unknown client IDs instead of erroring.
+
+    When a client presents a cached client_id that isn't in storage (e.g. after
+    a server migration from MemoryStore to Firestore, or after any future incident
+    that wipes OAuth state), the client is silently re-registered and the flow
+    completes normally. The registration is persisted to Firestore so it only
+    happens once per client.
+    """
+
+    async def get_client(self, client_id: str):
+        client = await super().get_client(client_id)
+        if client is None:
+            logger.info("Auto-registering unknown client_id=%s", client_id)
+            proxy_client = ProxyDCRClient(
+                client_id=client_id,
+                redirect_uris=[],
+                grant_types=["authorization_code", "refresh_token"],
+                response_types=["code"],
+                token_endpoint_auth_method="none",
+                scope="openid",
+                allowed_redirect_uri_patterns=self._allowed_client_redirect_uris,
+            )
+            await self._client_store.put(key=client_id, value=proxy_client)
+            return proxy_client
+        return client
+
+
 # ── Auth (toggle with DISABLE_AUTH env var on Cloud Run) ─────────────────────
 
 if os.getenv("DISABLE_AUTH"):
     auth = None
 else:
-    auth = GoogleProvider(
+    auth = AutoRegisteringGoogleProvider(
         client_id=os.getenv("GOOGLE_CLIENT_ID"),
         client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
         base_url=os.getenv("SERVICE_URL", "http://localhost:8080"),

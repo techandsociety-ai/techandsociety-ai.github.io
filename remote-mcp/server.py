@@ -12,6 +12,7 @@ import json
 import logging
 import asyncio
 import time
+import uuid
 from datetime import datetime, timezone
 from io import BytesIO
 from typing import Any, Dict, List, Optional
@@ -67,6 +68,10 @@ REPORTS_BUCKET = os.getenv("REPORTS_BUCKET", "chip50-reports")
 
 FULL_TABLE       = f"`{GCP_PROJECT}.{DATASET_NAME}.{TABLE_NAME}`"
 WAVE_DATES_TABLE = f"`{GCP_PROJECT}.{DATASET_NAME}.wave_dates`"
+
+# In-memory store for async PDF report jobs.  Keys are job IDs (str).
+# Values: {"status": "pending"|"done"|"error", "result": dict|None, "error": str|None}
+_report_jobs: Dict[str, Dict[str, Any]] = {}
 
 # ── Schema constants (mirrors real CSV structure) ───────────────────────────
 
@@ -697,7 +702,8 @@ async def introduce_mcp() -> str:
                     "Produces a title page, optional abstract, auto-generated methodology section "
                     "(weighting, cell suppression, regression conventions), and user-defined sections "
                     "with numbered tables following academic style. "
-                    "Returns the PDF as a base64-encoded string for local saving."
+                    "Returns immediately with a job_id and the expected download_url. "
+                    "Poll get_report_status(job_id=...) until status is 'done', then download the PDF."
                 ),
                 "example": (
                     'generate_pdf_report(\n'
@@ -721,6 +727,14 @@ async def introduce_mcp() -> str:
                     '  ]\n'
                     ')'
                 ),
+            },
+            {
+                "name": "get_report_status",
+                "purpose": (
+                    "Check the status of an async PDF report job started by generate_pdf_report. "
+                    "Returns status ('pending' or 'done' or 'error') and, when done, the download_url."
+                ),
+                "example": 'get_report_status(job_id="<job_id from generate_pdf_report>")',
             },
         ],
         "quick_start": [
@@ -2963,13 +2977,16 @@ async def generate_pdf_report(
             "and redeploy the service."
         )
 
-    # Derive a clean filename before threading
-    date_stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    safe_title = "".join(c if c.isalnum() else "_" for c in title)[:40].strip("_")
-    filename   = f"chip50_{safe_title}_{date_stamp}.pdf"
-    gcs_key    = f"reports/{filename}"
+    # Derive filename / GCS key up front so the URL is known immediately
+    date_stamp  = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    safe_title  = "".join(c if c.isalnum() else "_" for c in title)[:40].strip("_")
+    filename    = f"chip50_{safe_title}_{date_stamp}.pdf"
+    gcs_key     = f"reports/{filename}"
+    public_url  = f"https://storage.googleapis.com/{REPORTS_BUCKET}/{gcs_key}"
+    job_id      = str(uuid.uuid4())
 
-    # Build PDF and upload in a thread so blocking I/O doesn't freeze the event loop
+    _report_jobs[job_id] = {"status": "pending", "result": None, "error": None}
+
     def _build_and_upload():
         buf = BytesIO()
         n = _build_chip50_pdf(
@@ -2981,25 +2998,81 @@ async def generate_pdf_report(
             include_methodology=include_methodology,
             buf=buf,
         )
-        pdf_bytes = buf.getvalue()
+        pdf_bytes  = buf.getvalue()
         gcs_client = gcs.Client(project=GCP_PROJECT)
         bucket     = gcs_client.bucket(REPORTS_BUCKET)
         blob       = bucket.blob(gcs_key)
         blob.upload_from_string(pdf_bytes, content_type="application/pdf")
         return n, len(pdf_bytes)
 
-    loop = asyncio.get_event_loop()
-    n_tables, size_bytes = await loop.run_in_executor(None, _build_and_upload)
+    async def _run_job():
+        try:
+            loop = asyncio.get_event_loop()
+            n_tables, size_bytes = await loop.run_in_executor(None, _build_and_upload)
+            _report_jobs[job_id]["status"] = "done"
+            _report_jobs[job_id]["result"] = {
+                "download_url": public_url,
+                "filename": filename,
+                "tables_generated": n_tables,
+                "size_bytes": size_bytes,
+            }
+        except Exception as exc:
+            logger.error(f"generate_pdf_report job {job_id} failed: {exc}")
+            _report_jobs[job_id]["status"] = "error"
+            _report_jobs[job_id]["error"]  = str(exc)
 
-    # Public URL (bucket is publicly readable)
-    public_url = f"https://storage.googleapis.com/{REPORTS_BUCKET}/{gcs_key}"
+    asyncio.create_task(_run_job())
 
     return json.dumps({
+        "job_id": job_id,
+        "status": "pending",
         "download_url": public_url,
         "filename": filename,
-        "tables_generated": n_tables,
-        "size_bytes": size_bytes,
+        "message": (
+            "PDF generation started in the background. "
+            f"Call get_report_status(job_id=\"{job_id}\") to check progress. "
+            "When status is 'done' the download_url will be ready to download."
+        ),
     }, indent=2)
+
+
+@mcp.tool()
+async def get_report_status(job_id: str) -> str:
+    """Check the status of an async PDF report job.
+
+    Parameters
+    ----------
+    job_id : str
+        The job_id returned by generate_pdf_report.
+
+    Returns
+    -------
+    JSON with:
+    - job_id       : The job identifier.
+    - status       : "pending" | "done" | "error"
+    - download_url : Public GCS URL (present when status is "done").
+    - filename     : Suggested local filename (present when status is "done").
+    - tables_generated : Number of tables in the PDF (present when status is "done").
+    - size_bytes   : PDF file size in bytes (present when status is "done").
+    - error        : Error message (present when status is "error").
+    """
+    job = _report_jobs.get(job_id)
+    if job is None:
+        return json.dumps({
+            "job_id": job_id,
+            "status": "not_found",
+            "error": "No report job with that ID. Jobs are lost on server restart.",
+        }, indent=2)
+
+    response: Dict[str, Any] = {"job_id": job_id, "status": job["status"]}
+    if job["status"] == "done" and job["result"]:
+        response.update(job["result"])
+    elif job["status"] == "error":
+        response["error"] = job["error"]
+    else:
+        response["message"] = "PDF is still being generated. Poll again in a few seconds."
+
+    return json.dumps(response, indent=2)
 
 
 if __name__ == "__main__":

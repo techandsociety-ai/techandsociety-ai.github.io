@@ -2963,30 +2963,33 @@ async def generate_pdf_report(
             "and redeploy the service."
         )
 
-    # Build PDF in memory
-    buf = BytesIO()
-    n_tables = _build_chip50_pdf(
-        title=title,
-        subtitle=subtitle,
-        authors=authors,
-        abstract=abstract,
-        sections=sections,
-        include_methodology=include_methodology,
-        buf=buf,
-    )
-    pdf_bytes = buf.getvalue()
-
-    # Derive a clean filename
+    # Derive a clean filename before threading
     date_stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     safe_title = "".join(c if c.isalnum() else "_" for c in title)[:40].strip("_")
     filename   = f"chip50_{safe_title}_{date_stamp}.pdf"
     gcs_key    = f"reports/{filename}"
 
-    # Upload to GCS
-    gcs_client = gcs.Client(project=GCP_PROJECT)
-    bucket     = gcs_client.bucket(REPORTS_BUCKET)
-    blob       = bucket.blob(gcs_key)
-    blob.upload_from_string(pdf_bytes, content_type="application/pdf")
+    # Build PDF and upload in a thread so blocking I/O doesn't freeze the event loop
+    def _build_and_upload():
+        buf = BytesIO()
+        n = _build_chip50_pdf(
+            title=title,
+            subtitle=subtitle,
+            authors=authors,
+            abstract=abstract,
+            sections=sections,
+            include_methodology=include_methodology,
+            buf=buf,
+        )
+        pdf_bytes = buf.getvalue()
+        gcs_client = gcs.Client(project=GCP_PROJECT)
+        bucket     = gcs_client.bucket(REPORTS_BUCKET)
+        blob       = bucket.blob(gcs_key)
+        blob.upload_from_string(pdf_bytes, content_type="application/pdf")
+        return n, len(pdf_bytes)
+
+    loop = asyncio.get_event_loop()
+    n_tables, size_bytes = await loop.run_in_executor(None, _build_and_upload)
 
     # Public URL (bucket is publicly readable)
     public_url = f"https://storage.googleapis.com/{REPORTS_BUCKET}/{gcs_key}"
@@ -2995,7 +2998,7 @@ async def generate_pdf_report(
         "download_url": public_url,
         "filename": filename,
         "tables_generated": n_tables,
-        "size_bytes": len(pdf_bytes),
+        "size_bytes": size_bytes,
     }, indent=2)
 
 

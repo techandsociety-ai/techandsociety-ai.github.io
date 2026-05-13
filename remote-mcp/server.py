@@ -12,7 +12,7 @@ import json
 import logging
 import asyncio
 import time
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from io import BytesIO
 from typing import Any, Dict, List, Optional
 
@@ -2988,19 +2988,14 @@ async def generate_pdf_report(
     blob       = bucket.blob(gcs_key)
     blob.upload_from_string(pdf_bytes, content_type="application/pdf")
 
-    # Generate a v4 signed URL valid for 1 hour
-    signed_url = blob.generate_signed_url(
-        version="v4",
-        expiration=timedelta(hours=1),
-        method="GET",
-    )
+    # Public URL (bucket is publicly readable)
+    public_url = f"https://storage.googleapis.com/{REPORTS_BUCKET}/{gcs_key}"
 
     return json.dumps({
-        "download_url": signed_url,
+        "download_url": public_url,
         "filename": filename,
         "tables_generated": n_tables,
         "size_bytes": len(pdf_bytes),
-        "expires_in": "1 hour",
     }, indent=2)
 
 

@@ -2383,7 +2383,7 @@ async def run_ols_regression(
         filters: Optional subgroup filter applied before fitting. A mapping of
             {column_name: [allowed_values]}. Rows where the column value is NOT
             in the list are dropped before the model is fit. Example:
-            {"age_cat_8": ["18-24", "25-34"]} restricts to the two youngest
+            {"age_cat_8": ["18 to 20", "21 to 30"]} restricts to the two youngest
             age groups. {"gender": ["Female"], "party3": ["Democrat"]} restricts
             to female Democrats. Filter columns do not need to appear in predictors.
             Call get_available_variables() to see valid column names and values.
@@ -2526,7 +2526,7 @@ async def run_logistic_regression(
         filters: Optional subgroup filter applied before fitting. A mapping of
             {column_name: [allowed_values]}. Rows where the column value is NOT
             in the list are dropped before the model is fit. Example:
-            {"age_cat_8": ["18-24", "25-34"]} restricts to the two youngest
+            {"age_cat_8": ["18 to 20", "21 to 30"]} restricts to the two youngest
             age groups. {"gender": ["Female"], "party3": ["Democrat"]} restricts
             to female Democrats. Filter columns do not need to appear in predictors.
             Call get_available_variables() to see valid column names and values.

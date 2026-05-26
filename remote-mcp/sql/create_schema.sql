@@ -223,7 +223,7 @@ AS SELECT
   CAST(sm_post_snapchat_3  AS INT64) as sm_post_snapchat_3,
 
   -- Ozempic / GLP-1 questions (wave 35+; ordinal; -99 = skipped/refused; NULL = not asked)
-  CAST(ozempic        AS INT64)   as ozempic,       -- 1=never heard, 2=heard not used, 3=used past, 4=currently using, 5=prescribed not yet started
+  CAST(ozempic        AS INT64)   as ozempic,       -- 1=currently taking, 2=previously took/stopped, 3=considering/interested, 4=not taking/no interest, 5=don't know/unsure
   CAST(ozempic_why    AS INT64)   as ozempic_why,   -- 1=weight loss, 4=diabetes, 5=other
   CAST(ozempic_time_1 AS INT64)   as ozempic_time_1,-- months currently using (0–10+)
   CAST(ozempic_time_2 AS INT64)   as ozempic_time_2,-- months since stopped (0–11+)

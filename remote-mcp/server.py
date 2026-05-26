@@ -253,7 +253,7 @@ OZEMPIC_COLUMNS = [
 # Ozempic columns appropriate as OLS regression outcomes/predictors.
 # ozempic and ozempic_why are excluded: their numeric codes have no linear
 # interpretation (ozempic: 1=taking→5=don't know; ozempic_why: non-contiguous codes 1,4,5).
-# Use ozempic_binary (derived) for logistic regression instead.
+# Use ozempic_binary / ozempic_current (derived) for logistic regression instead.
 OZEMPIC_REGRESSION_COLUMNS = ["ozempic_time_1", "ozempic_time_2"]
 
 # Categorical ordinal columns where per-category distribution (not mean) is meaningful.
@@ -301,8 +301,13 @@ _BINARY_COLUMNS: set[str] = set(PLATFORM_COLUMNS + SM_POST_COLUMNS + POL_NEWS_CO
 _DERIVED_COLUMNS: dict[str, dict] = {
     "ozempic_binary": {
         "sql": "CASE WHEN ozempic IN (1, 2) THEN 1 ELSE 0 END",
-        "source": "ozempic",  # real column — used for NOT NULL + sentinel (>0) filtering
-        "description": "Binary GLP-1/Ozempic use: 1 = currently taking or previously took, 0 = all other categories (wave 35 only)",
+        "source": "ozempic",
+        "description": "Binary GLP-1/Ozempic use: 1 = currently taking or previously took (ozempic=1 or 2), 0 = never took (ozempic=3,4,5). Wave 35 only.",
+    },
+    "ozempic_current": {
+        "sql": "CASE WHEN ozempic = 1 THEN 1 WHEN ozempic IN (3, 4, 5) THEN 0 ELSE NULL END",
+        "source": "ozempic",
+        "description": "Binary: 1 = currently taking GLP-1/Ozempic (ozempic=1), 0 = never took (ozempic=3,4,5). Respondents who previously took and stopped (ozempic=2) are excluded. Wave 35 only.",
     },
 }
 
@@ -802,7 +807,7 @@ async def get_available_variables() -> str:
                 ),
                 "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35.",
                 "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors and in marginals/marginals_by_wave (returns adoption rate, like platform columns).",
-                "ozempic_regression": "ozempic_binary (derived: currently taking or previously took vs. all others) is valid for logistic regression (wave 35 only). ozempic/ozempic_why/ozempic_time_* are valid OLS outcomes. Always use wave='35'.",
+                "ozempic_regression": "Derived binary outcomes for logistic regression (wave 35 only): ozempic_binary (currently taking OR previously took [1,2] vs. never [3,4,5]), ozempic_current (currently taking [1] vs. never [3,4,5] — excludes stopped). ozempic/ozempic_why/ozempic_time_* are valid OLS outcomes. Always use wave='35'.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",
                 "missing_platform_waves": (
                     "Some waves exist in the panel but platform questions were not asked. "
@@ -2428,6 +2433,8 @@ async def run_ols_regression(
         logger.error(f"run_ols_regression data fetch error: {e}")
         return json.dumps({"error": str(e)})
 
+    df = df.dropna(subset=[outcome])
+
     if len(df) < 50:
         return json.dumps({"error": f"Too few observations ({len(df)}) after filters — cannot fit model."})
 
@@ -2571,6 +2578,8 @@ async def run_logistic_regression(
     except Exception as e:
         logger.error(f"run_logistic_regression data fetch error: {e}")
         return json.dumps({"error": str(e)})
+
+    df = df.dropna(subset=[outcome])
 
     if len(df) < 50:
         return json.dumps({"error": f"Too few observations ({len(df)}) after filters — cannot fit model."})

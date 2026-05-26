@@ -8,7 +8,7 @@ CLUSTER BY wave, age_cat_8, gender, party3
 AS SELECT
   id,
   wave,
-  state,
+  state_code AS state,
   state_code,
   age_cat_8,
   education_cat,

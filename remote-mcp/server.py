@@ -663,9 +663,13 @@ async def introduce_mcp() -> str:
                 "purpose": (
                     "Distribution of ONE variable across ALL waves in a single query. "
                     "Use instead of calling generate_marginals() 37 times. "
-                    "Works for demographics, platforms, ordinal columns, and binary columns."
+                    "Works for demographics, platforms, ordinal columns, and binary columns. "
+                    "Optional demographic parameter stratifies by a demographic group — returns "
+                    "the full per-category distribution (not just the mean) for each wave × demographic cell. "
+                    "Use this when you need to apply custom rescaling to an ordinal scale (e.g. freq_*) "
+                    "for a sub-population; the mean alone is lossy and cannot support rescaling."
                 ),
-                "example": 'generate_marginals_by_wave(variable="race_cat_5")',
+                "example": 'generate_marginals_by_wave(variable="freq_facebook", demographic="age_cat_8")',
             },
             {
                 "name": "generate_crosstab_by_wave",
@@ -1018,7 +1022,10 @@ async def generate_marginals(
 
 
 @mcp.tool()
-async def generate_marginals_by_wave(variable: str) -> str:
+async def generate_marginals_by_wave(
+    variable: str,
+    demographic: Optional[str] = None,
+) -> str:
     """Distribution of a single variable broken down by wave — one query, all waves.
 
     Use this instead of calling generate_marginals() 37 times.
@@ -1027,9 +1034,18 @@ async def generate_marginals_by_wave(variable: str) -> str:
     For demographic/categorical variables: weighted % per category per wave.
     For platform (binary) variables: weighted adoption rate per wave.
 
+    When demographic is provided, results are further stratified by that demographic
+    group. For ordinal variables (e.g. freq_*) this returns the full per-category
+    distribution for each wave × demographic cell — not just the mean. This is
+    required for applying custom rescalings (behavior-weighted, log, exponential, etc.)
+    to sub-populations, since the mean alone cannot support rescaling.
+
     Args:
         variable: Any demographic, platform, or ordinal column —
-                  e.g. "race_cat_5", "use_tiktok", "ideology", "phq9_1"
+                  e.g. "race_cat_5", "use_tiktok", "ideology", "freq_facebook"
+        demographic: Optional demographic column to stratify by —
+                  e.g. "age_cat_8", "party3", "gender". When set, pct sums to 100
+                  within each wave × demographic cell.
     """
     all_valid = (
         DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS + PLATFORM_COLUMNS +
@@ -1039,89 +1055,181 @@ async def generate_marginals_by_wave(variable: str) -> str:
         raise ValueError(
             f"Unknown variable '{variable}'. Call get_available_variables() to see valid names."
         )
+    if demographic is not None and demographic not in DEMOGRAPHIC_COLUMNS:
+        raise ValueError(
+            f"Unknown demographic '{demographic}'. Must be one of: {DEMOGRAPHIC_COLUMNS}"
+        )
 
     is_binary = variable in PLATFORM_COLUMNS or variable in ALL_BINARY_COLUMNS or variable in RACE_BOOLEAN_COLUMNS
 
     try:
         if is_binary:
-            df = run_query(f"""
-                SELECT
-                  CAST(t.wave AS FLOAT64)                                       AS wave,
-                  wd.midpoint_date,
-                  COUNT(*)                                                       AS unweighted_n,
-                  ROUND(SUM(t.{variable} * t.weight) / SUM(t.weight) * 100, 2)   AS user_rate_pct
-                FROM {FULL_TABLE} t
-                LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
-                WHERE t.{variable} IS NOT NULL
-                  AND t.weight IS NOT NULL
-                GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date
-                ORDER BY CAST(t.wave AS FLOAT64)
-            """)
-
-            return json.dumps({
-                "variable": variable,
-                "type": "platform_by_wave",
-                "note": NOTE_WEIGHTED,
-                "interpretation_note": (
-                    "unweighted_n = raw respondent headcount per wave (reliability check only). "
-                    "user_rate_pct = WEIGHTED, population-representative adoption rate per wave."
-                ),
-                "data": df.to_dict(orient="records"),
-            }, indent=2, default=str)
+            if demographic:
+                df = run_query(f"""
+                    SELECT
+                      CAST(t.wave AS FLOAT64)                                        AS wave,
+                      wd.midpoint_date,
+                      t.{demographic}                                                 AS demographic_value,
+                      COUNT(*)                                                        AS unweighted_n,
+                      ROUND(SUM(t.{variable} * t.weight) / SUM(t.weight) * 100, 2)  AS user_rate_pct
+                    FROM {FULL_TABLE} t
+                    LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
+                    WHERE t.{variable} IS NOT NULL
+                      AND t.{demographic} IS NOT NULL
+                      AND t.weight IS NOT NULL
+                    GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date, t.{demographic}
+                    ORDER BY CAST(t.wave AS FLOAT64), t.{demographic}
+                """)
+                return json.dumps({
+                    "variable": variable,
+                    "demographic": demographic,
+                    "type": "platform_by_wave_by_demographic",
+                    "note": NOTE_WEIGHTED,
+                    "interpretation_note": (
+                        "unweighted_n = raw respondent headcount per wave/group (reliability check only). "
+                        "user_rate_pct = WEIGHTED, population-representative adoption rate."
+                    ),
+                    "data": df.to_dict(orient="records"),
+                }, indent=2, default=str)
+            else:
+                df = run_query(f"""
+                    SELECT
+                      CAST(t.wave AS FLOAT64)                                       AS wave,
+                      wd.midpoint_date,
+                      COUNT(*)                                                       AS unweighted_n,
+                      ROUND(SUM(t.{variable} * t.weight) / SUM(t.weight) * 100, 2)   AS user_rate_pct
+                    FROM {FULL_TABLE} t
+                    LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
+                    WHERE t.{variable} IS NOT NULL
+                      AND t.weight IS NOT NULL
+                    GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date
+                    ORDER BY CAST(t.wave AS FLOAT64)
+                """)
+                return json.dumps({
+                    "variable": variable,
+                    "type": "platform_by_wave",
+                    "note": NOTE_WEIGHTED,
+                    "interpretation_note": (
+                        "unweighted_n = raw respondent headcount per wave (reliability check only). "
+                        "user_rate_pct = WEIGHTED, population-representative adoption rate per wave."
+                    ),
+                    "data": df.to_dict(orient="records"),
+                }, indent=2, default=str)
 
         else:
             sentinel_filter = f"AND t.{variable} > 0" if variable in ALL_ORDINAL_COLUMNS else ""
-            df = run_query(f"""
-                WITH agg AS (
-                  SELECT
-                    CAST(t.wave AS FLOAT64)                                          AS wave,
-                    wd.midpoint_date,
-                    t.{variable}                                                      AS value,
-                    COUNT(*)                                                          AS unweighted_n,
-                    ROUND(SUM(t.weight), 1)                                           AS weighted_n,
-                    CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END     AS suppressed
-                  FROM {FULL_TABLE} t
-                  LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
-                  WHERE t.{variable} IS NOT NULL
-                    AND t.weight IS NOT NULL
-                    {sentinel_filter}
-                  GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date, t.{variable}
-                )
-                SELECT
-                  wave,
-                  midpoint_date,
-                  value,
-                  unweighted_n,
-                  weighted_n,
-                  ROUND(weighted_n * 100.0 / SUM(weighted_n) OVER (PARTITION BY CAST(wave AS STRING)), 2) AS pct,
-                  suppressed
-                FROM agg
-                ORDER BY wave, value
-            """)
 
-            df.loc[df["suppressed"], ["weighted_n", "pct"]] = None
+            if demographic:
+                df = run_query(f"""
+                    WITH agg AS (
+                      SELECT
+                        CAST(t.wave AS FLOAT64)                                          AS wave,
+                        wd.midpoint_date,
+                        t.{demographic}                                                   AS demographic_value,
+                        t.{variable}                                                      AS value,
+                        COUNT(*)                                                          AS unweighted_n,
+                        ROUND(SUM(t.weight), 1)                                           AS weighted_n,
+                        CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END     AS suppressed
+                      FROM {FULL_TABLE} t
+                      LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
+                      WHERE t.{variable} IS NOT NULL
+                        AND t.{demographic} IS NOT NULL
+                        AND t.weight IS NOT NULL
+                        {sentinel_filter}
+                      GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date, t.{demographic}, t.{variable}
+                    )
+                    SELECT
+                      wave,
+                      midpoint_date,
+                      demographic_value,
+                      value,
+                      unweighted_n,
+                      weighted_n,
+                      ROUND(weighted_n * 100.0 / SUM(weighted_n) OVER (
+                        PARTITION BY wave, CAST(demographic_value AS STRING)
+                      ), 2) AS pct,
+                      suppressed
+                    FROM agg
+                    ORDER BY wave, demographic_value, value
+                """)
 
-            scale_labels = None
-            if variable.startswith("freq_"):
-                scale_labels = FREQ_SCALE_LABELS
-            elif variable.startswith("sm_trust_") or variable.startswith("pol_trust_"):
-                scale_labels = TRUST_SCALE_LABELS
-            elif variable == "ideology":
-                scale_labels = IDEOLOGY_SCALE_LABELS
+                df.loc[df["suppressed"], ["weighted_n", "pct"]] = None
 
-            return json.dumps({
-                "variable": variable,
-                "type": "demographic_by_wave",
-                "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
-                "scale_labels": scale_labels,
-                "note": NOTE_WEIGHTED,
-                "interpretation_note": (
-                    "unweighted_n = raw respondent headcount per wave/category (reliability check only). "
-                    "pct = WEIGHTED, population-representative percentage within each wave. "
-                    "pct sums to 100 within each wave, not across waves."
-                ),
-                "data": df.to_dict(orient="records"),
-            }, indent=2, default=str)
+                scale_labels = None
+                if variable.startswith("freq_"):
+                    scale_labels = FREQ_SCALE_LABELS
+                elif variable.startswith("sm_trust_") or variable.startswith("pol_trust_"):
+                    scale_labels = TRUST_SCALE_LABELS
+                elif variable == "ideology":
+                    scale_labels = IDEOLOGY_SCALE_LABELS
+
+                return json.dumps({
+                    "variable": variable,
+                    "demographic": demographic,
+                    "type": "ordinal_by_wave_by_demographic",
+                    "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+                    "scale_labels": scale_labels,
+                    "note": NOTE_WEIGHTED,
+                    "interpretation_note": (
+                        "unweighted_n = raw respondent headcount per wave/demographic/value cell (reliability check only). "
+                        "pct = WEIGHTED, population-representative percentage. "
+                        "pct sums to 100 within each wave × demographic_value cell, not across waves or groups."
+                    ),
+                    "data": df.to_dict(orient="records"),
+                }, indent=2, default=str)
+
+            else:
+                df = run_query(f"""
+                    WITH agg AS (
+                      SELECT
+                        CAST(t.wave AS FLOAT64)                                          AS wave,
+                        wd.midpoint_date,
+                        t.{variable}                                                      AS value,
+                        COUNT(*)                                                          AS unweighted_n,
+                        ROUND(SUM(t.weight), 1)                                           AS weighted_n,
+                        CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END     AS suppressed
+                      FROM {FULL_TABLE} t
+                      LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
+                      WHERE t.{variable} IS NOT NULL
+                        AND t.weight IS NOT NULL
+                        {sentinel_filter}
+                      GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date, t.{variable}
+                    )
+                    SELECT
+                      wave,
+                      midpoint_date,
+                      value,
+                      unweighted_n,
+                      weighted_n,
+                      ROUND(weighted_n * 100.0 / SUM(weighted_n) OVER (PARTITION BY CAST(wave AS STRING)), 2) AS pct,
+                      suppressed
+                    FROM agg
+                    ORDER BY wave, value
+                """)
+
+                df.loc[df["suppressed"], ["weighted_n", "pct"]] = None
+
+                scale_labels = None
+                if variable.startswith("freq_"):
+                    scale_labels = FREQ_SCALE_LABELS
+                elif variable.startswith("sm_trust_") or variable.startswith("pol_trust_"):
+                    scale_labels = TRUST_SCALE_LABELS
+                elif variable == "ideology":
+                    scale_labels = IDEOLOGY_SCALE_LABELS
+
+                return json.dumps({
+                    "variable": variable,
+                    "type": "demographic_by_wave",
+                    "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+                    "scale_labels": scale_labels,
+                    "note": NOTE_WEIGHTED,
+                    "interpretation_note": (
+                        "unweighted_n = raw respondent headcount per wave/category (reliability check only). "
+                        "pct = WEIGHTED, population-representative percentage within each wave. "
+                        "pct sums to 100 within each wave, not across waves."
+                    ),
+                    "data": df.to_dict(orient="records"),
+                }, indent=2, default=str)
 
     except Exception as e:
         logger.error(f"generate_marginals_by_wave error: {e}")

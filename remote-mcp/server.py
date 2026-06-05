@@ -241,6 +241,57 @@ RACE_BOOLEAN_COLUMNS = [
     "race_other",
 ]
 
+# General posting frequency per platform (ordinal 1–7; -99 = skipped/refused; NULL = not asked this wave)
+# Follow-up to sm_post_pol_*; asked of all users regardless of political posting
+GEN_POST_COLUMNS = [
+    "sm_post_gen_4chan",
+    "sm_post_gen_facebook",
+    "sm_post_gen_gab",
+    "sm_post_gen_instagram",
+    "sm_post_gen_linkedin",
+    "sm_post_gen_mastodon",
+    "sm_post_gen_messenger",
+    "sm_post_gen_parler",
+    "sm_post_gen_pinterest",
+    "sm_post_gen_post",
+    "sm_post_gen_reddit",
+    "sm_post_gen_snapchat",
+    "sm_post_gen_tiktok",
+    "sm_post_gen_truth",
+    "sm_post_gen_tumblr",
+    "sm_post_gen_twitter",
+    "sm_post_gen_whatsapp",
+    "sm_post_gen_youtube",
+    "sm_post_gen_bluesky",
+    "sm_post_gen_threads",
+    "sm_post_gen_bereal",
+    "sm_post_gen_lemon8",
+    "sm_post_gen_rednote",
+    "sm_post_gen_twitch",
+]
+
+# COVID behavior (ordinal 1–4; -99 = skipped/refused; NULL = not asked this wave)
+COV_BEH_COLUMNS = [
+    "cov_beh_1",
+    "cov_beh_2",
+    "cov_beh_3",
+    "cov_beh_4",
+    "cov_beh_5",
+]
+
+# Democracy / 2024 election attitudes (NULL = not asked this wave; -99 = skipped/refused)
+ELECTION_COLUMNS = [
+    "democ_1",      # democratic norms scale 0–100
+    "cand24",       # 2024 candidate preference (ordinal 1–6)
+    "vote24",       # 2024 vote (ordinal 1–4)
+    "news_elect_1", # election news consumption (ordinal 1–5)
+    "news_elect_2",
+    "news_elect_3",
+    "source_elect", # primary election news source (ordinal 1–10)
+    "media_elect",  # election media type (ordinal 1–9)
+    "news_sat",     # news satisfaction (ordinal 1–5)
+]
+
 # Ozempic / GLP-1 questions (wave 35+; ordinal; -99 = skipped/refused)
 # ozempic_wt is a subsample weight, not an analysis variable — excluded here.
 OZEMPIC_COLUMNS = [
@@ -263,7 +314,8 @@ CATEGORICAL_ORDINAL_COLUMNS = ["ozempic", "ozempic_why"]
 # All ordinal column groups (exclude -99 sentinel in queries with col > 0)
 ALL_ORDINAL_COLUMNS = (
     ATTITUDINAL_COLUMNS + FREQ_COLUMNS + TRUST_COLUMNS +
-    POL_POST_COLUMNS + POL_TRUST_COLUMNS + PHQ9_COLUMNS + OZEMPIC_COLUMNS
+    POL_POST_COLUMNS + GEN_POST_COLUMNS + POL_TRUST_COLUMNS +
+    PHQ9_COLUMNS + OZEMPIC_COLUMNS + COV_BEH_COLUMNS + ELECTION_COLUMNS
 )
 
 # All binary columns beyond the core use_* set
@@ -285,12 +337,15 @@ _ALL_REGRESSION_COLUMNS: set[str] = set(
     + FREQ_COLUMNS
     + TRUST_COLUMNS
     + POL_POST_COLUMNS
+    + GEN_POST_COLUMNS
     + POL_TRUST_COLUMNS
     + PHQ9_COLUMNS
     + OZEMPIC_REGRESSION_COLUMNS
     + SM_POST_COLUMNS
     + POL_NEWS_COLUMNS
     + RACE_BOOLEAN_COLUMNS
+    + COV_BEH_COLUMNS
+    + ELECTION_COLUMNS
 )
 
 # Binary-outcome columns (valid for logistic regression)

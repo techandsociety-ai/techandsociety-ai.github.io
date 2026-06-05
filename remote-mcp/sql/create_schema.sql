@@ -222,6 +222,53 @@ AS SELECT
   CAST(sm_post_snapchat_2  AS INT64) as sm_post_snapchat_2,
   CAST(sm_post_snapchat_3  AS INT64) as sm_post_snapchat_3,
 
+  -- General posting frequency per platform (ordinal 1–7; -99 = skipped/refused; NULL = not asked this wave)
+  -- Follow-up to sm_post_pol_*; asked of all users regardless of political posting
+  CAST(sm_post_gen_4chan      AS INT64) as sm_post_gen_4chan,
+  CAST(sm_post_gen_facebook   AS INT64) as sm_post_gen_facebook,
+  CAST(sm_post_gen_gab        AS INT64) as sm_post_gen_gab,
+  CAST(sm_post_gen_instagram  AS INT64) as sm_post_gen_instagram,
+  CAST(sm_post_gen_linkedin   AS INT64) as sm_post_gen_linkedin,
+  CAST(sm_post_gen_mastodon   AS INT64) as sm_post_gen_mastodon,
+  CAST(sm_post_gen_messenger  AS INT64) as sm_post_gen_messenger,
+  CAST(sm_post_gen_parler     AS INT64) as sm_post_gen_parler,
+  CAST(sm_post_gen_pinterest  AS INT64) as sm_post_gen_pinterest,
+  CAST(sm_post_gen_post       AS INT64) as sm_post_gen_post,
+  CAST(sm_post_gen_reddit     AS INT64) as sm_post_gen_reddit,
+  CAST(sm_post_gen_snapchat   AS INT64) as sm_post_gen_snapchat,
+  CAST(sm_post_gen_tiktok     AS INT64) as sm_post_gen_tiktok,
+  CAST(sm_post_gen_truth      AS INT64) as sm_post_gen_truth,
+  CAST(sm_post_gen_tumblr     AS INT64) as sm_post_gen_tumblr,
+  CAST(sm_post_gen_twitter    AS INT64) as sm_post_gen_twitter,
+  CAST(sm_post_gen_whatsapp   AS INT64) as sm_post_gen_whatsapp,
+  CAST(sm_post_gen_youtube    AS INT64) as sm_post_gen_youtube,
+  CAST(sm_post_gen_bluesky    AS INT64) as sm_post_gen_bluesky,
+  CAST(sm_post_gen_threads    AS INT64) as sm_post_gen_threads,
+  CAST(sm_post_gen_bereal     AS INT64) as sm_post_gen_bereal,
+  CAST(sm_post_gen_lemon8     AS INT64) as sm_post_gen_lemon8,
+  CAST(sm_post_gen_rednote    AS INT64) as sm_post_gen_rednote,
+  CAST(sm_post_gen_twitch     AS INT64) as sm_post_gen_twitch,
+
+  -- COVID behavior (ordinal 1–4; -99 = skipped/refused; NULL = not asked this wave)
+  CAST(cov_beh_1 AS INT64) as cov_beh_1,
+  CAST(cov_beh_2 AS INT64) as cov_beh_2,
+  CAST(cov_beh_3 AS INT64) as cov_beh_3,
+  CAST(cov_beh_4 AS INT64) as cov_beh_4,
+  CAST(cov_beh_5 AS INT64) as cov_beh_5,
+
+  -- Democracy / 2024 election attitudes (NULL = not asked this wave)
+  CAST(democ_1     AS INT64) as democ_1,      -- democratic norms scale 0–100; -99 = skipped/refused
+  CAST(cand24      AS INT64) as cand24,        -- 2024 candidate preference (ordinal 1–6); -99 = skipped/refused
+  CAST(vote24      AS INT64) as vote24,        -- 2024 vote (ordinal 1–4); -99 = skipped/refused
+
+  -- Election news consumption (NULL = not asked this wave; -99 = skipped/refused)
+  CAST(news_elect_1 AS INT64) as news_elect_1, -- ordinal 1–5
+  CAST(news_elect_2 AS INT64) as news_elect_2, -- ordinal 1–5
+  CAST(news_elect_3 AS INT64) as news_elect_3, -- ordinal 1–5
+  CAST(source_elect AS INT64) as source_elect,  -- primary election news source (ordinal 1–10)
+  CAST(media_elect  AS INT64) as media_elect,   -- election media type (ordinal 1–9)
+  CAST(news_sat     AS INT64) as news_sat,      -- news satisfaction (ordinal 1–5)
+
   -- Ozempic / GLP-1 questions (wave 35+; ordinal; -99 = skipped/refused; NULL = not asked)
   CAST(ozempic        AS INT64)   as ozempic,       -- 1=currently taking, 2=previously took/stopped, 3=considering/interested, 4=not taking/no interest, 5=don't know/unsure
   CAST(ozempic_why    AS INT64)   as ozempic_why,   -- 1=weight loss, 4=diabetes, 5=other

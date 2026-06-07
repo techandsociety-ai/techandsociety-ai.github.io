@@ -50,6 +50,16 @@ try:
 except ImportError:
     _REPORTLAB_AVAILABLE = False
 
+# matplotlib — optional; required only for chart embedding in PDF reports
+try:
+    import matplotlib
+    matplotlib.use("Agg")  # headless backend — must be set before importing pyplot
+    import matplotlib.pyplot as _plt
+    import matplotlib.ticker as _ticker
+    _MATPLOTLIB_AVAILABLE = True
+except ImportError:
+    _MATPLOTLIB_AVAILABLE = False
+
 _LOGO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chip50.png")
 
 # Configure logging
@@ -2998,6 +3008,101 @@ async def run_logistic_regression(
 
 # ── PDF Report Generator ─────────────────────────────────────────────────────
 
+def _render_chart(chart_def: Dict[str, Any], content_w_pt: float) -> BytesIO:
+    """Render a chart spec to a PNG BytesIO buffer for embedding in the PDF.
+
+    chart_def keys
+    --------------
+    chart_type : "bar" | "grouped_bar" | "line"   (default "bar")
+    x_labels   : list[str]
+    series     : list[{"label": str, "values": list[float]}]
+    y_label    : str (optional)
+    y_pct      : bool — format y-axis as 0–100 percentages (default False)
+    height_in  : float — figure height in inches (default 3.5)
+    """
+    chart_type = chart_def.get("chart_type", "bar")
+    x_labels   = chart_def.get("x_labels", [])
+    series     = chart_def.get("series", [])
+    y_label    = chart_def.get("y_label", "")
+    y_pct      = chart_def.get("y_pct", False)
+    height_in  = float(chart_def.get("height_in", 3.5))
+
+    # Convert content width from points to inches (72 pt = 1 in)
+    width_in = content_w_pt / 72.0
+
+    # CHIP50 palette: navy, steel-blue, muted-gold, muted-green, slate
+    PALETTE = ["#1E3D70", "#3A6199", "#C9962E", "#4A7C59", "#7B6FA0",
+               "#A04040", "#5B8FA8", "#C87137", "#6B9E6B", "#9B6B9B"]
+
+    fig, ax = _plt.subplots(figsize=(width_in, height_in))
+    fig.patch.set_facecolor("white")
+    ax.set_facecolor("#F4F6FB")
+    for spine in ax.spines.values():
+        spine.set_edgecolor("#CCCCCC")
+        spine.set_linewidth(0.6)
+    ax.tick_params(colors="#444444", labelsize=8)
+    ax.grid(axis="y", color="#DDDDDD", linewidth=0.5, linestyle="--", zorder=0)
+
+    n_groups = len(x_labels)
+    n_series = len(series)
+
+    if chart_type in ("bar", "grouped_bar") and n_series == 1:
+        vals   = series[0].get("values", [])
+        colors = [PALETTE[i % len(PALETTE)] for i in range(len(vals))]
+        bars   = ax.bar(range(len(vals)), vals, color=colors, zorder=3,
+                        width=0.6, edgecolor="white", linewidth=0.4)
+        ax.set_xticks(range(n_groups))
+        ax.set_xticklabels(x_labels, fontsize=8, rotation=30 if n_groups > 6 else 0,
+                           ha="right" if n_groups > 6 else "center")
+        # Value labels on bars
+        for bar in bars:
+            h = bar.get_height()
+            label = f"{h:.0f}%" if y_pct else f"{h:.1f}"
+            ax.text(bar.get_x() + bar.get_width() / 2, h + 0.01 * ax.get_ylim()[1],
+                    label, ha="center", va="bottom", fontsize=7.5, color="#333333")
+
+    elif chart_type == "grouped_bar" and n_series > 1:
+        bar_w  = 0.8 / n_series
+        x_pos  = np.arange(n_groups)
+        for i, ser in enumerate(series):
+            offset = (i - (n_series - 1) / 2) * bar_w
+            vals   = ser.get("values", [])
+            ax.bar(x_pos + offset, vals, width=bar_w * 0.9,
+                   color=PALETTE[i % len(PALETTE)], label=ser.get("label", f"Series {i+1}"),
+                   zorder=3, edgecolor="white", linewidth=0.4)
+        ax.set_xticks(x_pos)
+        ax.set_xticklabels(x_labels, fontsize=8, rotation=30 if n_groups > 5 else 0,
+                           ha="right" if n_groups > 5 else "center")
+        ax.legend(fontsize=8, framealpha=0.7, edgecolor="#CCCCCC")
+
+    elif chart_type == "line":
+        x_pos = range(n_groups)
+        for i, ser in enumerate(series):
+            vals  = ser.get("values", [])
+            color = PALETTE[i % len(PALETTE)]
+            ax.plot(x_pos, vals, marker="o", markersize=5, linewidth=1.8,
+                    color=color, label=ser.get("label", f"Series {i+1}"), zorder=3)
+        ax.set_xticks(list(x_pos))
+        ax.set_xticklabels(x_labels, fontsize=8, rotation=30 if n_groups > 6 else 0,
+                           ha="right" if n_groups > 6 else "center")
+        if n_series > 1:
+            ax.legend(fontsize=8, framealpha=0.7, edgecolor="#CCCCCC")
+
+    if y_pct:
+        ax.yaxis.set_major_formatter(_ticker.FormatStrFormatter("%.0f%%"))
+    if y_label:
+        ax.set_ylabel(y_label, fontsize=8.5, color="#333333")
+
+    fig.tight_layout(pad=0.5)
+
+    buf = BytesIO()
+    fig.savefig(buf, format="png", dpi=150, bbox_inches="tight",
+                facecolor="white", edgecolor="none")
+    _plt.close(fig)
+    buf.seek(0)
+    return buf
+
+
 def _build_chip50_pdf(
     title: str,
     subtitle: Optional[str],
@@ -3090,6 +3195,12 @@ def _build_chip50_pdf(
     s_tbl_note = _ps("ChipTblNote",
         fontName="Times-Italic", fontSize=8.5, leading=11,
         textColor=RULE, spaceAfter=12)
+    s_fig_title = _ps("ChipFigTitle",
+        fontName="Times-Bold", fontSize=9.5, leading=12,
+        textColor=BLACK, spaceBefore=14, spaceAfter=3)
+    s_fig_note = _ps("ChipFigNote",
+        fontName="Times-Italic", fontSize=8.5, leading=11,
+        textColor=RULE, spaceAfter=12)
     # ── Table style factory ───────────────────────────────────────────────────
     def _tbl_style(n_rows: int) -> _TableStyle:
         cmds = [
@@ -3120,7 +3231,8 @@ def _build_chip50_pdf(
 
     # ── Story ─────────────────────────────────────────────────────────────────
     story: List[Any] = []
-    table_counter = [0]
+    table_counter  = [0]
+    figure_counter = [0]
 
     # Title page
     story.append(_Spacer(1, 1.4 * _inch))
@@ -3199,6 +3311,7 @@ def _build_chip50_pdf(
         heading = section.get("heading", "")
         content = section.get("content", "")
         tables  = section.get("tables") or []
+        charts  = section.get("charts") or []
 
         if heading:
             story.append(_Paragraph(heading, s_h1))
@@ -3252,10 +3365,47 @@ def _build_chip50_pdf(
                 block.append(_Paragraph(f"<i>Note.</i> {notes}", s_tbl_note))
             story.append(_KeepTogether(block))
 
+        for chart_def in charts:
+            if not _MATPLOTLIB_AVAILABLE:
+                story.append(_Paragraph(
+                    "<i>[Chart omitted: matplotlib not installed on server.]</i>",
+                    s_fig_note,
+                ))
+                continue
+
+            chart_title = chart_def.get("title", "")
+            chart_notes = chart_def.get("notes")
+            width_pct   = float(chart_def.get("width_pct", 1.0))
+            height_in   = float(chart_def.get("height_in", 3.5))
+
+            try:
+                png_buf  = _render_chart(chart_def, CONTENT_W * width_pct)
+                draw_w   = CONTENT_W * width_pct
+                draw_h   = height_in * _inch
+
+                figure_counter[0] += 1
+                label = f"Figure {figure_counter[0]}."
+                if chart_title:
+                    label += f" {chart_title}"
+
+                img = _Image(png_buf, width=draw_w, height=draw_h)
+                img.hAlign = "CENTER"
+
+                block: List[Any] = [_Paragraph(label, s_fig_title), img]
+                if chart_notes:
+                    block.append(_Paragraph(f"<i>Note.</i> {chart_notes}", s_fig_note))
+                story.append(_KeepTogether(block))
+            except Exception as exc:
+                logger.warning(f"Chart rendering failed: {exc}")
+                story.append(_Paragraph(
+                    f"<i>[Chart could not be rendered: {exc}]</i>",
+                    s_fig_note,
+                ))
+
         story.append(_Spacer(1, 0.08 * _inch))
 
     doc.build(story, onFirstPage=_on_first_page, onLaterPages=_on_later_pages)
-    return table_counter[0]
+    return table_counter[0], figure_counter[0]
 
 
 @mcp.tool()
@@ -3293,6 +3443,23 @@ async def generate_pdf_report(
             - "rows" (list[list[str]]): Data rows; all cells as strings.
             - "notes" (str, optional): Footnote rendered below the table in
               italic per APA style ("Note. ...").
+        - "charts" (list[dict]): Charts to embed after the section text
+          (and after any tables). Each chart dict:
+            - "chart_type" (str): "bar" | "grouped_bar" | "line"
+              (default "bar"). Use "bar" for a single series with per-bar
+              colours; "grouped_bar" when comparing multiple series side by
+              side; "line" for trend lines across waves or categories.
+            - "title" (str): Caption; auto-prefixed "Figure N. <title>".
+            - "x_labels" (list[str]): Labels for each point on the x-axis.
+            - "series" (list[dict]): Data series. Each item:
+                - "label" (str): Series name (shown in legend for multi-series).
+                - "values" (list[float]): One numeric value per x_label.
+            - "y_label" (str, optional): Y-axis label.
+            - "y_pct" (bool, optional): Format y-axis as "N%" (default False).
+            - "notes" (str, optional): Footnote below the figure.
+            - "width_pct" (float, optional): Fraction of page width 0–1
+              (default 1.0 = full content width).
+            - "height_in" (float, optional): Chart height in inches (default 3.5).
 
     subtitle : str, optional
         Subtitle under the main title on the title page.
@@ -3311,6 +3478,7 @@ async def generate_pdf_report(
                           curl or a browser to download the PDF.
     - filename          : Suggested local filename for saving.
     - tables_generated  : Count of numbered tables in the report.
+    - figures_generated : Count of numbered figures (charts) in the report.
     - size_bytes        : PDF file size in bytes.
     - expires_in        : Human-readable URL expiry ("1 hour").
     """
@@ -3332,7 +3500,7 @@ async def generate_pdf_report(
 
     def _build_and_upload():
         buf = BytesIO()
-        n = _build_chip50_pdf(
+        n_tables, n_figures = _build_chip50_pdf(
             title=title,
             subtitle=subtitle,
             authors=authors,
@@ -3346,17 +3514,18 @@ async def generate_pdf_report(
         bucket     = gcs_client.bucket(REPORTS_BUCKET)
         blob       = bucket.blob(gcs_key)
         blob.upload_from_string(pdf_bytes, content_type="application/pdf")
-        return n, len(pdf_bytes)
+        return n_tables, n_figures, len(pdf_bytes)
 
     async def _run_job():
         try:
             loop = asyncio.get_event_loop()
-            n_tables, size_bytes = await loop.run_in_executor(None, _build_and_upload)
+            n_tables, n_figures, size_bytes = await loop.run_in_executor(None, _build_and_upload)
             _report_jobs[job_id]["status"] = "done"
             _report_jobs[job_id]["result"] = {
                 "download_url": public_url,
                 "filename": filename,
                 "tables_generated": n_tables,
+                "figures_generated": n_figures,
                 "size_bytes": size_bytes,
             }
         except Exception as exc:

@@ -110,10 +110,17 @@ PLATFORM_COLUMNS = [
     "use_post",
     "use_threads",
     "use_bluesky",
+    # Wave 38+
+    "use_discord",
+    "use_telegram",
+    "use_twitch",
 ]
 
 # Platforms added mid-panel (have NULLs in earlier waves)
-LATE_PLATFORMS = {"use_truth", "use_mastodon", "use_post", "use_threads", "use_bluesky"}
+LATE_PLATFORMS = {
+    "use_truth", "use_mastodon", "use_post", "use_threads", "use_bluesky",
+    "use_discord", "use_telegram", "use_twitch",
+}
 
 # Attitudinal / behavioral demographics (ordinal; -99 = skipped/refused)
 ATTITUDINAL_COLUMNS = [
@@ -149,8 +156,15 @@ FREQ_COLUMNS = [
     "freq_post",
     "freq_threads",
     "freq_bluesky",
+    # Wave 38+
+    "freq_discord",
+    "freq_telegram",
+    "freq_twitch",
 ]
-LATE_FREQ_PLATFORMS = {"freq_truth", "freq_mastodon", "freq_post", "freq_threads", "freq_bluesky"}
+LATE_FREQ_PLATFORMS = {
+    "freq_truth", "freq_mastodon", "freq_post", "freq_threads", "freq_bluesky",
+    "freq_discord", "freq_telegram", "freq_twitch",
+}
 
 # Platform trust scores (ordinal 1–4; -99 = skipped/refused)
 TRUST_COLUMNS = [
@@ -172,6 +186,12 @@ TRUST_COLUMNS = [
     "sm_trust_tumblr",
     "sm_trust_threads",
     "sm_trust_bluesky",
+    # Wave 38+ (new platforms + previously missing)
+    "sm_trust_discord",
+    "sm_trust_telegram",
+    "sm_trust_twitch",
+    "sm_trust_gab",
+    "sm_trust_pinterest",
 ]
 
 # Political posting frequency per platform (ordinal 1–6; -99 = skipped/refused)
@@ -196,6 +216,10 @@ POL_POST_COLUMNS = [
     "sm_post_pol_snapchat",
     "sm_post_pol_threads",
     "sm_post_pol_bluesky",
+    # Wave 38+
+    "sm_post_pol_discord",
+    "sm_post_pol_telegram",
+    "sm_post_pol_twitch",
 ]
 
 # Posting behavior — binary variants 1, 2, 3 per platform (0/1)
@@ -214,6 +238,7 @@ POL_NEWS_COLUMNS = [
 ]
 
 # Institutional trust (ordinal 1–4; -99 = skipped/refused)
+# Core subset present across many waves
 POL_TRUST_COLUMNS = [
     "pol_trust_science",
     "pol_trust_trump",
@@ -221,6 +246,120 @@ POL_TRUST_COLUMNS = [
     "pol_trust_social",
     "pol_trust_google",
     "pol_trust_facebook",
+]
+
+# Extended institutional trust (wave 38+; ordinal 1–4; -99 = skipped/refused)
+POL_TRUST_EXT_COLUMNS = [
+    "pol_trust_city",        "pol_trust_state",     "pol_trust_congress",
+    "pol_trust_white_house", "pol_trust_court",     "pol_trust_election",
+    "pol_trust_fbi",         "pol_trust_fda",       "pol_trust_cdc",
+    "pol_trust_biden",       "pol_trust_harris",    "pol_trust_doctors",
+    "pol_trust_pharma",      "pol_trust_education", "pol_trust_police",
+    "pol_trust_military",    "pol_trust_justice",   "pol_trust_religion",
+    "pol_trust_banks",       "pol_trust_media",     "pol_trust_ai",
+]
+
+# ── Wave-38-specific content columns ─────────────────────────────────────────
+
+# Political / electoral (wave 38; ordinal unless noted; -99 = skipped/refused)
+W38_POLITICAL_COLUMNS = [
+    "interest", "indep", "dem_str", "rep_str",
+    "vote24_post", "vote24_certain", "support24",
+    "vote_26", "rep_26", "sen_26", "el_conf_26",
+    "pol_par_1", "pol_par_2", "pol_par_3", "pol_par_4",
+    "pol_par_5", "pol_par_6", "pol_par_7",
+    "gov_gen", "mayor_gen",
+    "us_dem_1", "state_dem_1",
+    "gerry_eval", "gerry_amend", "gerry_state_aware",
+    "gas_affected", "support_cuba",
+    # Feeling thermometers — domestic groups (0–100)
+    "therm1_1",  "therm1_2",  "therm1_3",  "therm1_4",  "therm1_5",
+    "therm1_6",  "therm1_7",  "therm1_11", "therm1_12", "therm1_13",
+    "therm1_14", "therm1_15", "therm1_16",
+    # Feeling thermometers — countries (0–100)
+    "therm_country_1",  "therm_country_2",  "therm_country_3",
+    "therm_country_4",  "therm_country_11", "therm_country_12",
+    "therm_country_15",
+    "comfort_party_1", "comfort_party_2", "comfort_party_3",
+    # Protest attitudes
+    "prot_prior_1",  "prot_prior_2",  "prot_prior_3",  "prot_prior_4",
+    "prot_prior_5",  "prot_prior_6",  "prot_prior_7",  "prot_prior_8",
+    "prot_prior_9",  "prot_prior_10", "prot_prior_11", "prot_prior_12",
+    "prot_prior_13", "trump_protest",
+    "prot_enc_trump_1", "prot_enc_trump_2", "prot_enc_trump_3",
+    "prot_enc_trump_4", "prot_enc_trump_5",
+    "prot_contagion_trump_1", "prot_contagion_trump_2", "prot_contagion_trump_3",
+    "prot_contagion_trump_4", "prot_contagion_trump_5",
+    "prot_contagion_trump_6", "prot_contagion_trump_7",
+    "trump_prot_fut", "trump_prot_symp",
+    # Iran foreign policy attitudes
+    "iran_foll", "iran_decision", "iran_trump_app",
+    "iran_threat_belief", "iran_posture", "iran_action_outcome",
+]
+
+# Binary check-all protest/protest-avoidance items (wave 38; 0/1)
+W38_PROTEST_BINARY_COLUMNS = [
+    "prot_causes_1",  "prot_causes_2",  "prot_causes_3",  "prot_causes_4",
+    "prot_causes_5",  "prot_causes_6",  "prot_causes_7",  "prot_causes_8",
+    "prot_causes_9",  "prot_causes_10", "prot_causes_11", "prot_causes_12",
+    "prot_feel_1",    "prot_feel_2",    "prot_feel_3",    "prot_feel_4",
+    "prot_feel_5",    "prot_feel_6",    "prot_feel_7",    "prot_feel_8",
+    "prot_feel_9",
+    "trump_prot_notwhy_1",  "trump_prot_notwhy_2",  "trump_prot_notwhy_3",
+    "trump_prot_notwhy_4",  "trump_prot_notwhy_5",  "trump_prot_notwhy_6",
+    "trump_prot_notwhy_7",  "trump_prot_notwhy_8",  "trump_prot_notwhy_9",
+    "trump_prot_notwhy_10", "trump_prot_notwhy_11",
+]
+
+# Health / disability / ozempic extended (wave 38; ordinal; -99 = skipped/refused)
+W38_HEALTH_COLUMNS = [
+    "vac_gen_child", "mmr_risk",
+    "dis_work", "dis_wg_vis", "dis_wg_hear", "dis_wg_mob",
+    "dis_wg_cog",   "dis_wg_sc",  "dis_wg_com",
+    "ozempic_dm", "ozempic_pay",
+    "height_1", "height_2", "weight_current", "weight_pre_glp1",
+    "med_policy_approve_1", "med_policy_approve_2", "med_policy_approve_3",
+    "insured", "insured_lost", "insured_gap",
+    "medicaid_last", "medicare_last",
+    "soc_sup_1", "soc_sup_2", "soc_sup_3", "soc_sup_4", "soc_sup_5",
+    "phq9_13", "stress_1",
+    "lonely1", "lonely2", "lonely3",
+]
+
+# Binary check-all healthcare items (wave 38; 0/1)
+W38_HEALTH_BINARY_COLUMNS = [
+    "ozempic_stop_1",  "ozempic_stop_2",  "ozempic_stop_3",  "ozempic_stop_4",
+    "ozempic_stop_5",  "ozempic_stop_6",  "ozempic_stop_7",  "ozempic_stop_8",
+    "ozempic_stop_9",  "ozempic_stop_10", "ozempic_stop_11", "ozempic_stop_12",
+    "ozempic_stop_13", "ozempic_stop_14", "ozempic_stop_15", "ozempic_stop_16",
+    "insured_lost_why_1",  "insured_lost_why_2",  "insured_lost_why_3",
+    "insured_lost_why_4",  "insured_lost_why_5",  "insured_lost_why_6",
+    "insured_lost_why_7",  "insured_lost_why_8",  "insured_lost_why_9",
+    "insured_lost_why_10", "insured_lost_why_11", "insured_lost_why_12",
+    "insured_lost_why_13", "insured_lost_why_14", "insured_lost_why_15",
+    "insured_lost_why_16", "insured_lost_why_17", "insured_lost_why_18",
+    "insured_lost_why_19",
+    "insurance_type_1", "insurance_type_2", "insurance_type_3", "insurance_type_4",
+    "insurance_type_5", "insurance_type_6", "insurance_type_7", "insurance_type_8",
+    "med_ever_1", "med_ever_2", "med_ever_3",
+]
+
+# University / research funding (wave 38; ordinal; -99 = skipped/refused)
+W38_UNIVERSITY_COLUMNS = [
+    "uni_funding_1",           "uni_funding_2",           "uni_funding_3",
+    "uni_sources_1",           "uni_sources_2",           "uni_sources_3",
+    "program_inv_1",           "program_inv_2",           "program_inv_3",
+    "program_inv_4",
+    "ec_benefit_1",            "ec_benefit_2",            "ec_benefit_3",
+    "non_economic_benefits_1", "non_economic_benefits_2", "non_economic_benefits_3",
+    "public_funds_1",          "public_funds_2",          "public_funds_3",
+    "public_funds_order_1",    "public_funds_order_2",    "public_funds_order_3",
+]
+
+# LLM / AI attitudes (wave 38; ordinal; -99 = skipped/refused)
+W38_LLM_COLUMNS = [
+    "llm_psych",
+    "llm_help",
 ]
 
 # PHQ-9 depression screening items — SENSITIVE
@@ -268,6 +407,21 @@ GEN_POST_COLUMNS = [
     "sm_post_gen_lemon8",
     "sm_post_gen_rednote",
     "sm_post_gen_twitch",
+    # Wave 38+
+    "sm_post_gen_discord",
+    "sm_post_gen_telegram",
+]
+
+# Platform quit intention (wave 38+; ordinal 1=already quit, 2=considering, 3=not planning; -99 = refused)
+SM_QUIT_COLUMNS = [
+    "sm_quit_bluesky",   "sm_quit_discord",  "sm_quit_gab",
+    "sm_quit_facebook",  "sm_quit_messenger","sm_quit_instagram",
+    "sm_quit_linkedin",  "sm_quit_mastodon", "sm_quit_parler",
+    "sm_quit_pinterest", "sm_quit_post",     "sm_quit_reddit",
+    "sm_quit_tiktok",    "sm_quit_threads",  "sm_quit_truth",
+    "sm_quit_tumblr",    "sm_quit_telegram", "sm_quit_twitch",
+    "sm_quit_twitter",   "sm_quit_snapchat", "sm_quit_youtube",
+    "sm_quit_whatsapp",  "sm_quit_4chan",
 ]
 
 # COVID behavior (ordinal 1–4; -99 = skipped/refused; NULL = not asked this wave)
@@ -315,11 +469,17 @@ CATEGORICAL_ORDINAL_COLUMNS = ["ozempic", "ozempic_why"]
 ALL_ORDINAL_COLUMNS = (
     ATTITUDINAL_COLUMNS + FREQ_COLUMNS + TRUST_COLUMNS +
     POL_POST_COLUMNS + GEN_POST_COLUMNS + POL_TRUST_COLUMNS +
-    PHQ9_COLUMNS + OZEMPIC_COLUMNS + COV_BEH_COLUMNS + ELECTION_COLUMNS
+    PHQ9_COLUMNS + OZEMPIC_COLUMNS + COV_BEH_COLUMNS + ELECTION_COLUMNS +
+    SM_QUIT_COLUMNS + POL_TRUST_EXT_COLUMNS +
+    W38_POLITICAL_COLUMNS + W38_HEALTH_COLUMNS +
+    W38_UNIVERSITY_COLUMNS + W38_LLM_COLUMNS
 )
 
 # All binary columns beyond the core use_* set
-ALL_BINARY_COLUMNS = SM_POST_COLUMNS + POL_NEWS_COLUMNS
+ALL_BINARY_COLUMNS = (
+    SM_POST_COLUMNS + POL_NEWS_COLUMNS +
+    W38_PROTEST_BINARY_COLUMNS + W38_HEALTH_BINARY_COLUMNS
+)
 
 # ── Regression column sets ───────────────────────────────────────────────────
 
@@ -346,10 +506,21 @@ _ALL_REGRESSION_COLUMNS: set[str] = set(
     + RACE_BOOLEAN_COLUMNS
     + COV_BEH_COLUMNS
     + ELECTION_COLUMNS
+    + SM_QUIT_COLUMNS
+    + POL_TRUST_EXT_COLUMNS
+    + W38_POLITICAL_COLUMNS
+    + W38_PROTEST_BINARY_COLUMNS
+    + W38_HEALTH_COLUMNS
+    + W38_HEALTH_BINARY_COLUMNS
+    + W38_UNIVERSITY_COLUMNS
+    + W38_LLM_COLUMNS
 )
 
 # Binary-outcome columns (valid for logistic regression)
-_BINARY_COLUMNS: set[str] = set(PLATFORM_COLUMNS + SM_POST_COLUMNS + POL_NEWS_COLUMNS)
+_BINARY_COLUMNS: set[str] = set(
+    PLATFORM_COLUMNS + SM_POST_COLUMNS + POL_NEWS_COLUMNS +
+    W38_PROTEST_BINARY_COLUMNS + W38_HEALTH_BINARY_COLUMNS
+)
 
 # Derived columns: computed on the fly in SQL from a source column.
 # Each entry: { "sql": <expression>, "source": <real column for NULL/sentinel checks> }

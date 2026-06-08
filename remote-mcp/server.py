@@ -1382,7 +1382,7 @@ async def generate_marginals_by_wave(
                       unweighted_n,
                       weighted_n,
                       ROUND(weighted_n * 100.0 / SUM(weighted_n) OVER (
-                        PARTITION BY wave, CAST(demographic_value AS STRING)
+                        PARTITION BY CAST(wave AS STRING), CAST(demographic_value AS STRING)
                       ), 2) AS pct,
                       suppressed
                     FROM agg

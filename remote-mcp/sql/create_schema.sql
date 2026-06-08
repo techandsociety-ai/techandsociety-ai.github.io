@@ -276,341 +276,74 @@ AS SELECT
   CAST(ozempic_time_2 AS INT64)   as ozempic_time_2,-- months since stopped (0–11+)
   CAST(ozempic_wt     AS FLOAT64) as ozempic_wt,    -- ozempic subsample weight (not an analysis variable)
 
-  -- ── New SM platforms (wave 38+; NULL in earlier waves) ─────────────────────
-  -- Platform usage (binary 0/1)
-  CAST(use_discord   AS INT64) as use_discord,
-  CAST(use_telegram  AS INT64) as use_telegram,
-  CAST(use_twitch    AS INT64) as use_twitch,
-
-  -- Platform usage frequency (ordinal 1–6; -99 = skipped/refused)
-  CAST(freq_discord  AS INT64) as freq_discord,
-  CAST(freq_telegram AS INT64) as freq_telegram,
-  CAST(freq_twitch   AS INT64) as freq_twitch,
-
-  -- General posting frequency (ordinal 1–7; -99 = skipped/refused)
-  CAST(sm_post_gen_discord  AS INT64) as sm_post_gen_discord,
-  CAST(sm_post_gen_telegram AS INT64) as sm_post_gen_telegram,
-
-  -- Political posting frequency (ordinal 1–6; -99 = skipped/refused)
-  CAST(sm_post_pol_discord  AS INT64) as sm_post_pol_discord,
-  CAST(sm_post_pol_telegram AS INT64) as sm_post_pol_telegram,
-  CAST(sm_post_pol_twitch   AS INT64) as sm_post_pol_twitch,
-
-  -- Platform trust (ordinal 1–4; -99 = skipped/refused)
-  CAST(sm_trust_discord   AS INT64) as sm_trust_discord,
-  CAST(sm_trust_telegram  AS INT64) as sm_trust_telegram,
-  CAST(sm_trust_twitch    AS INT64) as sm_trust_twitch,
-  CAST(sm_trust_gab       AS INT64) as sm_trust_gab,
-  CAST(sm_trust_pinterest AS INT64) as sm_trust_pinterest,
-
-  -- Platform quit intention (wave 38+; ordinal 1=already quit, 2=considering, 3=not planning; -99 = refused)
-  CAST(sm_quit_bluesky   AS INT64) as sm_quit_bluesky,
-  CAST(sm_quit_discord   AS INT64) as sm_quit_discord,
-  CAST(sm_quit_gab       AS INT64) as sm_quit_gab,
-  CAST(sm_quit_facebook  AS INT64) as sm_quit_facebook,
-  CAST(sm_quit_messenger AS INT64) as sm_quit_messenger,
-  CAST(sm_quit_instagram AS INT64) as sm_quit_instagram,
-  CAST(sm_quit_linkedin  AS INT64) as sm_quit_linkedin,
-  CAST(sm_quit_mastodon  AS INT64) as sm_quit_mastodon,
-  CAST(sm_quit_parler    AS INT64) as sm_quit_parler,
-  CAST(sm_quit_pinterest AS INT64) as sm_quit_pinterest,
-  CAST(sm_quit_post      AS INT64) as sm_quit_post,
-  CAST(sm_quit_reddit    AS INT64) as sm_quit_reddit,
-  CAST(sm_quit_tiktok    AS INT64) as sm_quit_tiktok,
-  CAST(sm_quit_threads   AS INT64) as sm_quit_threads,
-  CAST(sm_quit_truth     AS INT64) as sm_quit_truth,
-  CAST(sm_quit_tumblr    AS INT64) as sm_quit_tumblr,
-  CAST(sm_quit_telegram  AS INT64) as sm_quit_telegram,
-  CAST(sm_quit_twitch    AS INT64) as sm_quit_twitch,
-  CAST(sm_quit_twitter   AS INT64) as sm_quit_twitter,
-  CAST(sm_quit_snapchat  AS INT64) as sm_quit_snapchat,
-  CAST(sm_quit_youtube   AS INT64) as sm_quit_youtube,
-  CAST(sm_quit_whatsapp  AS INT64) as sm_quit_whatsapp,
-  CAST(sm_quit_4chan     AS INT64) as sm_quit_4chan,
-
-  -- ── Extended institutional trust (wave 38+; ordinal 1–4; -99 = refused) ───
-  CAST(pol_trust_city        AS INT64) as pol_trust_city,
-  CAST(pol_trust_state       AS INT64) as pol_trust_state,
-  CAST(pol_trust_congress    AS INT64) as pol_trust_congress,
-  CAST(pol_trust_white_house AS INT64) as pol_trust_white_house,
-  CAST(pol_trust_court       AS INT64) as pol_trust_court,
-  CAST(pol_trust_election    AS INT64) as pol_trust_election,
-  CAST(pol_trust_fbi         AS INT64) as pol_trust_fbi,
-  CAST(pol_trust_fda         AS INT64) as pol_trust_fda,
-  CAST(pol_trust_cdc         AS INT64) as pol_trust_cdc,
-  CAST(pol_trust_biden       AS INT64) as pol_trust_biden,
-  CAST(pol_trust_harris      AS INT64) as pol_trust_harris,
-  CAST(pol_trust_doctors     AS INT64) as pol_trust_doctors,
-  CAST(pol_trust_pharma      AS INT64) as pol_trust_pharma,
-  CAST(pol_trust_education   AS INT64) as pol_trust_education,
-  CAST(pol_trust_police      AS INT64) as pol_trust_police,
-  CAST(pol_trust_military    AS INT64) as pol_trust_military,
-  CAST(pol_trust_justice     AS INT64) as pol_trust_justice,
-  CAST(pol_trust_religion    AS INT64) as pol_trust_religion,
-  CAST(pol_trust_banks       AS INT64) as pol_trust_banks,
-  CAST(pol_trust_media       AS INT64) as pol_trust_media,
-  CAST(pol_trust_ai          AS INT64) as pol_trust_ai,
-
-  -- ── Wave-38 political / electoral content ─────────────────────────────────
-  -- Political interest and party strength (ordinal; -99 = refused)
-  -- Note: raw `party` column excluded — contains text labels; use party3/party7 instead
-  CAST(interest AS INT64) as interest,
-  CAST(indep    AS INT64) as indep,
-  CAST(dem_str  AS INT64) as dem_str,
-  CAST(rep_str  AS INT64) as rep_str,
-
-  -- 2024 election follow-up
-  CAST(vote24_post    AS INT64) as vote24_post,
-  CAST(vote24_certain AS INT64) as vote24_certain,
-  CAST(support24      AS INT64) as support24,
-
-  -- 2026 election outlook (ordinal; -99 = refused)
-  CAST(vote_26    AS INT64) as vote_26,
-  CAST(rep_26     AS INT64) as rep_26,
-  CAST(sen_26     AS INT64) as sen_26,
-  CAST(el_conf_26 AS INT64) as el_conf_26,
-
-  -- Partisan attitudes (ordinal; -99 = refused)
-  CAST(pol_par_1 AS INT64) as pol_par_1,
-  CAST(pol_par_2 AS INT64) as pol_par_2,
-  CAST(pol_par_3 AS INT64) as pol_par_3,
-  CAST(pol_par_4 AS INT64) as pol_par_4,
-  CAST(pol_par_5 AS INT64) as pol_par_5,
-  CAST(pol_par_6 AS INT64) as pol_par_6,
-  CAST(pol_par_7 AS INT64) as pol_par_7,
-
-  -- Government approval (ordinal; -99 = refused)
-  CAST(gov_gen   AS INT64) as gov_gen,
-  CAST(mayor_gen AS INT64) as mayor_gen,
-
-  -- Democracy evaluations (0–100 slider; -99 = refused)
-  CAST(us_dem_1          AS INT64) as us_dem_1,
-  CAST(state_dem_1       AS INT64) as state_dem_1,
-  CAST(gerry_eval        AS INT64) as gerry_eval,
-  CAST(gerry_amend       AS INT64) as gerry_amend,
-  CAST(gerry_state_aware AS INT64) as gerry_state_aware,
+  -- ── Democracy evaluations ─────────────────────────────────────────────────
+  CAST(state_dem         AS INT64) as state_dem,        -- state democracy evaluation (0–100 slider; -99 = refused)
+  CAST(gerry_eval        AS INT64) as gerry_eval,        -- gerrymandering evaluation (ordinal; -99 = refused)
+  CAST(gerry_amend       AS INT64) as gerry_amend,       -- gerrymandering amendment support (ordinal; -99 = refused)
+  CAST(gerry_state_aware AS INT64) as gerry_state_aware, -- gerrymandering state awareness (ordinal; -99 = refused)
 
   -- Policy attitudes (ordinal; -99 = refused)
-  CAST(gas_affected  AS INT64) as gas_affected,
-  CAST(support_cuba  AS INT64) as support_cuba,
+  CAST(support_cuba      AS INT64) as support_cuba,
+  CAST(support_cuba_DO_0 AS INT64) as support_cuba_DO_0, -- display order variables
+  CAST(support_cuba_DO_1 AS INT64) as support_cuba_DO_1,
+  CAST(support_cuba_DO_2 AS INT64) as support_cuba_DO_2,
+  CAST(support_cuba_DO_3 AS INT64) as support_cuba_DO_3,
+  CAST(support_cuba_DO_4 AS INT64) as support_cuba_DO_4,
+  CAST(support_cuba_DO_5 AS INT64) as support_cuba_DO_5,
 
-  -- Feeling thermometers — domestic groups (0–100; -99 = refused)
-  CAST(therm1_1  AS INT64) as therm1_1,
-  CAST(therm1_2  AS INT64) as therm1_2,
-  CAST(therm1_3  AS INT64) as therm1_3,
-  CAST(therm1_4  AS INT64) as therm1_4,
-  CAST(therm1_5  AS INT64) as therm1_5,
-  CAST(therm1_6  AS INT64) as therm1_6,
-  CAST(therm1_7  AS INT64) as therm1_7,
-  CAST(therm1_11 AS INT64) as therm1_11,
-  CAST(therm1_12 AS INT64) as therm1_12,
-  CAST(therm1_13 AS INT64) as therm1_13,
-  CAST(therm1_14 AS INT64) as therm1_14,
-  CAST(therm1_15 AS INT64) as therm1_15,
-  CAST(therm1_16 AS INT64) as therm1_16,
+  -- Raw demographics
+  CAST(age AS INT64) as age,  -- raw age in years
 
-  -- Feeling thermometers — countries (0–100; -99 = refused)
-  CAST(therm_country_1  AS INT64) as therm_country_1,
-  CAST(therm_country_2  AS INT64) as therm_country_2,
-  CAST(therm_country_3  AS INT64) as therm_country_3,
-  CAST(therm_country_4  AS INT64) as therm_country_4,
-  CAST(therm_country_11 AS INT64) as therm_country_11,
-  CAST(therm_country_12 AS INT64) as therm_country_12,
-  CAST(therm_country_15 AS INT64) as therm_country_15,
+  -- Political engagement and opinion (ordinal; -99 = refused; NULL = not asked this wave)
+  CAST(pol_info  AS INT64) as pol_info,   -- political information level
+  CAST(pol_disc  AS INT64) as pol_disc,   -- political discussion frequency
+  CAST(trump_gen AS INT64) as trump_gen,  -- general Trump favorability/support
 
-  -- Party comfort (ordinal 1–5; -99 = refused)
-  CAST(comfort_party_1 AS INT64) as comfort_party_1,
-  CAST(comfort_party_2 AS INT64) as comfort_party_2,
-  CAST(comfort_party_3 AS INT64) as comfort_party_3,
+  -- Political news sources — social media format (binary 0/1; NULL = not asked this wave)
+  CAST(pol_news2_1 AS INT64) as pol_news2_1,
 
-  -- ── Wave-38 protest / social unrest content ────────────────────────────────
-  -- Support for protest (ordinal; -99 = refused)
-  CAST(prot_prior_1  AS INT64) as prot_prior_1,
-  CAST(prot_prior_2  AS INT64) as prot_prior_2,
-  CAST(prot_prior_3  AS INT64) as prot_prior_3,
-  CAST(prot_prior_4  AS INT64) as prot_prior_4,
-  CAST(prot_prior_5  AS INT64) as prot_prior_5,
-  CAST(prot_prior_6  AS INT64) as prot_prior_6,
-  CAST(prot_prior_7  AS INT64) as prot_prior_7,
-  CAST(prot_prior_8  AS INT64) as prot_prior_8,
-  CAST(prot_prior_9  AS INT64) as prot_prior_9,
-  CAST(prot_prior_10 AS INT64) as prot_prior_10,
-  CAST(prot_prior_11 AS INT64) as prot_prior_11,
-  CAST(prot_prior_12 AS INT64) as prot_prior_12,
-  CAST(prot_prior_13 AS INT64) as prot_prior_13,
-  CAST(trump_protest AS INT64) as trump_protest,
-  -- Anti-Trump protest causes / feelings (binary 0/1 check-all)
-  CAST(prot_causes_1  AS INT64) as prot_causes_1,
-  CAST(prot_causes_2  AS INT64) as prot_causes_2,
-  CAST(prot_causes_3  AS INT64) as prot_causes_3,
-  CAST(prot_causes_4  AS INT64) as prot_causes_4,
-  CAST(prot_causes_5  AS INT64) as prot_causes_5,
-  CAST(prot_causes_6  AS INT64) as prot_causes_6,
-  CAST(prot_causes_7  AS INT64) as prot_causes_7,
-  CAST(prot_causes_8  AS INT64) as prot_causes_8,
-  CAST(prot_causes_9  AS INT64) as prot_causes_9,
-  CAST(prot_causes_10 AS INT64) as prot_causes_10,
-  CAST(prot_causes_11 AS INT64) as prot_causes_11,
-  CAST(prot_causes_12 AS INT64) as prot_causes_12,
-  CAST(prot_feel_1    AS INT64) as prot_feel_1,
-  CAST(prot_feel_2    AS INT64) as prot_feel_2,
-  CAST(prot_feel_3    AS INT64) as prot_feel_3,
-  CAST(prot_feel_4    AS INT64) as prot_feel_4,
-  CAST(prot_feel_5    AS INT64) as prot_feel_5,
-  CAST(prot_feel_6    AS INT64) as prot_feel_6,
-  CAST(prot_feel_7    AS INT64) as prot_feel_7,
-  CAST(prot_feel_8    AS INT64) as prot_feel_8,
-  CAST(prot_feel_9    AS INT64) as prot_feel_9,
-  -- Protest encouragement / contagion (ordinal; -99 = refused)
-  CAST(prot_enc_trump_1       AS INT64) as prot_enc_trump_1,
-  CAST(prot_enc_trump_2       AS INT64) as prot_enc_trump_2,
-  CAST(prot_enc_trump_3       AS INT64) as prot_enc_trump_3,
-  CAST(prot_enc_trump_4       AS INT64) as prot_enc_trump_4,
-  CAST(prot_enc_trump_5       AS INT64) as prot_enc_trump_5,
-  CAST(prot_contagion_trump_1 AS INT64) as prot_contagion_trump_1,
-  CAST(prot_contagion_trump_2 AS INT64) as prot_contagion_trump_2,
-  CAST(prot_contagion_trump_3 AS INT64) as prot_contagion_trump_3,
-  CAST(prot_contagion_trump_4 AS INT64) as prot_contagion_trump_4,
-  CAST(prot_contagion_trump_5 AS INT64) as prot_contagion_trump_5,
-  CAST(prot_contagion_trump_6 AS INT64) as prot_contagion_trump_6,
-  CAST(prot_contagion_trump_7 AS INT64) as prot_contagion_trump_7,
-  CAST(trump_prot_fut         AS INT64) as trump_prot_fut,
-  CAST(trump_prot_symp        AS INT64) as trump_prot_symp,
-  -- Reasons for not protesting (binary 0/1 check-all)
-  CAST(trump_prot_notwhy_1  AS INT64) as trump_prot_notwhy_1,
-  CAST(trump_prot_notwhy_2  AS INT64) as trump_prot_notwhy_2,
-  CAST(trump_prot_notwhy_3  AS INT64) as trump_prot_notwhy_3,
-  CAST(trump_prot_notwhy_4  AS INT64) as trump_prot_notwhy_4,
-  CAST(trump_prot_notwhy_5  AS INT64) as trump_prot_notwhy_5,
-  CAST(trump_prot_notwhy_6  AS INT64) as trump_prot_notwhy_6,
-  CAST(trump_prot_notwhy_7  AS INT64) as trump_prot_notwhy_7,
-  CAST(trump_prot_notwhy_8  AS INT64) as trump_prot_notwhy_8,
-  CAST(trump_prot_notwhy_9  AS INT64) as trump_prot_notwhy_9,
-  CAST(trump_prot_notwhy_10 AS INT64) as trump_prot_notwhy_10,
-  CAST(trump_prot_notwhy_11 AS INT64) as trump_prot_notwhy_11,
+  -- Political news sources — traditional/outlet format (binary 0/1; NULL = not asked this wave)
+  CAST(pol_news1_1  AS INT64) as pol_news1_1,
+  CAST(pol_news1_2  AS INT64) as pol_news1_2,
+  CAST(pol_news1_3  AS INT64) as pol_news1_3,
+  CAST(pol_news1_4  AS INT64) as pol_news1_4,
+  CAST(pol_news1_5  AS INT64) as pol_news1_5,
+  CAST(pol_news1_6  AS INT64) as pol_news1_6,
+  CAST(pol_news1_7  AS INT64) as pol_news1_7,
+  CAST(pol_news1_8  AS INT64) as pol_news1_8,
+  CAST(pol_news1_9  AS INT64) as pol_news1_9,
+  CAST(pol_news1_13 AS INT64) as pol_news1_13,
+  CAST(pol_news1_14 AS INT64) as pol_news1_14,
+  CAST(pol_news1_15 AS INT64) as pol_news1_15,
+  CAST(pol_news1_16 AS INT64) as pol_news1_16,
+  CAST(pol_news1_17 AS INT64) as pol_news1_17,
 
-  -- ── Wave-38 Iran foreign policy content ────────────────────────────────────
-  CAST(iran_foll           AS INT64) as iran_foll,
-  CAST(iran_decision       AS INT64) as iran_decision,
-  CAST(iran_trump_app      AS INT64) as iran_trump_app,
-  CAST(iran_threat_belief  AS INT64) as iran_threat_belief,
-  CAST(iran_posture        AS INT64) as iran_posture,
-  CAST(iran_action_outcome AS INT64) as iran_action_outcome,
+  -- Conspiracy beliefs (4th item; ordinal 1–5; -99 = skipped/refused)
+  CAST(conspiracy_4 AS INT64) as conspiracy_4,
 
-  -- ── Wave-38 health / disability content ────────────────────────────────────
-  -- Health attitudes (ordinal; -99 = refused)
-  CAST(vac_gen_child AS INT64) as vac_gen_child,
-  CAST(mmr_risk      AS INT64) as mmr_risk,
-  -- Disability / functioning (ordinal; -99 = refused)
-  CAST(dis_work    AS INT64) as dis_work,
-  CAST(dis_wg_vis  AS INT64) as dis_wg_vis,
-  CAST(dis_wg_hear AS INT64) as dis_wg_hear,
-  CAST(dis_wg_mob  AS INT64) as dis_wg_mob,
-  CAST(dis_wg_cog  AS INT64) as dis_wg_cog,
-  CAST(dis_wg_sc   AS INT64) as dis_wg_sc,
-  CAST(dis_wg_com  AS INT64) as dis_wg_com,
-  -- Extended GLP-1/Ozempic module (subsample ~2500; -99 = refused)
-  CAST(ozempic_dm      AS INT64) as ozempic_dm,
-  CAST(ozempic_pay     AS INT64) as ozempic_pay,
-  CAST(ozempic_stop_1  AS INT64) as ozempic_stop_1,   -- reasons for stopping (binary 0/1)
-  CAST(ozempic_stop_2  AS INT64) as ozempic_stop_2,
-  CAST(ozempic_stop_3  AS INT64) as ozempic_stop_3,
-  CAST(ozempic_stop_4  AS INT64) as ozempic_stop_4,
-  CAST(ozempic_stop_5  AS INT64) as ozempic_stop_5,
-  CAST(ozempic_stop_6  AS INT64) as ozempic_stop_6,
-  CAST(ozempic_stop_7  AS INT64) as ozempic_stop_7,
-  CAST(ozempic_stop_8  AS INT64) as ozempic_stop_8,
-  CAST(ozempic_stop_9  AS INT64) as ozempic_stop_9,
-  CAST(ozempic_stop_10 AS INT64) as ozempic_stop_10,
-  CAST(ozempic_stop_11 AS INT64) as ozempic_stop_11,
-  CAST(ozempic_stop_12 AS INT64) as ozempic_stop_12,
-  CAST(ozempic_stop_13 AS INT64) as ozempic_stop_13,
-  CAST(ozempic_stop_14 AS INT64) as ozempic_stop_14,
-  CAST(ozempic_stop_15 AS INT64) as ozempic_stop_15,
-  CAST(ozempic_stop_16 AS INT64) as ozempic_stop_16,
-  CAST(height_1        AS INT64) as height_1,          -- height feet (coded category)
-  CAST(height_2        AS INT64) as height_2,          -- height inches (coded category)
-  CAST(weight_current  AS INT64) as weight_current,    -- current weight (coded category)
-  CAST(weight_pre_glp1 AS INT64) as weight_pre_glp1,   -- weight before GLP-1 (coded category)
-  -- Healthcare coverage (ordinal / binary; -99 = refused)
-  CAST(med_policy_approve_1 AS INT64) as med_policy_approve_1,
-  CAST(med_policy_approve_2 AS INT64) as med_policy_approve_2,
-  CAST(med_policy_approve_3 AS INT64) as med_policy_approve_3,
-  CAST(insured              AS INT64) as insured,
-  CAST(insured_lost         AS INT64) as insured_lost,
-  CAST(insured_lost_why_1   AS INT64) as insured_lost_why_1,   -- reasons (binary 0/1)
-  CAST(insured_lost_why_2   AS INT64) as insured_lost_why_2,
-  CAST(insured_lost_why_3   AS INT64) as insured_lost_why_3,
-  CAST(insured_lost_why_4   AS INT64) as insured_lost_why_4,
-  CAST(insured_lost_why_5   AS INT64) as insured_lost_why_5,
-  CAST(insured_lost_why_6   AS INT64) as insured_lost_why_6,
-  CAST(insured_lost_why_7   AS INT64) as insured_lost_why_7,
-  CAST(insured_lost_why_8   AS INT64) as insured_lost_why_8,
-  CAST(insured_lost_why_9   AS INT64) as insured_lost_why_9,
-  CAST(insured_lost_why_10  AS INT64) as insured_lost_why_10,
-  CAST(insured_lost_why_11  AS INT64) as insured_lost_why_11,
-  CAST(insured_lost_why_12  AS INT64) as insured_lost_why_12,
-  CAST(insured_lost_why_13  AS INT64) as insured_lost_why_13,
-  CAST(insured_lost_why_14  AS INT64) as insured_lost_why_14,
-  CAST(insured_lost_why_15  AS INT64) as insured_lost_why_15,
-  CAST(insured_lost_why_16  AS INT64) as insured_lost_why_16,
-  CAST(insured_lost_why_17  AS INT64) as insured_lost_why_17,
-  CAST(insured_lost_why_18  AS INT64) as insured_lost_why_18,
-  CAST(insured_lost_why_19  AS INT64) as insured_lost_why_19,
-  CAST(insurance_type_1     AS INT64) as insurance_type_1,     -- type (binary 0/1)
-  CAST(insurance_type_2     AS INT64) as insurance_type_2,
-  CAST(insurance_type_3     AS INT64) as insurance_type_3,
-  CAST(insurance_type_4     AS INT64) as insurance_type_4,
-  CAST(insurance_type_5     AS INT64) as insurance_type_5,
-  CAST(insurance_type_6     AS INT64) as insurance_type_6,
-  CAST(insurance_type_7     AS INT64) as insurance_type_7,
-  CAST(insurance_type_8     AS INT64) as insurance_type_8,
-  CAST(insured_gap          AS INT64) as insured_gap,
-  CAST(med_ever_1           AS INT64) as med_ever_1,           -- Medicaid/Medicare ever (binary 0/1)
-  CAST(med_ever_2           AS INT64) as med_ever_2,
-  CAST(med_ever_3           AS INT64) as med_ever_3,
-  CAST(medicaid_last        AS INT64) as medicaid_last,
-  CAST(medicare_last        AS INT64) as medicare_last,
-
-  -- ── Wave-38 mental health / social support extended ────────────────────────
-  CAST(soc_sup_1 AS INT64) as soc_sup_1,
-  CAST(soc_sup_2 AS INT64) as soc_sup_2,
-  CAST(soc_sup_3 AS INT64) as soc_sup_3,
-  CAST(soc_sup_4 AS INT64) as soc_sup_4,
-  CAST(soc_sup_5 AS INT64) as soc_sup_5,
-  CAST(phq9_13   AS INT64) as phq9_13,
-  CAST(stress_1  AS INT64) as stress_1,
-  CAST(lonely1   AS INT64) as lonely1,
-  CAST(lonely2   AS INT64) as lonely2,
-  CAST(lonely3   AS INT64) as lonely3,
-
-  -- ── Wave-38 university / research funding content ──────────────────────────
-  CAST(uni_funding_1           AS INT64) as uni_funding_1,
-  CAST(uni_funding_2           AS INT64) as uni_funding_2,
-  CAST(uni_funding_3           AS INT64) as uni_funding_3,
-  CAST(uni_sources_1           AS INT64) as uni_sources_1,
-  CAST(uni_sources_2           AS INT64) as uni_sources_2,
-  CAST(uni_sources_3           AS INT64) as uni_sources_3,
-  CAST(program_inv_1           AS INT64) as program_inv_1,
-  CAST(program_inv_2           AS INT64) as program_inv_2,
-  CAST(program_inv_3           AS INT64) as program_inv_3,
-  CAST(program_inv_4           AS INT64) as program_inv_4,
-  CAST(ec_benefit_1            AS INT64) as ec_benefit_1,
-  CAST(ec_benefit_2            AS INT64) as ec_benefit_2,
-  CAST(ec_benefit_3            AS INT64) as ec_benefit_3,
-  CAST(non_economic_benefits_1 AS INT64) as non_economic_benefits_1,
-  CAST(non_economic_benefits_2 AS INT64) as non_economic_benefits_2,
-  CAST(non_economic_benefits_3 AS INT64) as non_economic_benefits_3,
-  CAST(public_funds_1          AS INT64) as public_funds_1,
-  CAST(public_funds_2          AS INT64) as public_funds_2,
-  CAST(public_funds_3          AS INT64) as public_funds_3,
-  CAST(public_funds_order_1    AS INT64) as public_funds_order_1,
-  CAST(public_funds_order_2    AS INT64) as public_funds_order_2,
-  CAST(public_funds_order_3    AS INT64) as public_funds_order_3,
-
-  -- ── Wave-38 LLM / AI attitudes ─────────────────────────────────────────────
-  CAST(llm_psych AS INT64) as llm_psych,
-  CAST(llm_help  AS INT64) as llm_help
+  -- COVID-era institutional trust (early waves; ordinal 1–4; -99 = skipped/refused; NULL = not asked this wave)
+  CAST(cov_trust_city        AS INT64) as cov_trust_city,
+  CAST(cov_trust_state       AS INT64) as cov_trust_state,
+  CAST(cov_trust_white_house AS INT64) as cov_trust_white_house,
+  CAST(cov_trust_congress    AS INT64) as cov_trust_congress,
+  CAST(cov_trust_trump       AS INT64) as cov_trust_trump,
+  CAST(cov_trust_biden       AS INT64) as cov_trust_biden,
+  CAST(cov_trust_cdc         AS INT64) as cov_trust_cdc,
+  CAST(cov_trust_fauci       AS INT64) as cov_trust_fauci,
+  CAST(cov_trust_fda         AS INT64) as cov_trust_fda,
+  CAST(cov_trust_doctors     AS INT64) as cov_trust_doctors,
+  CAST(cov_trust_pharma      AS INT64) as cov_trust_pharma,
+  CAST(cov_trust_science     AS INT64) as cov_trust_science,
+  CAST(cov_trust_police      AS INT64) as cov_trust_police,
+  CAST(cov_trust_banks       AS INT64) as cov_trust_banks,
+  CAST(cov_trust_media       AS INT64) as cov_trust_media,
+  CAST(cov_trust_social      AS INT64) as cov_trust_social,
+  CAST(cov_trust_cnn         AS INT64) as cov_trust_cnn,
+  CAST(cov_trust_fox         AS INT64) as cov_trust_fox,
+  CAST(cov_trust_nyt         AS INT64) as cov_trust_nyt,
+  CAST(cov_trust_google      AS INT64) as cov_trust_google,
+  CAST(cov_trust_facebook    AS INT64) as cov_trust_facebook,
+  CAST(cov_trust_twitter     AS INT64) as cov_trust_twitter
 
 FROM `social_media_demographics.panel_data`
 -- Exclude national sub-sample waves (Size != 'full' per Wave to Dates.xlsx).

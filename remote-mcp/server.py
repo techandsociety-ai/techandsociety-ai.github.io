@@ -1996,6 +1996,91 @@ async def get_ordinal_distribution(
 
 
 @mcp.tool()
+async def get_ordinal_distribution_by_demographic(
+    column: str,
+    demographic: str,
+    wave: Optional[str] = None,
+) -> str:
+    """Full weighted % distribution of an ordinal variable broken down by a demographic group.
+
+    Unlike get_ordinal_crosstab (which returns a single weighted mean per group),
+    this returns the complete response distribution within each demographic category —
+    i.e. what % of Hispanics said 1, 2, 3, 4, 5, etc.
+
+    Use this when you need to compare response profiles across groups, e.g.:
+      "Show the full distribution of support_cuba for Hispanics vs. non-Hispanics"
+      "How does trust in Twitter break down by response category for Democrats vs Republicans?"
+
+    Args:
+        column:      Any ordinal column — e.g. "support_cuba", "sm_trust_twitter", "ideology"
+        demographic: Demographic column — e.g. "race_hisp", "party3", "gender", "age_cat_8"
+        wave:        Optional wave filter. Omit for all waves.
+
+    Returns one row per (demographic_value × response_value) combination.
+    pct is the within-group weighted percentage (rows sum to ~100% within each group).
+    """
+    if column not in ALL_ORDINAL_COLUMNS:
+        raise ValueError(f"Unknown ordinal column '{column}'. Choose from: {ALL_ORDINAL_COLUMNS}")
+    if demographic not in _ALL_REGRESSION_COLUMNS:
+        raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
+
+    demo_sentinel = f"AND {demographic} > 0" if demographic in ALL_ORDINAL_COLUMNS else ""
+
+    try:
+        df = run_query(f"""
+            SELECT
+              {demographic}                                                              AS demographic_value,
+              {column}                                                                   AS value,
+              COUNT(*)                                                                   AS unweighted_n,
+              ROUND(SUM(weight), 1)                                                      AS weighted_n,
+              ROUND(
+                SUM(weight) * 100.0
+                / SUM(SUM(weight)) OVER (PARTITION BY {demographic}),
+              2)                                                                         AS pct,
+              CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END             AS suppressed
+            FROM {FULL_TABLE}
+            WHERE {column} IS NOT NULL
+              AND {column} > 0
+              AND {demographic} IS NOT NULL
+              AND weight IS NOT NULL
+              {demo_sentinel}
+              {wave_clause(wave)}
+            GROUP BY {demographic}, {column}
+            ORDER BY {demographic}, {column}
+        """)
+
+        df.loc[df["suppressed"], ["weighted_n", "pct"]] = None
+
+        scale_labels = None
+        if column.startswith("freq_"):
+            scale_labels = FREQ_SCALE_LABELS
+        elif column.startswith("sm_trust_") or column.startswith("pol_trust_"):
+            scale_labels = TRUST_SCALE_LABELS
+        elif column == "ideology":
+            scale_labels = IDEOLOGY_SCALE_LABELS
+
+        return json.dumps({
+            "column": column,
+            "demographic": demographic,
+            "type": "ordinal_distribution_by_demographic",
+            "wave_filter": wave or "all",
+            "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+            "scale_labels": scale_labels,
+            "note": NOTE_WEIGHTED,
+            "interpretation_note": (
+                "pct = WEIGHTED within-group percentage. "
+                "Rows sum to ~100% within each demographic_value group. "
+                "unweighted_n = raw respondent headcount (reliability check only)."
+            ),
+            "data": df.to_dict(orient="records"),
+        }, indent=2, default=str)
+
+    except Exception as e:
+        logger.error(f"get_ordinal_distribution_by_demographic error: {e}")
+        raise
+
+
+@mcp.tool()
 async def get_ordinal_crosstab(
     column: str,
     demographic: str,

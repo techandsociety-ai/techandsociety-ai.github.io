@@ -13,7 +13,17 @@ AS SELECT
   age_cat_8,
   education_cat,
   CAST(income_cat_10 AS INT64) as income_cat_10,
-  race_cat_5,
+  -- race_cat_5 is NULL in wave 38 export; derive from boolean flags using standard US Census priority
+  COALESCE(
+    race_cat_5,
+    CASE
+      WHEN race_hisp  = 1 THEN 'Hispanic'
+      WHEN race_black = 1 THEN 'African American'
+      WHEN race_asian = 1 THEN 'Asian American'
+      WHEN race_white = 1 THEN 'White'
+      ELSE 'Other'
+    END
+  ) AS race_cat_5,
   gender,
   party3,
   CAST(party7 AS INT64) as party7,

@@ -91,13 +91,13 @@ Pew's signature chart style:
   axis.
 - One clear idea per chart — a single demographic breakdown or a single
   trend line, not a dense multi-panel figure.
-- Every figure gets a numbered caption ("Figure N. ...") and, where relevant,
-  a source/note line describing the population and wave(s) (this mirrors
-  Pew's "Note:" / "Source:" convention at the bottom of every chart).
-- Horizontal bar charts are usually more readable than vertical ones when
-  category labels are long (e.g. platform names, race/ethnicity categories) —
-  prefer them for that case even though `_render_chart` currently only does
-  vertical bars (see Roadmap).
+- Every figure gets a numbered caption ("Figure N. ...") and a "Source." line
+  naming the CHIP50 wave(s) — drawn automatically from the report's `waves`
+  argument — plus an optional "Note." line for caveats. This mirrors Pew's
+  "Note:" / "Source:" convention at the bottom of every chart.
+- Horizontal bar charts (`chart_type="hbar"` / `"grouped_hbar"`) are usually
+  more readable than vertical ones when category labels are long (e.g.
+  platform names, race/ethnicity categories) — prefer them for that case.
 
 ### Methodology section
 
@@ -152,10 +152,13 @@ above, roughly in priority order:
    accepts `waves=[...]` (from `get_wave_metadata`) and adapts the
    methodology section for single-wave "deep dive" vs. multi-wave "trend"
    reports (see Multi-wave pattern detection above).
-3. **Horizontal bar chart support** in `_render_chart`, for variables with
-   long category labels (platforms, race/ethnicity, education).
-4. **Source/note line on every chart** by default (population description +
-   wave(s)), not just when the caller remembers to pass `notes`.
+3. ~~**Horizontal bar chart support.**~~ Done — `_render_chart` supports
+   `chart_type="hbar"` / `"grouped_hbar"` for variables with long category
+   labels (platforms, race/ethnicity, education).
+4. ~~**Source/note line on every chart.**~~ Done — every chart in
+   `generate_pdf_report` gets an automatic "Source." line naming the wave(s)
+   from the report's `waves` argument, in addition to any caller-supplied
+   "Note." text.
 5. **"Pattern" framing helpers.** Consider a tool that, given a column and a
    demographic, returns a structured summary across waves (direction, total
    change, whether the cross-sectional gap is stable) to make the

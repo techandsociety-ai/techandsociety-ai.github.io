@@ -2980,11 +2980,18 @@ def _render_chart(chart_def: Dict[str, Any], content_w_pt: float) -> BytesIO:
 
     chart_def keys
     --------------
-    chart_type : "bar" | "grouped_bar" | "line"   (default "bar")
-    x_labels   : list[str]
+    chart_type : "bar" | "grouped_bar" | "hbar" | "grouped_hbar" | "line"
+                 (default "bar"). The "hbar"/"grouped_hbar" (horizontal bar)
+                 variants are preferred — Pew-style — when category labels
+                 (platform names, race/ethnicity, education levels, etc.)
+                 are long enough to crowd a vertical x-axis.
+    x_labels   : list[str] — category labels (bars/groups for bar charts,
+                 x-axis points for line charts)
     series     : list[{"label": str, "values": list[float]}]
-    y_label    : str (optional)
-    y_pct      : bool — format y-axis as 0–100 percentages (default False)
+    y_label    : str (optional) — label for the value axis (the y-axis for
+                 vertical charts/lines, the x-axis for horizontal bar charts)
+    y_pct      : bool — format the value axis as 0–100 percentages
+                 (default False)
     height_in  : float — figure height in inches (default 3.5)
     """
     chart_type = chart_def.get("chart_type", "bar")
@@ -3001,6 +3008,8 @@ def _render_chart(chart_def: Dict[str, Any], content_w_pt: float) -> BytesIO:
     PALETTE = ["#1E3D70", "#3A6199", "#C9962E", "#4A7C59", "#7B6FA0",
                "#A04040", "#5B8FA8", "#C87137", "#6B9E6B", "#9B6B9B"]
 
+    horizontal = chart_type in ("hbar", "grouped_hbar")
+
     fig, ax = _plt.subplots(figsize=(width_in, height_in))
     fig.patch.set_facecolor("white")
     ax.set_facecolor("#F4F6FB")
@@ -3008,7 +3017,10 @@ def _render_chart(chart_def: Dict[str, Any], content_w_pt: float) -> BytesIO:
         spine.set_edgecolor("#CCCCCC")
         spine.set_linewidth(0.6)
     ax.tick_params(colors="#444444", labelsize=8)
-    ax.grid(axis="y", color="#DDDDDD", linewidth=0.5, linestyle="--", zorder=0)
+    if horizontal:
+        ax.grid(axis="x", color="#DDDDDD", linewidth=0.5, linestyle="--", zorder=0)
+    else:
+        ax.grid(axis="y", color="#DDDDDD", linewidth=0.5, linestyle="--", zorder=0)
 
     n_groups = len(x_labels)
     n_series = len(series)
@@ -3042,6 +3054,37 @@ def _render_chart(chart_def: Dict[str, Any], content_w_pt: float) -> BytesIO:
                            ha="right" if n_groups > 5 else "center")
         ax.legend(fontsize=8, framealpha=0.7, edgecolor="#CCCCCC")
 
+    elif chart_type == "hbar" and n_series == 1:
+        vals   = series[0].get("values", [])
+        colors = [PALETTE[i % len(PALETTE)] for i in range(len(vals))]
+        y_pos  = range(len(vals))
+        bars   = ax.barh(list(y_pos), vals, color=colors, zorder=3,
+                         height=0.6, edgecolor="white", linewidth=0.4)
+        ax.set_yticks(list(y_pos))
+        ax.set_yticklabels(x_labels, fontsize=8)
+        ax.invert_yaxis()  # first category at top, matching x_labels order
+        # Value labels at the end of each bar
+        x_max = max(vals) if vals else 0
+        for bar in bars:
+            w = bar.get_width()
+            label = f"{w:.0f}%" if y_pct else f"{w:.1f}"
+            ax.text(w + 0.01 * (x_max or 1), bar.get_y() + bar.get_height() / 2,
+                    label, ha="left", va="center", fontsize=7.5, color="#333333")
+
+    elif chart_type == "grouped_hbar" and n_series > 1:
+        bar_w = 0.8 / n_series
+        y_pos = np.arange(n_groups)
+        for i, ser in enumerate(series):
+            offset = (i - (n_series - 1) / 2) * bar_w
+            vals   = ser.get("values", [])
+            ax.barh(y_pos + offset, vals, height=bar_w * 0.9,
+                    color=PALETTE[i % len(PALETTE)], label=ser.get("label", f"Series {i+1}"),
+                    zorder=3, edgecolor="white", linewidth=0.4)
+        ax.set_yticks(y_pos)
+        ax.set_yticklabels(x_labels, fontsize=8)
+        ax.invert_yaxis()
+        ax.legend(fontsize=8, framealpha=0.7, edgecolor="#CCCCCC")
+
     elif chart_type == "line":
         x_pos = range(n_groups)
         for i, ser in enumerate(series):
@@ -3055,10 +3098,14 @@ def _render_chart(chart_def: Dict[str, Any], content_w_pt: float) -> BytesIO:
         if n_series > 1:
             ax.legend(fontsize=8, framealpha=0.7, edgecolor="#CCCCCC")
 
+    value_axis = ax.xaxis if horizontal else ax.yaxis
     if y_pct:
-        ax.yaxis.set_major_formatter(_ticker.FormatStrFormatter("%.0f%%"))
+        value_axis.set_major_formatter(_ticker.FormatStrFormatter("%.0f%%"))
     if y_label:
-        ax.set_ylabel(y_label, fontsize=8.5, color="#333333")
+        if horizontal:
+            ax.set_xlabel(y_label, fontsize=8.5, color="#333333")
+        else:
+            ax.set_ylabel(y_label, fontsize=8.5, color="#333333")
 
     fig.tight_layout(pad=0.5)
 
@@ -3085,6 +3132,19 @@ def _format_report_date(value: Any) -> Optional[str]:
         return pd.to_datetime(value).strftime("%B %d, %Y")
     except Exception:
         return str(value)
+
+
+def _chart_source_line(waves: Optional[List[Dict[str, Any]]]) -> str:
+    """Build the default 'Source.' line for a chart, naming the wave(s) used."""
+    if not waves:
+        return "CHIP50 Social Media Demographics Panel, Nanocentury AI."
+
+    waves_sorted = sorted(waves, key=lambda w: float(w.get("wave", 0)))
+    if len(waves_sorted) == 1:
+        return f"CHIP50 Social Media Demographics Panel, Wave {waves_sorted[0].get('wave')}."
+
+    wave_labels = ", ".join(str(w.get("wave")) for w in waves_sorted)
+    return f"CHIP50 Social Media Demographics Panel, Waves {wave_labels}."
 
 
 def _wave_methodology_content(
@@ -3321,6 +3381,7 @@ def _build_chip50_pdf(
     story: List[Any] = []
     table_counter  = [0]
     figure_counter = [0]
+    chart_source   = _chart_source_line(waves)
 
     def _render_table_block(tbl_def: Dict[str, Any]) -> Optional[Any]:
         """Build a numbered, captioned table flowable and bump table_counter."""
@@ -3497,6 +3558,7 @@ def _build_chip50_pdf(
                 block: List[Any] = [_Paragraph(label, s_fig_title), img]
                 if chart_notes:
                     block.append(_Paragraph(f"<i>Note.</i> {chart_notes}", s_fig_note))
+                block.append(_Paragraph(f"<i>Source.</i> {chart_source}", s_fig_note))
                 story.append(_KeepTogether(block))
             except Exception as exc:
                 logger.warning(f"Chart rendering failed: {exc}")
@@ -3572,18 +3634,28 @@ async def generate_pdf_report(
               italic per APA style ("Note. ...").
         - "charts" (list[dict]): Charts to embed after the section text
           (and after any tables). Each chart dict:
-            - "chart_type" (str): "bar" | "grouped_bar" | "line"
-              (default "bar"). Use "bar" for a single series with per-bar
-              colours; "grouped_bar" when comparing multiple series side by
-              side; "line" for trend lines across waves or categories.
+            - "chart_type" (str): "bar" | "grouped_bar" | "hbar" |
+              "grouped_hbar" | "line" (default "bar"). Use "bar"/"hbar" for a
+              single series with per-bar colours; "grouped_bar"/"grouped_hbar"
+              when comparing multiple series side by side; "line" for trend
+              lines across waves or categories. Prefer the horizontal "hbar"
+              / "grouped_hbar" variants (Pew-style) whenever category labels
+              are long — platform names, race/ethnicity, education levels —
+              so labels read horizontally instead of being rotated.
             - "title" (str): Caption; auto-prefixed "Figure N. <title>".
-            - "x_labels" (list[str]): Labels for each point on the x-axis.
+            - "x_labels" (list[str]): Category labels — bars/groups for bar
+              charts (including "hbar"/"grouped_hbar", where these become the
+              y-axis category labels), or x-axis points for line charts.
             - "series" (list[dict]): Data series. Each item:
                 - "label" (str): Series name (shown in legend for multi-series).
                 - "values" (list[float]): One numeric value per x_label.
-            - "y_label" (str, optional): Y-axis label.
-            - "y_pct" (bool, optional): Format y-axis as "N%" (default False).
-            - "notes" (str, optional): Footnote below the figure.
+            - "y_label" (str, optional): Label for the value axis (the y-axis
+              for "bar"/"grouped_bar"/"line", the x-axis for "hbar"/"grouped_hbar").
+            - "y_pct" (bool, optional): Format the value axis as "N%" (default False).
+            - "notes" (str, optional): Additional "Note." line below the figure
+              (e.g. methodological caveats). A "Source." line naming the
+              CHIP50 wave(s) — from the report's `waves` argument — is added
+              automatically to every chart.
             - "width_pct" (float, optional): Fraction of page width 0–1
               (default 1.0 = full content width).
             - "height_in" (float, optional): Chart height in inches (default 3.5).

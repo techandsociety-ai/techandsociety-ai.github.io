@@ -822,8 +822,13 @@ async def introduce_mcp() -> str:
                 "purpose": (
                     "Generate a publication-quality PDF report from CHIP50 analysis results. "
                     "Produces a title page, optional abstract, auto-generated methodology section "
-                    "(weighting, cell suppression, regression conventions), and user-defined sections "
-                    "with numbered tables following academic style. "
+                    "(weighting, cell suppression, regression conventions), user-defined sections "
+                    "with numbered tables and Pew-style charts, and an optional 'Reproducibility' "
+                    "appendix listing every tool call (pass via tool_calls=[...]) used to produce "
+                    "the report so a reviewer can re-run them verbatim. "
+                    "Pass waves=[...] (entries from get_wave_metadata()) to extend the methodology "
+                    "section with the specific fielding period(s) used — a single wave entry for a "
+                    "deep-dive report, or multiple for a trend report (adds a wave-coverage table). "
                     "Returns immediately with a job_id and the expected download_url. "
                     "Poll get_report_status(job_id=...) until status is 'done', then download the PDF."
                 ),
@@ -2975,11 +2980,18 @@ def _render_chart(chart_def: Dict[str, Any], content_w_pt: float) -> BytesIO:
 
     chart_def keys
     --------------
-    chart_type : "bar" | "grouped_bar" | "line"   (default "bar")
-    x_labels   : list[str]
+    chart_type : "bar" | "grouped_bar" | "hbar" | "grouped_hbar" | "line"
+                 (default "bar"). The "hbar"/"grouped_hbar" (horizontal bar)
+                 variants are preferred — Pew-style — when category labels
+                 (platform names, race/ethnicity, education levels, etc.)
+                 are long enough to crowd a vertical x-axis.
+    x_labels   : list[str] — category labels (bars/groups for bar charts,
+                 x-axis points for line charts)
     series     : list[{"label": str, "values": list[float]}]
-    y_label    : str (optional)
-    y_pct      : bool — format y-axis as 0–100 percentages (default False)
+    y_label    : str (optional) — label for the value axis (the y-axis for
+                 vertical charts/lines, the x-axis for horizontal bar charts)
+    y_pct      : bool — format the value axis as 0–100 percentages
+                 (default False)
     height_in  : float — figure height in inches (default 3.5)
     """
     chart_type = chart_def.get("chart_type", "bar")
@@ -2996,6 +3008,8 @@ def _render_chart(chart_def: Dict[str, Any], content_w_pt: float) -> BytesIO:
     PALETTE = ["#1E3D70", "#3A6199", "#C9962E", "#4A7C59", "#7B6FA0",
                "#A04040", "#5B8FA8", "#C87137", "#6B9E6B", "#9B6B9B"]
 
+    horizontal = chart_type in ("hbar", "grouped_hbar")
+
     fig, ax = _plt.subplots(figsize=(width_in, height_in))
     fig.patch.set_facecolor("white")
     ax.set_facecolor("#F4F6FB")
@@ -3003,7 +3017,10 @@ def _render_chart(chart_def: Dict[str, Any], content_w_pt: float) -> BytesIO:
         spine.set_edgecolor("#CCCCCC")
         spine.set_linewidth(0.6)
     ax.tick_params(colors="#444444", labelsize=8)
-    ax.grid(axis="y", color="#DDDDDD", linewidth=0.5, linestyle="--", zorder=0)
+    if horizontal:
+        ax.grid(axis="x", color="#DDDDDD", linewidth=0.5, linestyle="--", zorder=0)
+    else:
+        ax.grid(axis="y", color="#DDDDDD", linewidth=0.5, linestyle="--", zorder=0)
 
     n_groups = len(x_labels)
     n_series = len(series)
@@ -3037,6 +3054,37 @@ def _render_chart(chart_def: Dict[str, Any], content_w_pt: float) -> BytesIO:
                            ha="right" if n_groups > 5 else "center")
         ax.legend(fontsize=8, framealpha=0.7, edgecolor="#CCCCCC")
 
+    elif chart_type == "hbar" and n_series == 1:
+        vals   = series[0].get("values", [])
+        colors = [PALETTE[i % len(PALETTE)] for i in range(len(vals))]
+        y_pos  = range(len(vals))
+        bars   = ax.barh(list(y_pos), vals, color=colors, zorder=3,
+                         height=0.6, edgecolor="white", linewidth=0.4)
+        ax.set_yticks(list(y_pos))
+        ax.set_yticklabels(x_labels, fontsize=8)
+        ax.invert_yaxis()  # first category at top, matching x_labels order
+        # Value labels at the end of each bar
+        x_max = max(vals) if vals else 0
+        for bar in bars:
+            w = bar.get_width()
+            label = f"{w:.0f}%" if y_pct else f"{w:.1f}"
+            ax.text(w + 0.01 * (x_max or 1), bar.get_y() + bar.get_height() / 2,
+                    label, ha="left", va="center", fontsize=7.5, color="#333333")
+
+    elif chart_type == "grouped_hbar" and n_series > 1:
+        bar_w = 0.8 / n_series
+        y_pos = np.arange(n_groups)
+        for i, ser in enumerate(series):
+            offset = (i - (n_series - 1) / 2) * bar_w
+            vals   = ser.get("values", [])
+            ax.barh(y_pos + offset, vals, height=bar_w * 0.9,
+                    color=PALETTE[i % len(PALETTE)], label=ser.get("label", f"Series {i+1}"),
+                    zorder=3, edgecolor="white", linewidth=0.4)
+        ax.set_yticks(y_pos)
+        ax.set_yticklabels(x_labels, fontsize=8)
+        ax.invert_yaxis()
+        ax.legend(fontsize=8, framealpha=0.7, edgecolor="#CCCCCC")
+
     elif chart_type == "line":
         x_pos = range(n_groups)
         for i, ser in enumerate(series):
@@ -3050,10 +3098,14 @@ def _render_chart(chart_def: Dict[str, Any], content_w_pt: float) -> BytesIO:
         if n_series > 1:
             ax.legend(fontsize=8, framealpha=0.7, edgecolor="#CCCCCC")
 
+    value_axis = ax.xaxis if horizontal else ax.yaxis
     if y_pct:
-        ax.yaxis.set_major_formatter(_ticker.FormatStrFormatter("%.0f%%"))
+        value_axis.set_major_formatter(_ticker.FormatStrFormatter("%.0f%%"))
     if y_label:
-        ax.set_ylabel(y_label, fontsize=8.5, color="#333333")
+        if horizontal:
+            ax.set_xlabel(y_label, fontsize=8.5, color="#333333")
+        else:
+            ax.set_ylabel(y_label, fontsize=8.5, color="#333333")
 
     fig.tight_layout(pad=0.5)
 
@@ -3065,6 +3117,137 @@ def _render_chart(chart_def: Dict[str, Any], content_w_pt: float) -> BytesIO:
     return buf
 
 
+def _format_tool_call(name: str, arguments: Optional[Dict[str, Any]]) -> str:
+    """Render a tool call as a single-line, copy-pasteable call expression."""
+    arguments = arguments or {}
+    parts = [f"{key}={json.dumps(value)}" for key, value in arguments.items()]
+    return f"{name}({', '.join(parts)})"
+
+
+def _format_report_date(value: Any) -> Optional[str]:
+    """Format a date-like value (str/Timestamp) as 'Month D, YYYY', or None."""
+    if value is None or value == "":
+        return None
+    try:
+        ts = pd.to_datetime(value)
+        return f"{ts.strftime('%B')} {ts.day}, {ts.year}"
+    except Exception:
+        return str(value)
+
+
+def _fmt_wave(value: Any) -> str:
+    """Format a wave number, dropping a trailing '.0' (e.g. 37.0 -> '37', 35.1 -> '35.1')."""
+    try:
+        f = float(value)
+        if f == int(f):
+            return str(int(f))
+        return str(f)
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def _chart_source_line(waves: Optional[List[Dict[str, Any]]]) -> str:
+    """Build the default 'Source.' line for a chart, naming the wave(s) used."""
+    if not waves:
+        return "CHIP50 Social Media Demographics Panel, Nanocentury AI."
+
+    waves_sorted = sorted(waves, key=lambda w: float(w.get("wave", 0)))
+    if len(waves_sorted) == 1:
+        return f"CHIP50 Social Media Demographics Panel, Wave {_fmt_wave(waves_sorted[0].get('wave'))}."
+
+    wave_labels = ", ".join(_fmt_wave(w.get("wave")) for w in waves_sorted)
+    return f"CHIP50 Social Media Demographics Panel, Waves {wave_labels}."
+
+
+def _wave_methodology_content(
+    waves: List[Dict[str, Any]],
+) -> tuple[List[str], Optional[Dict[str, Any]]]:
+    """Build methodology paragraph(s) and an optional wave-coverage table
+    describing the specific CHIP50 wave(s) a report draws on.
+
+    *waves* is a list of dicts as returned by ``get_wave_metadata`` (or a
+    subset of its "waves" entries) — each with at least "wave", and
+    optionally "start_date", "end_date", "unweighted_n", "weighted_n".
+
+    Returns (paragraphs, table_def) — table_def is None for a single-wave
+    "deep dive" report, and a column-headers/rows dict for a multi-wave
+    "trend" report.
+    """
+    if not waves:
+        return [], None
+
+    waves_sorted = sorted(waves, key=lambda w: float(w.get("wave", 0)))
+
+    if len(waves_sorted) == 1:
+        w = waves_sorted[0]
+        start = _format_report_date(w.get("start_date"))
+        end   = _format_report_date(w.get("end_date"))
+        period = f"fielded {start}–{end}" if start and end else ""
+
+        n_clause = ""
+        unweighted_n = w.get("unweighted_n")
+        weighted_n   = w.get("weighted_n")
+        if unweighted_n is not None:
+            n_clause = f", with {int(unweighted_n):,} respondents"
+            if weighted_n is not None:
+                n_clause += (
+                    f" (weighted to represent approximately "
+                    f"{int(weighted_n):,} U.S. adults)"
+                )
+
+        para = (
+            f"This report focuses on Wave {_fmt_wave(w.get('wave'))} of the CHIP50 panel"
+            f"{(', ' + period) if period else ''}{n_clause}. All figures below "
+            f"reflect this single wave; no cross-wave comparisons are implied."
+        )
+        return [para], None
+
+    wave_labels = ", ".join(_fmt_wave(w.get("wave")) for w in waves_sorted)
+    starts = [w.get("start_date") for w in waves_sorted if w.get("start_date")]
+    ends   = [w.get("end_date") for w in waves_sorted if w.get("end_date")]
+
+    span = ""
+    if starts and ends:
+        span = (
+            f" fielded between {_format_report_date(min(starts))} "
+            f"and {_format_report_date(max(ends))}"
+        )
+
+    para = (
+        f"This report draws on {len(waves_sorted)} waves of the CHIP50 panel "
+        f"(Waves {wave_labels}){span}. Each wave is an independent "
+        f"cross-sectional sample of U.S. adults; the same questions are "
+        f"tracked across waves below to assess whether and how attitudes and "
+        f"behaviors have changed over time. Field dates and sample sizes for "
+        f"each wave are summarized in the table below."
+    )
+
+    def _fmt_n(n: Any) -> str:
+        return f"{int(n):,}" if n is not None else "—"
+
+    table_def = {
+        "title": "CHIP50 Waves Used in This Report",
+        "column_headers": ["Wave", "Field Dates", "Unweighted n", "Weighted n"],
+        "rows": [
+            [
+                _fmt_wave(w.get("wave")),
+                (
+                    f"{_format_report_date(w.get('start_date')) or '—'} "
+                    f"– {_format_report_date(w.get('end_date')) or '—'}"
+                ),
+                _fmt_n(w.get("unweighted_n")),
+                _fmt_n(w.get("weighted_n")),
+            ]
+            for w in waves_sorted
+        ],
+        "notes": (
+            "Weighted n is the sum of survey weights for that wave, an "
+            "estimate of the U.S. adult population it represents."
+        ),
+    }
+    return [para], table_def
+
+
 def _build_chip50_pdf(
     title: str,
     subtitle: Optional[str],
@@ -3072,6 +3255,8 @@ def _build_chip50_pdf(
     abstract: Optional[str],
     sections: List[Dict[str, Any]],
     include_methodology: bool,
+    waves: Optional[List[Dict[str, Any]]],
+    tool_calls: Optional[List[Dict[str, Any]]],
     buf: BytesIO,
 ) -> int:
     """Render the report into *buf* and return the number of tables produced."""
@@ -3163,6 +3348,19 @@ def _build_chip50_pdf(
     s_fig_note = _ps("ChipFigNote",
         fontName="Times-Italic", fontSize=8.5, leading=11,
         textColor=RULE, spaceAfter=12)
+    s_appendix_intro = _ps("ChipAppendixIntro",
+        fontName="Times-Roman", fontSize=10.5, leading=15,
+        textColor=BLACK, alignment=TA_JUSTIFY, spaceAfter=10)
+    s_call_label = _ps("ChipCallLabel",
+        fontName="Times-Bold", fontSize=9.5, leading=13,
+        textColor=NAVY, spaceBefore=8, spaceAfter=2)
+    s_call_code = _ps("ChipCallCode",
+        fontName="Courier", fontSize=8.5, leading=12,
+        textColor=BLACK, leftIndent=12, spaceAfter=2,
+        backColor=ROW_ALT)
+    s_call_purpose = _ps("ChipCallPurpose",
+        fontName="Times-Italic", fontSize=9, leading=12,
+        textColor=RULE, leftIndent=12, spaceAfter=10)
     # ── Table style factory ───────────────────────────────────────────────────
     def _tbl_style(n_rows: int) -> _TableStyle:
         cmds = [
@@ -3195,6 +3393,49 @@ def _build_chip50_pdf(
     story: List[Any] = []
     table_counter  = [0]
     figure_counter = [0]
+    chart_source   = _chart_source_line(waves)
+
+    def _render_table_block(tbl_def: Dict[str, Any]) -> Optional[Any]:
+        """Build a numbered, captioned table flowable and bump table_counter."""
+        col_headers = tbl_def.get("column_headers") or []
+        rows        = tbl_def.get("rows") or []
+        notes       = tbl_def.get("notes")
+        tbl_ttl     = tbl_def.get("title", "")
+
+        if not col_headers and not rows:
+            return None
+
+        table_counter[0] += 1
+        label = f"Table {table_counter[0]}."
+        if tbl_ttl:
+            label += f" {tbl_ttl}"
+
+        data: List[List[Any]] = []
+        if col_headers:
+            data.append([_Paragraph(str(h), _s_th) for h in col_headers])
+        for row in rows:
+            data.append([_Paragraph(str(cell), _s_td) for cell in row])
+
+        if not data:
+            return None
+
+        n_cols = len(data[0])
+        if n_cols == 1:
+            col_widths = [CONTENT_W]
+        elif n_cols == 2:
+            col_widths = [CONTENT_W * 0.44, CONTENT_W * 0.56]
+        else:
+            first = CONTENT_W * 0.30
+            rest  = (CONTENT_W - first) / (n_cols - 1)
+            col_widths = [first] + [rest] * (n_cols - 1)
+
+        tbl = _Table(data, colWidths=col_widths, repeatRows=1)
+        tbl.setStyle(_tbl_style(len(data)))
+
+        block: List[Any] = [_Paragraph(label, s_tbl_title), tbl]
+        if notes:
+            block.append(_Paragraph(f"<i>Note.</i> {notes}", s_tbl_note))
+        return _KeepTogether(block)
 
     # Title page
     story.append(_Spacer(1, 1.4 * _inch))
@@ -3264,8 +3505,19 @@ def _build_chip50_pdf(
                 "and AIC/BIC. Statistical significance is assessed at \u03b1\u202f=\u202f0.05."
             ),
         ]
+        wave_paragraphs, wave_table_def = _wave_methodology_content(waves or [])
+        # Insert the wave-coverage paragraph(s) right after the panel
+        # description, before the general weighting/suppression text.
+        methodology_text = methodology_text[:1] + wave_paragraphs + methodology_text[1:]
+
         for para in methodology_text:
             story.append(_Paragraph(para, s_body))
+
+        if wave_table_def is not None:
+            block = _render_table_block(wave_table_def)
+            if block is not None:
+                story.append(block)
+
         story.append(_Spacer(1, 0.1 * _inch))
 
     # User sections
@@ -3285,47 +3537,9 @@ def _build_chip50_pdf(
                     story.append(_Paragraph(para.strip(), s_body))
 
         for tbl_def in tables:
-            col_headers = tbl_def.get("column_headers") or []
-            rows        = tbl_def.get("rows") or []
-            notes       = tbl_def.get("notes")
-            tbl_ttl     = tbl_def.get("title", "")
-
-            if not col_headers and not rows:
-                continue
-
-            table_counter[0] += 1
-            label = f"Table {table_counter[0]}."
-            if tbl_ttl:
-                label += f" {tbl_ttl}"
-
-            # Build cell data
-            data: List[List[Any]] = []
-            if col_headers:
-                data.append([_Paragraph(str(h), _s_th) for h in col_headers])
-            for row in rows:
-                data.append([_Paragraph(str(cell), _s_td) for cell in row])
-
-            if not data:
-                continue
-
-            n_cols = len(data[0])
-            # Column widths: first col ~30% wider than rest
-            if n_cols == 1:
-                col_widths = [CONTENT_W]
-            elif n_cols == 2:
-                col_widths = [CONTENT_W * 0.44, CONTENT_W * 0.56]
-            else:
-                first = CONTENT_W * 0.30
-                rest  = (CONTENT_W - first) / (n_cols - 1)
-                col_widths = [first] + [rest] * (n_cols - 1)
-
-            tbl = _Table(data, colWidths=col_widths, repeatRows=1)
-            tbl.setStyle(_tbl_style(len(data)))
-
-            block: List[Any] = [_Paragraph(label, s_tbl_title), tbl]
-            if notes:
-                block.append(_Paragraph(f"<i>Note.</i> {notes}", s_tbl_note))
-            story.append(_KeepTogether(block))
+            block = _render_table_block(tbl_def)
+            if block is not None:
+                story.append(block)
 
         for chart_def in charts:
             if not _MATPLOTLIB_AVAILABLE:
@@ -3356,6 +3570,7 @@ def _build_chip50_pdf(
                 block: List[Any] = [_Paragraph(label, s_fig_title), img]
                 if chart_notes:
                     block.append(_Paragraph(f"<i>Note.</i> {chart_notes}", s_fig_note))
+                block.append(_Paragraph(f"<i>Source.</i> {chart_source}", s_fig_note))
                 story.append(_KeepTogether(block))
             except Exception as exc:
                 logger.warning(f"Chart rendering failed: {exc}")
@@ -3365,6 +3580,28 @@ def _build_chip50_pdf(
                 ))
 
         story.append(_Spacer(1, 0.08 * _inch))
+
+    # Reproducibility appendix
+    if tool_calls:
+        story.append(_PageBreak())
+        story.append(_Paragraph("Appendix: Reproducibility — MCP Tool Calls", s_h1))
+        story.append(_HRFlowable(width="100%", color=NAVY, thickness=0.5, spaceAfter=10))
+        story.append(_Paragraph(
+            "The table below lists, in order, every CHIP50 MCP tool call used to "
+            "produce the tables and figures in this report. Each call can be "
+            "re-run verbatim against the same MCP server to reproduce the "
+            "corresponding result.",
+            s_appendix_intro,
+        ))
+        for i, call in enumerate(tool_calls, start=1):
+            tool_name = call.get("tool", "")
+            arguments = call.get("arguments")
+            purpose   = call.get("purpose")
+
+            story.append(_Paragraph(f"{i}. {tool_name}", s_call_label))
+            story.append(_Paragraph(_format_tool_call(tool_name, arguments), s_call_code))
+            if purpose:
+                story.append(_Paragraph(purpose, s_call_purpose))
 
     doc.build(story, onFirstPage=_on_first_page, onLaterPages=_on_later_pages)
     return table_counter[0], figure_counter[0]
@@ -3378,6 +3615,8 @@ async def generate_pdf_report(
     authors: Optional[str] = None,
     abstract: Optional[str] = None,
     include_methodology: bool = True,
+    waves: Optional[List[Dict[str, Any]]] = None,
+    tool_calls: Optional[List[Dict[str, Any]]] = None,
 ) -> str:
     """Generate a formatted PDF report from CHIP50 analysis results.
 
@@ -3407,18 +3646,28 @@ async def generate_pdf_report(
               italic per APA style ("Note. ...").
         - "charts" (list[dict]): Charts to embed after the section text
           (and after any tables). Each chart dict:
-            - "chart_type" (str): "bar" | "grouped_bar" | "line"
-              (default "bar"). Use "bar" for a single series with per-bar
-              colours; "grouped_bar" when comparing multiple series side by
-              side; "line" for trend lines across waves or categories.
+            - "chart_type" (str): "bar" | "grouped_bar" | "hbar" |
+              "grouped_hbar" | "line" (default "bar"). Use "bar"/"hbar" for a
+              single series with per-bar colours; "grouped_bar"/"grouped_hbar"
+              when comparing multiple series side by side; "line" for trend
+              lines across waves or categories. Prefer the horizontal "hbar"
+              / "grouped_hbar" variants (Pew-style) whenever category labels
+              are long — platform names, race/ethnicity, education levels —
+              so labels read horizontally instead of being rotated.
             - "title" (str): Caption; auto-prefixed "Figure N. <title>".
-            - "x_labels" (list[str]): Labels for each point on the x-axis.
+            - "x_labels" (list[str]): Category labels — bars/groups for bar
+              charts (including "hbar"/"grouped_hbar", where these become the
+              y-axis category labels), or x-axis points for line charts.
             - "series" (list[dict]): Data series. Each item:
                 - "label" (str): Series name (shown in legend for multi-series).
                 - "values" (list[float]): One numeric value per x_label.
-            - "y_label" (str, optional): Y-axis label.
-            - "y_pct" (bool, optional): Format y-axis as "N%" (default False).
-            - "notes" (str, optional): Footnote below the figure.
+            - "y_label" (str, optional): Label for the value axis (the y-axis
+              for "bar"/"grouped_bar"/"line", the x-axis for "hbar"/"grouped_hbar").
+            - "y_pct" (bool, optional): Format the value axis as "N%" (default False).
+            - "notes" (str, optional): Additional "Note." line below the figure
+              (e.g. methodological caveats). A "Source." line naming the
+              CHIP50 wave(s) — from the report's `waves` argument — is added
+              automatically to every chart.
             - "width_pct" (float, optional): Fraction of page width 0–1
               (default 1.0 = full content width).
             - "height_in" (float, optional): Chart height in inches (default 3.5).
@@ -3432,6 +3681,45 @@ async def generate_pdf_report(
     include_methodology : bool, default True
         Auto-include the CHIP50 methodology section (weighting, cell
         suppression, ordinal sentinel, regression conventions).
+    waves : list[dict], optional
+        Wave(s) this report draws on, as entries from get_wave_metadata()'s
+        "waves" list (or any dict with the same keys). Used to extend the
+        methodology section with a description of exactly which fielding
+        period(s) the data come from:
+
+        - Pass a single wave's entry for a "deep dive" report — the
+          methodology section will name that wave, its field dates, and its
+          sample size, and note that no cross-wave comparison is implied.
+        - Pass multiple waves' entries for a "trend" report — the
+          methodology section will describe the panel's repeated
+          cross-sectional design and add a numbered table listing each
+          wave's field dates, unweighted n, and weighted n.
+
+        Each entry should have at least "wave", and ideally "start_date",
+        "end_date", "unweighted_n", "weighted_n" (all present in
+        get_wave_metadata() output). Omit entirely for reports that don't
+        anchor to specific wave(s) (e.g. purely cross-sectional summaries
+        already described in a custom abstract).
+    tool_calls : list[dict], optional
+        Ordered log of every CHIP50 MCP tool call used to produce the tables
+        and figures in this report — rendered as a numbered "Reproducibility"
+        appendix at the end of the PDF so a reviewer can re-run them
+        verbatim. Each item:
+            - "tool" (str): Tool name, e.g. "generate_crosstab".
+            - "arguments" (dict): The exact keyword arguments passed to the
+              tool, e.g. {"platform": "use_tiktok", "demographic": "age_cat_8"}.
+            - "purpose" (str, optional): One-line note on what the call
+              produced, e.g. "Table 1 — TikTok adoption by age".
+        Example:
+            tool_calls=[
+              {"tool": "generate_crosstab",
+               "arguments": {"platform": "use_tiktok", "demographic": "age_cat_8"},
+               "purpose": "Table 1 — TikTok adoption by age"},
+              {"tool": "run_logistic_regression",
+               "arguments": {"outcome": "use_tiktok",
+                              "predictors": ["age_cat_8", "party3"]},
+               "purpose": "Table 2 — adoption controlling for party"},
+            ]
 
     Returns
     -------
@@ -3469,6 +3757,8 @@ async def generate_pdf_report(
             abstract=abstract,
             sections=sections,
             include_methodology=include_methodology,
+            waves=waves,
+            tool_calls=tool_calls,
             buf=buf,
         )
         pdf_bytes  = buf.getvalue()

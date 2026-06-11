@@ -3129,8 +3129,20 @@ def _format_report_date(value: Any) -> Optional[str]:
     if value is None or value == "":
         return None
     try:
-        return pd.to_datetime(value).strftime("%B %d, %Y")
+        ts = pd.to_datetime(value)
+        return f"{ts.strftime('%B')} {ts.day}, {ts.year}"
     except Exception:
+        return str(value)
+
+
+def _fmt_wave(value: Any) -> str:
+    """Format a wave number, dropping a trailing '.0' (e.g. 37.0 -> '37', 35.1 -> '35.1')."""
+    try:
+        f = float(value)
+        if f == int(f):
+            return str(int(f))
+        return str(f)
+    except (TypeError, ValueError):
         return str(value)
 
 
@@ -3141,9 +3153,9 @@ def _chart_source_line(waves: Optional[List[Dict[str, Any]]]) -> str:
 
     waves_sorted = sorted(waves, key=lambda w: float(w.get("wave", 0)))
     if len(waves_sorted) == 1:
-        return f"CHIP50 Social Media Demographics Panel, Wave {waves_sorted[0].get('wave')}."
+        return f"CHIP50 Social Media Demographics Panel, Wave {_fmt_wave(waves_sorted[0].get('wave'))}."
 
-    wave_labels = ", ".join(str(w.get("wave")) for w in waves_sorted)
+    wave_labels = ", ".join(_fmt_wave(w.get("wave")) for w in waves_sorted)
     return f"CHIP50 Social Media Demographics Panel, Waves {wave_labels}."
 
 
@@ -3184,13 +3196,13 @@ def _wave_methodology_content(
                 )
 
         para = (
-            f"This report focuses on Wave {w.get('wave')} of the CHIP50 panel"
+            f"This report focuses on Wave {_fmt_wave(w.get('wave'))} of the CHIP50 panel"
             f"{(', ' + period) if period else ''}{n_clause}. All figures below "
             f"reflect this single wave; no cross-wave comparisons are implied."
         )
         return [para], None
 
-    wave_labels = ", ".join(str(w.get("wave")) for w in waves_sorted)
+    wave_labels = ", ".join(_fmt_wave(w.get("wave")) for w in waves_sorted)
     starts = [w.get("start_date") for w in waves_sorted if w.get("start_date")]
     ends   = [w.get("end_date") for w in waves_sorted if w.get("end_date")]
 
@@ -3218,7 +3230,7 @@ def _wave_methodology_content(
         "column_headers": ["Wave", "Field Dates", "Unweighted n", "Weighted n"],
         "rows": [
             [
-                str(w.get("wave")),
+                _fmt_wave(w.get("wave")),
                 (
                     f"{_format_report_date(w.get('start_date')) or '—'} "
                     f"– {_format_report_date(w.get('end_date')) or '—'}"

@@ -11,6 +11,7 @@ import os
 import json
 import logging
 import asyncio
+import itertools
 import time
 import uuid
 from datetime import datetime, timezone
@@ -794,6 +795,23 @@ async def introduce_mcp() -> str:
                 "example": 'generate_crosstab_by_wave(platform="use_twitter", demographic="party3")',
             },
             {
+                "name": "summarize_pattern_by_wave",
+                "purpose": (
+                    "Structured trend summary for ONE variable by ONE demographic, across ALL waves. "
+                    "For each demographic group: direction (increasing/decreasing/flat) and total "
+                    "change in percentage points from the first to the last available wave. For "
+                    "every pair of groups: whether the cross-sectional gap between them is stable, "
+                    "widening, narrowing, or has reversed sign. Use this to turn the manual "
+                    "'eyeball the trend chart' step into a structured comparison before writing "
+                    "the narrative. For ordinal variables, ordinal_value sets a 'top-box' cutpoint "
+                    "(% scoring >= ordinal_value) — call get_ordinal_distribution() first to choose it."
+                ),
+                "example": (
+                    'summarize_pattern_by_wave(variable="use_tiktok", demographic="party3")\n'
+                    'summarize_pattern_by_wave(variable="sm_trust_twitter", demographic="party3", ordinal_value=4)'
+                ),
+            },
+            {
                 "name": "get_wave_metadata",
                 "purpose": (
                     "Wave-level metadata: respondent counts, field dates, field-period length, "
@@ -872,6 +890,7 @@ async def introduce_mcp() -> str:
             "5. Use get_wave_metadata() to see respondent counts, field dates, and which questions were asked per wave.",
             "5b. Use get_platform_trends() / get_freq_trends() for platform adoption/frequency time series.",
             "5c. Use generate_marginals_by_wave() to get a variable's distribution across ALL waves in one call (e.g. race_cat_5 per wave). Use generate_crosstab_by_wave() for platform × demographic across all waves. Both replace looping through 37 waves.",
+            "5d. Use summarize_pattern_by_wave() to turn a wave × demographic series into a structured trend summary — direction/total change per group, and stability of the cross-group gap (stable/widening/narrowing/reversed) — before writing the trend narrative.",
             "6. Use get_ordinal_distribution() / get_ordinal_crosstab() for frequency, trust, and attitude scales.",
             "7. Use get_platform_posting_summary() for a full profile of one platform.",
             "8. Use the _batch variants to run multiple queries in parallel.",
@@ -1432,6 +1451,213 @@ async def generate_crosstab_by_wave(
 
     except Exception as e:
         logger.error(f"generate_crosstab_by_wave error: {e}")
+        raise
+
+
+@mcp.tool()
+async def summarize_pattern_by_wave(
+    variable: str,
+    demographic: str,
+    ordinal_value: Optional[int] = None,
+    flat_threshold_pp: float = 3.0,
+) -> str:
+    """Structured summary of how a variable trends across waves, by demographic group.
+
+    Turns the manual "eyeball the trend chart" step from AGENTS.md's "Multi-wave
+    pattern detection" section into a structured comparison: for each demographic
+    group, the direction and total change from the first to the last available
+    wave; and for each pair of groups, whether the cross-sectional gap between
+    them is stable, widening, narrowing, or has reversed sign.
+
+    Args:
+        variable:    A platform/binary column (e.g. "use_tiktok", "sm_post_gen_twitter")
+                     or an ordinal column (e.g. "freq_facebook", "sm_trust_twitter").
+        demographic: Demographic column to stratify by, e.g. "party3", "age_cat_8".
+        ordinal_value: Required for ordinal variables. The metric becomes the
+                     weighted % of respondents scoring >= ordinal_value (a
+                     "top-box" share), e.g. ordinal_value=4 on the 1-6 freq scale
+                     ("often" or more often). Call get_ordinal_distribution() first
+                     to see the variable's scale and pick a meaningful cutpoint.
+                     Must be omitted for platform/binary variables.
+        flat_threshold_pp: Changes smaller than this (in percentage points) are
+                     classified as "flat" (for a group's trend) or "stable" (for
+                     a cross-group gap). Default 3.0.
+
+    Returns direction/total_change per demographic group and a stability
+    classification ("stable", "widening", "narrowing", "reversed") for every
+    pair of groups.
+    """
+    if demographic not in DEMOGRAPHIC_COLUMNS:
+        raise ValueError(f"Unknown demographic '{demographic}'. Must be one of: {DEMOGRAPHIC_COLUMNS}")
+
+    is_binary = variable in PLATFORM_COLUMNS or variable in ALL_BINARY_COLUMNS or variable in RACE_BOOLEAN_COLUMNS
+    is_ordinal = variable in ALL_ORDINAL_COLUMNS
+
+    if not is_binary and not is_ordinal:
+        raise ValueError(
+            f"Unknown variable '{variable}'. Must be a platform/binary column or an "
+            f"ordinal column. Call get_available_variables() to see valid names."
+        )
+
+    if is_ordinal:
+        if ordinal_value is None:
+            raise ValueError(
+                f"'{variable}' is an ordinal variable — ordinal_value is required. "
+                f"Call get_ordinal_distribution(variable='{variable}') first to see "
+                f"its scale and pick a meaningful cutpoint (e.g. the top one or two "
+                f"categories)."
+            )
+    elif ordinal_value is not None:
+        raise ValueError(f"'{variable}' is a platform/binary variable — ordinal_value must be omitted.")
+
+    try:
+        if is_binary:
+            metric_label = "user_rate_pct"
+            metric_sql = f"ROUND(SUM(t.{variable} * t.weight) / SUM(t.weight) * 100, 2)"
+            sentinel_filter = ""
+        else:
+            metric_label = f"pct_{variable}_ge_{ordinal_value}"
+            metric_sql = (
+                f"ROUND(SUM(CASE WHEN t.{variable} >= {ordinal_value} THEN t.weight ELSE 0 END) "
+                f"/ SUM(t.weight) * 100, 2)"
+            )
+            sentinel_filter = f"AND t.{variable} > 0"
+
+        df = run_query(f"""
+            SELECT
+              CAST(t.wave AS FLOAT64)                                AS wave,
+              wd.midpoint_date,
+              t.{demographic}                                         AS demographic_value,
+              COUNT(*)                                                AS unweighted_n,
+              {metric_sql}                                            AS metric_value,
+              CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END AS suppressed
+            FROM {FULL_TABLE} t
+            LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
+            WHERE t.{variable} IS NOT NULL
+              AND t.{demographic} IS NOT NULL
+              AND t.weight IS NOT NULL
+              {sentinel_filter}
+            GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date, t.{demographic}
+            ORDER BY CAST(t.wave AS FLOAT64), t.{demographic}
+        """)
+
+        df.loc[df["suppressed"], "metric_value"] = None
+
+        # Detect wave gaps (same logic as generate_crosstab_by_wave)
+        all_waves_df = run_query(f"""
+            SELECT DISTINCT CAST(wave AS FLOAT64) AS wave_num FROM {FULL_TABLE} ORDER BY wave_num
+        """)
+        all_wave_set  = {int(w) for w in all_waves_df["wave_num"].tolist()}
+        data_wave_set = {int(float(w)) for w in df["wave"].unique().tolist()}
+        missing_waves = sorted(all_wave_set - data_wave_set)
+
+        groups: Dict[str, Dict[str, Any]] = {}
+        for group_value, group_df in df.groupby("demographic_value"):
+            group_df = group_df.sort_values("wave")
+            series = [
+                {
+                    "wave": _fmt_wave(row["wave"]),
+                    "midpoint_date": row["midpoint_date"],
+                    "value": row["metric_value"],
+                }
+                for _, row in group_df.iterrows()
+            ]
+            non_null = group_df.dropna(subset=["metric_value"])
+
+            if len(non_null) < 2:
+                groups[str(group_value)] = {
+                    "series": series,
+                    "direction": "insufficient_data",
+                    "note": "Fewer than two non-suppressed waves available for this group.",
+                }
+                continue
+
+            first_row = non_null.iloc[0]
+            last_row  = non_null.iloc[-1]
+            total_change = round(float(last_row["metric_value"]) - float(first_row["metric_value"]), 2)
+
+            if total_change > flat_threshold_pp:
+                direction = "increasing"
+            elif total_change < -flat_threshold_pp:
+                direction = "decreasing"
+            else:
+                direction = "flat"
+
+            groups[str(group_value)] = {
+                "first_wave": _fmt_wave(first_row["wave"]),
+                "first_value": float(first_row["metric_value"]),
+                "last_wave": _fmt_wave(last_row["wave"]),
+                "last_value": float(last_row["metric_value"]),
+                "total_change_pp": total_change,
+                "direction": direction,
+                "series": series,
+            }
+
+        # Pairwise gap analysis between groups with sufficient data
+        comparable_groups = sorted(
+            g for g, v in groups.items() if v.get("direction") != "insufficient_data"
+        )
+        gap_analysis: Dict[str, Any] = {}
+        for g1, g2 in itertools.combinations(comparable_groups, 2):
+            df1 = df[(df["demographic_value"].astype(str) == g1)].dropna(subset=["metric_value"])
+            df2 = df[(df["demographic_value"].astype(str) == g2)].dropna(subset=["metric_value"])
+            common_waves = sorted(set(df1["wave"]) & set(df2["wave"]))
+            if len(common_waves) < 2:
+                continue
+
+            v1 = df1.set_index("wave")["metric_value"]
+            v2 = df2.set_index("wave")["metric_value"]
+            gaps = {w: float(v1[w] - v2[w]) for w in common_waves}
+
+            first_wave, last_wave = common_waves[0], common_waves[-1]
+            first_gap, last_gap = gaps[first_wave], gaps[last_wave]
+            min_gap, max_gap = min(gaps.values()), max(gaps.values())
+
+            if (
+                (first_gap > flat_threshold_pp and last_gap < -flat_threshold_pp)
+                or (first_gap < -flat_threshold_pp and last_gap > flat_threshold_pp)
+            ):
+                stability = "reversed"
+            else:
+                magnitude_change = abs(last_gap) - abs(first_gap)
+                if abs(magnitude_change) <= flat_threshold_pp:
+                    stability = "stable"
+                elif magnitude_change > 0:
+                    stability = "widening"
+                else:
+                    stability = "narrowing"
+
+            gap_analysis[f"{g1} vs {g2}"] = {
+                "first_wave": _fmt_wave(first_wave),
+                "first_gap_pp": round(first_gap, 2),
+                "last_wave": _fmt_wave(last_wave),
+                "last_gap_pp": round(last_gap, 2),
+                "min_gap_pp": round(min_gap, 2),
+                "max_gap_pp": round(max_gap, 2),
+                "stability": stability,
+            }
+
+        return json.dumps({
+            "variable": variable,
+            "demographic": demographic,
+            "metric": metric_label,
+            "flat_threshold_pp": flat_threshold_pp,
+            "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
+            "note": NOTE_WEIGHTED,
+            "interpretation_note": (
+                f"metric_value ('{metric_label}') is a WEIGHTED, population-representative "
+                "percentage. 'gap_pp' values are <group1> minus <group2> in percentage "
+                "points; sign indicates which group is higher. 'first'/'last' refer to the "
+                "first and last waves with non-suppressed data for the group(s) involved, "
+                "which may differ between groups and pairs."
+            ),
+            "groups": groups,
+            "gap_analysis": gap_analysis,
+            "missing_waves": missing_waves,
+        }, indent=2, default=str)
+
+    except Exception as e:
+        logger.error(f"summarize_pattern_by_wave error: {e}")
         raise
 
 

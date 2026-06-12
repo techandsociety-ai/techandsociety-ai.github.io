@@ -159,10 +159,11 @@ above, roughly in priority order:
    `generate_pdf_report` gets an automatic "Source." line naming the wave(s)
    from the report's `waves` argument, in addition to any caller-supplied
    "Note." text.
-5. **"Pattern" framing helpers.** Consider a tool that, given a column and a
-   demographic, returns a structured summary across waves (direction, total
-   change, whether the cross-sectional gap is stable) to make the
-   trend-narrative step in "Multi-wave pattern detection" above less manual.
+5. ~~**"Pattern" framing helpers.**~~ Done — `summarize_pattern_by_wave(variable,
+   demographic, ordinal_value=None, flat_threshold_pp=3.0)` returns, per
+   demographic group, the direction (increasing/decreasing/flat) and total
+   change in percentage points from the first to last available wave, plus
+   pairwise gap analysis (stable/widening/narrowing/reversed) between groups.
 
 ## Architecture
 

@@ -177,16 +177,17 @@ above, roughly in priority order:
    `kateto/COVID19/SURVEYS/CSP_W38_Survey_Text.txt` in a clean
    `[varname] question text` + `code = label` format. This unblocks item 9
    below (variable metadata tool).
-8. **Intersectional subpopulation filtering.** Implemented (2026-06-14),
-   pending deploy + live test — `get_ordinal_crosstab` and
-   `get_ordinal_distribution_by_demographic` now take an optional
+8. ~~**Intersectional subpopulation filtering.**~~ Done and verified
+   (2026-06-14) — `get_ordinal_crosstab` and
+   `get_ordinal_distribution_by_demographic` take an optional
    `filters: Dict[str, List[str]]` param, validated against
    `_ALL_REGRESSION_COLUMNS` and built via the existing
    `_build_filter_clauses` helper (same pattern already used by
-   `run_ols_regression`/`run_logistic_regression`). Example:
+   `run_ols_regression`/`run_logistic_regression`). Tested live:
    `get_ordinal_distribution_by_demographic(column="support_cuba",
-   demographic="party3", filters={"race_hisp": [1]}, wave="38")`. Need to
-   merge to `main` (auto-deploys via CI) and re-test live before marking done.
+   demographic="party3", filters={"race_hisp": ["1"]}, wave="38")` returns
+   correct weighted distributions for the Hispanic subsample, broken out by
+   party.
 9. **Variable metadata tool (`get_variable_metadata`).** Open, now unblocked
    by item 7 — parse `CSP_W38_Survey_Text.txt` (and ideally older wave files,
    since most variables persist across waves) into a `{column: {question,
@@ -201,16 +202,20 @@ above, roughly in priority order:
     (same pattern as `ozempic_binary`/`ozempic_current` in
     `_DERIVED_COLUMNS`) that collapses codes 3-5 into a single "Never used"
     category for David's exact 3-bucket framing.
-11. ~~**PHQ-9 composite (`phq9_total`).**~~ Implemented (2026-06-14), pending
-    deploy + live test — added `phq9_total` to `_DERIVED_COLUMNS` as
-    `SUM(phq9_1..phq9_9)`, gated by a `CASE WHEN ... > 0` guard on all nine
-    items so it's NULL (and dropped) if any item is -99/missing rather than
-    silently summing a sentinel. Marked `binary: False` so it's only
-    registered as a valid OLS outcome, not a logistic one. Also added a
-    `.dropna(subset=cols)` safety net in `_fetch_regression_data` for any
-    derived column that can evaluate to NULL per-row. Need to merge to `main`
-    (auto-deploys via CI) and run
-    `run_ols_regression(outcome="phq9_total", predictors=[...])` live.
+11. ~~**PHQ-9 composite (`phq9_total`).**~~ Done and verified (2026-06-14) —
+    added `phq9_total` to `_DERIVED_COLUMNS`. CHIP50 codes each `phq9_1..9`
+    item 1-4 ("Not at all" .. "Nearly every day"), so `phq9_total` sums
+    `(phq9_i - 1)` across all nine items to produce the standard clinical
+    0-27 scale (0-4 minimal, 5-9 mild, ..., 20-27 severe). Gated by a
+    `CASE WHEN ... > 0` guard on all nine items so it's NULL (and dropped) if
+    any item is -99/missing rather than silently summing a sentinel. Marked
+    `binary: False` so it's only registered as a valid OLS outcome, not a
+    logistic one. Also added a `.dropna(subset=cols)` safety net in
+    `_fetch_regression_data` for any derived column that can evaluate to NULL
+    per-row. Tested live: `run_ols_regression(outcome="phq9_total",
+    predictors=["age_cat_8", "gender", "party3"], wave="38")` returns a
+    plausible intercept (~9.3, "mild" band) and expected age/gender patterns
+    (depression scores decline with age, men score lower than women).
 12. **Height/weight ingestion.** Open — `height_1`, `height_2`,
     `weight_current`, `weight_pre_glp1` are present in
     `data/export_CHIP50_SocialMedia_vars_2026_06_06_merged.csv` and coded in

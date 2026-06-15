@@ -231,11 +231,38 @@ above, roughly in priority order:
     needs post-stratification weights generated for the `support_cuba`
     subsample, then a `weight_column` override param added to the relevant
     tools.
-15. **Report-generation workflow + reliability testing.** Unblocked — the
-    three reference `.docx` reports (`cuba_military_force_report.docx`,
-    `glp1_use_report.docx`, `gerrymandering_amendment_report.docx`) are now in
-    `gold_standard_reports/`. Next: run each through the MCP
-    report-generation workflow and diff against these references.
+15. **Report-generation workflow + reliability testing.** In progress
+    (2026-06-14) — the three reference `.docx` reports
+    (`cuba_military_force_report.docx`, `glp1_use_report.docx`,
+    `gerrymandering_amendment_report.docx`) are in `gold_standard_reports/`.
+    Spot-checked `cuba_military_force_report.docx` against live tool calls:
+    - `get_ordinal_distribution(column="support_cuba", wave="38")` reproduces
+      Table 1 exactly (31.45/14.81/29.17/15.15/9.42 vs. reported
+      31.5/14.8/29.2/15.2/9.4).
+    - `get_ordinal_distribution_by_demographic(column="support_cuba",
+      demographic="party7", wave="38")` reproduces Figure 2 exactly (Strong
+      Republican: 50.3% support / 22.1% oppose; Lean Democrat (party7=5):
+      9.4% support / 70.4% oppose — both match the report verbatim).
+    - `run_ols_regression(outcome="support_cuba", predictors=["party7",
+      "education_cat", "gender", "income_cat_10", "urban_type", "age_cat_8"],
+      wave="38", treat_as_categorical=["party7","age_cat_8","income_cat_10"])`
+      reproduces the Appendix A model exactly: n=3,807, R²=0.2125 (reported
+      0.212), and every cited coefficient matches to 2 decimals (party7
+      gradient -0.39/-0.27/-1.06/-1.55/-1.17/-1.35, age_cat_8 +0.37/+0.48/
+      +0.40/+0.25/+0.16(p=.06), education College −0.21/Graduate −0.27/Some
+      College −0.15 vs. HS-grad baseline, gender male +0.05 (p=.22),
+      rural/suburban/urban gap +0.12/0/+0.03).
+    Conclusion so far: the MCP's existing tools (`get_ordinal_distribution`,
+    `get_ordinal_distribution_by_demographic`, `run_ols_regression`) are
+    sufficient to reproduce this report's numbers exactly — no backend gaps
+    found for this report. The gap, if any, is in `generate_pdf_report`'s
+    narrative/appendix depth vs. these analyst-written reports (Appendix A
+    "analytic memo" and Appendix B "methodological evaluation" are
+    hand-authored synthesis, not auto-generated). Remaining work: spot-check
+    `glp1_use_report.docx` and `gerrymandering_amendment_report.docx`
+    similarly, then decide whether `generate_pdf_report`'s narrative
+    generation needs a "memo/appendix" mode or whether that layer is
+    intentionally left to the calling analyst/assistant.
 16. **Polarization variable inventory for DDF demo.** Open — cross-check
     `ATTITUDINAL_COLUMNS`/`POL_*` against the survey text file for a first
     pass, then confirm completeness with Hong.

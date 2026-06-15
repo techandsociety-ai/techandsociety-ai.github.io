@@ -417,17 +417,30 @@ _DERIVED_COLUMNS: dict[str, dict] = {
         "sql": "CASE WHEN ozempic IN (1, 2) THEN 1 ELSE 0 END",
         "source": "ozempic",
         "description": "Binary GLP-1/Ozempic use: 1 = currently taking or previously took (ozempic=1 or 2), 0 = never took (ozempic=3,4,5). Wave 35 only.",
+        "binary": True,
     },
     "ozempic_current": {
         "sql": "CASE WHEN ozempic = 1 THEN 1 WHEN ozempic IN (3, 4, 5) THEN 0 ELSE NULL END",
         "source": "ozempic",
         "description": "Binary: 1 = currently taking GLP-1/Ozempic (ozempic=1), 0 = never took (ozempic=3,4,5). Respondents who previously took and stopped (ozempic=2) are excluded. Wave 35 only.",
+        "binary": True,
+    },
+    "phq9_total": {
+        "sql": (
+            "CASE WHEN phq9_1 > 0 AND phq9_2 > 0 AND phq9_3 > 0 AND phq9_4 > 0"
+            " AND phq9_5 > 0 AND phq9_6 > 0 AND phq9_7 > 0 AND phq9_8 > 0 AND phq9_9 > 0"
+            " THEN phq9_1 + phq9_2 + phq9_3 + phq9_4 + phq9_5 + phq9_6 + phq9_7 + phq9_8 + phq9_9"
+            " ELSE NULL END"
+        ),
+        "source": "phq9_1",
+        "description": "PHQ-9 depression severity composite (sum of phq9_1..phq9_9, range 0-27). NULL if any of the 9 items is missing or skipped (-99). Use as an OLS outcome, not logistic.",
+        "binary": False,
     },
 }
 
-# Register derived columns as valid regression columns and binary outcomes
+# Register derived columns as valid regression columns; only binary ones as logistic outcomes
 _ALL_REGRESSION_COLUMNS.update(_DERIVED_COLUMNS.keys())
-_BINARY_COLUMNS.update(_DERIVED_COLUMNS.keys())
+_BINARY_COLUMNS.update(k for k, v in _DERIVED_COLUMNS.items() if v.get("binary"))
 
 # ── Key historical events for trend annotation ───────────────────────────────
 # Injected into get_platform_trends / get_freq_trends responses.
@@ -2108,6 +2121,7 @@ async def get_ordinal_distribution_by_demographic(
     column: str,
     demographic: str,
     wave: Optional[str] = None,
+    filters: Optional[Dict[str, List[str]]] = None,
 ) -> str:
     """Full weighted % distribution of an ordinal variable broken down by a demographic group.
 
@@ -2119,10 +2133,20 @@ async def get_ordinal_distribution_by_demographic(
       "Show the full distribution of support_cuba for Hispanics vs. non-Hispanics"
       "How does trust in Twitter break down by response category for Democrats vs Republicans?"
 
+    For intersectional breakdowns — e.g. "support_cuba by party, among Hispanic
+    respondents only" — use filters to restrict the population first:
+      get_ordinal_distribution_by_demographic(
+          column="support_cuba", demographic="party3",
+          filters={"race_hisp": [1]}, wave="38")
+
     Args:
         column:      Any ordinal column — e.g. "support_cuba", "sm_trust_twitter", "ideology"
         demographic: Demographic column — e.g. "race_hisp", "party3", "gender", "age_cat_8"
         wave:        Optional wave filter. Omit for all waves.
+        filters:     Optional subpopulation filter applied before the breakdown. A mapping
+                      of {column_name: [allowed_values]}, e.g. {"race_hisp": [1]} or
+                      {"party3": ["Democrat"]}. Rows where the column value is NOT in the
+                      list are dropped. Filter columns must not be the same as `demographic`.
 
     Returns one row per (demographic_value × response_value) combination.
     pct is the within-group weighted percentage (rows sum to ~100% within each group).
@@ -2133,6 +2157,21 @@ async def get_ordinal_distribution_by_demographic(
         raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
     demo_sentinel = f"AND {demographic} > 0" if demographic in ALL_ORDINAL_COLUMNS else ""
+
+    filter_sql = ""
+    if filters:
+        invalid_filters = [c for c in filters if c not in _ALL_REGRESSION_COLUMNS]
+        if invalid_filters:
+            raise ValueError(
+                f"Unknown filter column(s) {invalid_filters}. "
+                "Call get_available_variables() to see valid names."
+            )
+        if demographic in filters:
+            raise ValueError(
+                f"Filter column '{demographic}' cannot be the same as the breakdown demographic. "
+                "Use the demographic argument to select the breakdown dimension, not filters."
+            )
+        filter_sql = _build_filter_clauses(filters)
 
     try:
         df = run_query(f"""
@@ -2153,6 +2192,7 @@ async def get_ordinal_distribution_by_demographic(
               AND weight IS NOT NULL
               {demo_sentinel}
               {wave_clause(wave)}
+              {filter_sql}
             GROUP BY {demographic}, {column}
             ORDER BY {demographic}, {column}
         """)
@@ -2172,6 +2212,7 @@ async def get_ordinal_distribution_by_demographic(
             "demographic": demographic,
             "type": "ordinal_distribution_by_demographic",
             "wave_filter": wave or "all",
+            "filters": filters or {},
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
             "scale_labels": scale_labels,
             "note": NOTE_WEIGHTED,
@@ -2193,6 +2234,7 @@ async def get_ordinal_crosstab(
     column: str,
     demographic: str,
     wave: Optional[str] = None,
+    filters: Optional[Dict[str, List[str]]] = None,
 ) -> str:
     """Weighted mean of an ordinal variable broken down by a demographic group.
 
@@ -2202,10 +2244,23 @@ async def get_ordinal_crosstab(
     Returns the weighted mean of the ordinal column per demographic category,
     excluding -99 (skipped/refused) values.
 
+    For intersectional breakdowns — e.g. "support_cuba mean by party, among Hispanic
+    respondents only" — use filters to restrict the population first:
+      get_ordinal_crosstab(
+          column="support_cuba", demographic="party3",
+          filters={"race_hisp": [1]}, wave="38")
+    Note a mean alone may not be the right summary for non-linear rescalings; for the
+    full per-category distribution within a filtered subgroup, use
+    get_ordinal_distribution_by_demographic with the same filters.
+
     Args:
         column:      Any ordinal column — e.g. "sm_trust_twitter", "freq_tiktok", "ideology"
         demographic: Demographic or attitudinal column — e.g. "party3", "age_cat_8", "gender"
         wave:        Optional wave filter. Omit for all waves.
+        filters:     Optional subpopulation filter applied before the breakdown. A mapping
+                      of {column_name: [allowed_values]}, e.g. {"race_hisp": [1]} or
+                      {"party3": ["Democrat"]}. Rows where the column value is NOT in the
+                      list are dropped. Filter columns must not be the same as `demographic`.
     """
     if column not in ALL_ORDINAL_COLUMNS:
         raise ValueError(f"Unknown ordinal column '{column}'. Choose from: {ALL_ORDINAL_COLUMNS}")
@@ -2213,6 +2268,21 @@ async def get_ordinal_crosstab(
         raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
     demo_sentinel = f"AND {demographic} > 0" if demographic in ALL_ORDINAL_COLUMNS else ""
+
+    filter_sql = ""
+    if filters:
+        invalid_filters = [c for c in filters if c not in _ALL_REGRESSION_COLUMNS]
+        if invalid_filters:
+            raise ValueError(
+                f"Unknown filter column(s) {invalid_filters}. "
+                "Call get_available_variables() to see valid names."
+            )
+        if demographic in filters:
+            raise ValueError(
+                f"Filter column '{demographic}' cannot be the same as the breakdown demographic. "
+                "Use the demographic argument to select the breakdown dimension, not filters."
+            )
+        filter_sql = _build_filter_clauses(filters)
 
     try:
         df = run_query(f"""
@@ -2229,6 +2299,7 @@ async def get_ordinal_crosstab(
               AND weight IS NOT NULL
               {demo_sentinel}
               {wave_clause(wave)}
+              {filter_sql}
             GROUP BY {demographic}
             ORDER BY {demographic}
         """)
@@ -2247,6 +2318,7 @@ async def get_ordinal_crosstab(
             "column": column,
             "demographic": demographic,
             "wave_filter": wave or "all",
+            "filters": filters or {},
             "suppression_note": f"Cells with n<{MIN_CELL_SIZE} suppressed for privacy",
             "scale_labels": scale_labels,
             "note": NOTE_WEIGHTED,
@@ -2778,7 +2850,11 @@ def _fetch_regression_data(
           {wave_clause(wave)}
           {filter_clauses}
     """
-    return run_query(sql)
+    df = run_query(sql)
+    # Derived columns (e.g. phq9_total) may evaluate to NULL row-by-row even
+    # when their source column passes the sentinel check — drop those rows
+    # so they don't crash WLS/Logit fitting downstream.
+    return df.dropna(subset=cols)
 
 
 def _resolve_reference_level(col: str, available: List[str], requested: Optional[str]) -> str:

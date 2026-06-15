@@ -164,6 +164,76 @@ above, roughly in priority order:
    demographic group, the direction (increasing/decreasing/flat) and total
    change in percentage points from the first to last available wave, plus
    pairwise gap analysis (stable/widening/narrowing/reversed) between groups.
+6. ~~**Ordinal distributions by wave x demographic.**~~ Done and verified
+   (2026-06-14) — `generate_marginals_by_wave(variable, demographic)` returns
+   the full per-category distribution for every wave x demographic cell with
+   correct `CAST(wave AS FLOAT64)` handling (tested live with
+   `support_cuba` x `race_cat_5`, no partitioning error).
+   `get_ordinal_distribution_by_demographic(column, demographic, wave)` also
+   confirmed working single-wave, including with `race_hisp` as the
+   demographic (tested with `support_cuba` x `race_hisp`, wave 38).
+7. ~~**Survey question text in source-of-truth repo.**~~ Done — W38 (and
+   W35-W37.6) survey text files are live at
+   `kateto/COVID19/SURVEYS/CSP_W38_Survey_Text.txt` in a clean
+   `[varname] question text` + `code = label` format. This unblocks item 9
+   below (variable metadata tool).
+8. **Intersectional subpopulation filtering.** Implemented (2026-06-14),
+   pending deploy + live test — `get_ordinal_crosstab` and
+   `get_ordinal_distribution_by_demographic` now take an optional
+   `filters: Dict[str, List[str]]` param, validated against
+   `_ALL_REGRESSION_COLUMNS` and built via the existing
+   `_build_filter_clauses` helper (same pattern already used by
+   `run_ols_regression`/`run_logistic_regression`). Example:
+   `get_ordinal_distribution_by_demographic(column="support_cuba",
+   demographic="party3", filters={"race_hisp": [1]}, wave="38")`. Need to
+   merge to `main` (auto-deploys via CI) and re-test live before marking done.
+9. **Variable metadata tool (`get_variable_metadata`).** Open, now unblocked
+   by item 7 — parse `CSP_W38_Survey_Text.txt` (and ideally older wave files,
+   since most variables persist across waves) into a `{column: {question,
+   response_labels, type, waves}}` map, expose via a new tool, and inline
+   `scale_labels`/question wording into existing ordinal-tool outputs so
+   Claude never has to guess what a "3" means.
+10. **GLP-1 status categorization.** Mostly available now — confirmed
+    `get_categorical_crosstab(column="ozempic", demographic=...)` already
+    returns per-party shares for "Currently taking" / "Previously took /
+    stopped" / "Considering" / "Not taking" / "Don't know" (codes 1-5) with
+    labels attached. Optional follow-up: add a derived `glp1_status` column
+    (same pattern as `ozempic_binary`/`ozempic_current` in
+    `_DERIVED_COLUMNS`) that collapses codes 3-5 into a single "Never used"
+    category for David's exact 3-bucket framing.
+11. ~~**PHQ-9 composite (`phq9_total`).**~~ Implemented (2026-06-14), pending
+    deploy + live test — added `phq9_total` to `_DERIVED_COLUMNS` as
+    `SUM(phq9_1..phq9_9)`, gated by a `CASE WHEN ... > 0` guard on all nine
+    items so it's NULL (and dropped) if any item is -99/missing rather than
+    silently summing a sentinel. Marked `binary: False` so it's only
+    registered as a valid OLS outcome, not a logistic one. Also added a
+    `.dropna(subset=cols)` safety net in `_fetch_regression_data` for any
+    derived column that can evaluate to NULL per-row. Need to merge to `main`
+    (auto-deploys via CI) and run
+    `run_ols_regression(outcome="phq9_total", predictors=[...])` live.
+12. **Height/weight ingestion.** Open — `height_1`, `height_2`,
+    `weight_current`, `weight_pre_glp1` are present in
+    `data/export_CHIP50_SocialMedia_vars_2026_06_06_merged.csv` and coded in
+    `CSP_W38_Survey_Text.txt`, but not yet loaded into the BigQuery table or
+    registered as columns in `server.py`. Needs a `load_data.sh` reload +
+    column-list additions.
+13. **`sm_post_mult_*` variables.** Blocked — confirmed absent from both the
+    06-06 merged export and the newer `export_CHIP50_SocialMedia_vars_2026_06_06_22_09.csv`
+    (284 cols, 24 `sm_post_gen_*`, 0 `sm_post_mult_*`). Needs a fresh export
+    from Hong that includes these columns before any ingestion work can
+    start.
+14. **Subsample-specific weighting (e.g. `weight_cuba`).** Blocked on Katya —
+    needs post-stratification weights generated for the `support_cuba`
+    subsample, then a `weight_column` override param added to the relevant
+    tools.
+15. **Report-generation workflow + reliability testing.** Unblocked — the
+    three reference `.docx` reports (`cuba_military_force_report.docx`,
+    `glp1_use_report.docx`, `gerrymandering_amendment_report.docx`) are now in
+    `gold_standard_reports/`. Next: run each through the MCP
+    report-generation workflow and diff against these references.
+16. **Polarization variable inventory for DDF demo.** Open — cross-check
+    `ATTITUDINAL_COLUMNS`/`POL_*` against the survey text file for a first
+    pass, then confirm completeness with Hong.
 
 ## Architecture
 
@@ -201,9 +271,14 @@ updated without redistributing anything to clients.
 
 ```bash
 ./test_local.sh   # run the server on localhost:8080
-./deploy.sh       # build + deploy to Cloud Run
 gcloud run logs read social-media-demographics-mcp --region us-central1
 ```
+
+Deployment is automatic: `.github/workflows/deploy.yml` builds and deploys to
+Cloud Run on every push to `main` (also triggerable via
+`workflow_dispatch`). `./deploy.sh` is a manual fallback for when a
+local/out-of-band rebuild or restart is needed (e.g. CI is down or you need to
+test an image before merging) — it is not part of the normal release path.
 
 `test_regression.py` covers the OLS/logistic regression helpers; run it with
 `pytest` before deploying changes to those code paths.

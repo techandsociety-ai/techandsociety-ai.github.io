@@ -429,11 +429,12 @@ _DERIVED_COLUMNS: dict[str, dict] = {
         "sql": (
             "CASE WHEN phq9_1 > 0 AND phq9_2 > 0 AND phq9_3 > 0 AND phq9_4 > 0"
             " AND phq9_5 > 0 AND phq9_6 > 0 AND phq9_7 > 0 AND phq9_8 > 0 AND phq9_9 > 0"
-            " THEN phq9_1 + phq9_2 + phq9_3 + phq9_4 + phq9_5 + phq9_6 + phq9_7 + phq9_8 + phq9_9"
+            " THEN (phq9_1 - 1) + (phq9_2 - 1) + (phq9_3 - 1) + (phq9_4 - 1) + (phq9_5 - 1)"
+            " + (phq9_6 - 1) + (phq9_7 - 1) + (phq9_8 - 1) + (phq9_9 - 1)"
             " ELSE NULL END"
         ),
         "source": "phq9_1",
-        "description": "PHQ-9 depression severity composite (sum of phq9_1..phq9_9, range 0-27). NULL if any of the 9 items is missing or skipped (-99). Use as an OLS outcome, not logistic.",
+        "description": "PHQ-9 depression severity composite, range 0-27 (standard clinical scoring: 0=Not at all, 1=Several days, 2=More than half the days, 3=Nearly every day per item; CHIP50 codes these items 1-4, so each is shifted down by 1). Severity bands: 0-4 minimal, 5-9 mild, 10-14 moderate, 15-19 moderately severe, 20-27 severe. NULL if any of the 9 items is missing or skipped (-99). Use as an OLS outcome, not logistic.",
         "binary": False,
     },
 }

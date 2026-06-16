@@ -259,6 +259,28 @@ AS SELECT
   CAST(sm_post_gen_rednote    AS INT64) as sm_post_gen_rednote,
   CAST(sm_post_gen_twitch     AS INT64) as sm_post_gen_twitch,
 
+  -- Multi-platform posting battery (binary 0/1; NULL = not asked this wave)
+  CAST(sm_post_mult_1  AS INT64) as sm_post_mult_1,
+  CAST(sm_post_mult_2  AS INT64) as sm_post_mult_2,
+  CAST(sm_post_mult_3  AS INT64) as sm_post_mult_3,
+  CAST(sm_post_mult_4  AS INT64) as sm_post_mult_4,
+  CAST(sm_post_mult_5  AS INT64) as sm_post_mult_5,
+  CAST(sm_post_mult_6  AS INT64) as sm_post_mult_6,
+  CAST(sm_post_mult_7  AS INT64) as sm_post_mult_7,
+  CAST(sm_post_mult_8  AS INT64) as sm_post_mult_8,
+  CAST(sm_post_mult_9  AS INT64) as sm_post_mult_9,
+  CAST(sm_post_mult_10 AS INT64) as sm_post_mult_10,
+  CAST(sm_post_mult_11 AS INT64) as sm_post_mult_11,
+  CAST(sm_post_mult_12 AS INT64) as sm_post_mult_12,
+  CAST(sm_post_mult_13 AS INT64) as sm_post_mult_13,
+  CAST(sm_post_mult_14 AS INT64) as sm_post_mult_14,
+  CAST(sm_post_mult_15 AS INT64) as sm_post_mult_15,
+  CAST(sm_post_mult_16 AS INT64) as sm_post_mult_16,
+  CAST(sm_post_mult_17 AS INT64) as sm_post_mult_17,
+  CAST(sm_post_mult_18 AS INT64) as sm_post_mult_18,
+  CAST(sm_post_mult_19 AS INT64) as sm_post_mult_19,
+  CAST(sm_post_mult_20 AS INT64) as sm_post_mult_20,
+
   -- COVID behavior (ordinal 1–4; -99 = skipped/refused; NULL = not asked this wave)
   CAST(cov_beh_1 AS INT64) as cov_beh_1,
   CAST(cov_beh_2 AS INT64) as cov_beh_2,
@@ -294,12 +316,6 @@ AS SELECT
 
   -- Policy attitudes (ordinal; -99 = refused)
   CAST(support_cuba      AS INT64) as support_cuba,
-  CAST(support_cuba_DO_0 AS INT64) as support_cuba_DO_0, -- display order variables
-  CAST(support_cuba_DO_1 AS INT64) as support_cuba_DO_1,
-  CAST(support_cuba_DO_2 AS INT64) as support_cuba_DO_2,
-  CAST(support_cuba_DO_3 AS INT64) as support_cuba_DO_3,
-  CAST(support_cuba_DO_4 AS INT64) as support_cuba_DO_4,
-  CAST(support_cuba_DO_5 AS INT64) as support_cuba_DO_5,
 
   -- Raw demographics
   CAST(age AS INT64) as age,  -- raw age in years

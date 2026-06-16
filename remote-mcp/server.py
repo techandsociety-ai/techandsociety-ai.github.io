@@ -25,6 +25,7 @@ from google.cloud import bigquery
 from google.cloud import storage as gcs
 
 from fastmcp import FastMCP
+from question_wording import QUESTION_WORDING
 from fastmcp.server.auth.providers.google import GoogleProvider
 from fastmcp.server.auth.oauth_proxy.models import ProxyDCRClient
 from key_value.aio.stores.firestore import FirestoreStore
@@ -716,6 +717,11 @@ async def introduce_mcp() -> str:
                 "example": "get_available_variables()",
             },
             {
+                "name": "get_question_wording",
+                "purpose": "Return the exact survey question wording for any CHIP50 variable(s). Call this whenever you need to quote or paraphrase what respondents were actually asked.",
+                "example": 'get_question_wording(variables="use_facebook,sm_trust_twitter,ideology")',
+            },
+            {
                 "name": "generate_marginals",
                 "purpose": "Distribution for a single variable. Works for demographics, platforms (binary rate), attitudinal, ordinal, and binary columns.",
                 "example": 'generate_marginals(variable="age_cat_8")  # or "use_tiktok", "ideology", "freq_twitter"',
@@ -988,6 +994,45 @@ async def get_available_variables() -> str:
     except Exception as e:
         logger.error(f"get_available_variables error: {e}")
         raise
+
+
+@mcp.tool()
+async def get_question_wording(variables: Optional[str] = None) -> str:
+    """Return the exact survey question wording for one or more CHIP50 variables.
+
+    Args:
+        variables: Comma-separated variable names to look up (e.g.
+            "use_facebook,sm_trust_twitter,ideology"). If omitted, returns
+            wording for all 220 known variables.
+
+    Wording is sourced from the COVID States Project survey text archive and
+    reflects the most recent wave in which each variable was fielded. For
+    matrix/multi-select items (platform usage, trust, posting frequency, news
+    source checkboxes) the stem question is combined with the item-specific
+    label using " — ".
+
+    phq9_12 ("Experiencing weakness in your right arm") is a survey attention-
+    check item embedded in the PHQ-9 battery — it is not a clinical symptom
+    item and is not included in phq9_total.
+    """
+    if variables:
+        keys = [v.strip() for v in variables.split(",") if v.strip()]
+    else:
+        keys = list(QUESTION_WORDING.keys())
+
+    result = {}
+    unknown = []
+    for k in keys:
+        if k in QUESTION_WORDING:
+            result[k] = QUESTION_WORDING[k]
+        else:
+            unknown.append(k)
+
+    out: dict = {"wording": result}
+    if unknown:
+        out["unknown_variables"] = unknown
+        out["note"] = "Unknown variables are not in the question wording registry. Call get_available_variables() to see valid column names."
+    return json.dumps(out, indent=2)
 
 
 async def _generate_crosstab_impl(

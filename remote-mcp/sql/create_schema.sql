@@ -369,7 +369,182 @@ AS SELECT
   CAST(cov_trust_nyt         AS INT64) as cov_trust_nyt,
   CAST(cov_trust_google      AS INT64) as cov_trust_google,
   CAST(cov_trust_facebook    AS INT64) as cov_trust_facebook,
-  CAST(cov_trust_twitter     AS INT64) as cov_trust_twitter
+  CAST(cov_trust_twitter     AS INT64) as cov_trust_twitter,
+
+  -- Fake news / misinformation items (ordinal; -99 = skipped/refused; NULL = not asked this wave)
+  CAST(fn_1  AS INT64) as fn_1,
+  CAST(fn_2  AS INT64) as fn_2,
+  CAST(fn_3  AS INT64) as fn_3,
+  CAST(fn_6  AS INT64) as fn_6,
+  CAST(fn_8  AS INT64) as fn_8,
+  CAST(fn_9  AS INT64) as fn_9,
+  CAST(fn_10 AS INT64) as fn_10,
+  CAST(fn_11 AS INT64) as fn_11,
+  CAST(fn_12 AS INT64) as fn_12,
+  CAST(fn_13 AS INT64) as fn_13,
+  CAST(fn_14 AS INT64) as fn_14,
+  CAST(fn_15 AS INT64) as fn_15,
+  CAST(fn_16 AS INT64) as fn_16,
+  CAST(fn_20 AS INT64) as fn_20,
+  CAST(fn_21 AS INT64) as fn_21,
+  CAST(fn_22 AS INT64) as fn_22,
+  CAST(fn_23 AS INT64) as fn_23,
+  CAST(fn_30 AS INT64) as fn_30,
+  CAST(fn_31 AS INT64) as fn_31,
+  CAST(fn_33 AS INT64) as fn_33,
+  CAST(fn_34 AS INT64) as fn_34,
+  CAST(fn_35 AS INT64) as fn_35,
+  CAST(fn_36 AS INT64) as fn_36,
+  CAST(fn_38 AS INT64) as fn_38,
+  CAST(fn_40 AS INT64) as fn_40,
+  CAST(fn_43 AS INT64) as fn_43,
+  CAST(fn_44 AS INT64) as fn_44,
+  CAST(fn_45 AS INT64) as fn_45,
+  CAST(fn_47 AS INT64) as fn_47,
+
+  -- Fact-checking capacity (binary 0/1; NULL = not asked this wave)
+  CAST(cap_fn_1 AS INT64) as cap_fn_1,
+  CAST(cap_fn_2 AS INT64) as cap_fn_2,
+  CAST(cap_fn_3 AS INT64) as cap_fn_3,
+  CAST(cap_fn_4 AS INT64) as cap_fn_4,
+  CAST(cap_fn_5 AS INT64) as cap_fn_5,
+  CAST(cap_fn_6 AS INT64) as cap_fn_6,
+
+  -- Political discussion (ordinal; -99 = skipped/refused; NULL = not asked this wave)
+  CAST(fr_pol_4 AS INT64) as fr_pol_4,
+  CAST(fr_pol_6 AS INT64) as fr_pol_6,
+
+  -- Protest causes (binary 0/1; NULL = not asked this wave)
+  CAST(prot_cause_elect AS INT64) as prot_cause_elect,
+  CAST(prot_pan_cause_2 AS INT64) as prot_pan_cause_2,
+
+  -- Election confidence (ordinal; -99 = skipped/refused; NULL = not asked this wave)
+  CAST(el_conf    AS INT64) as el_conf,
+  CAST(el_conf_22 AS INT64) as el_conf_22,
+  CAST(el_conf_24 AS INT64) as el_conf_24,
+  CAST(el_conf_26 AS INT64) as el_conf_26,
+  CAST(el_count   AS INT64) as el_count,
+
+  -- Election concerns (binary 0/1; NULL = not asked this wave)
+  CAST(el_conc_1 AS INT64) as el_conc_1,
+  CAST(el_conc_2 AS INT64) as el_conc_2,
+  CAST(el_conc_3 AS INT64) as el_conc_3,
+  CAST(el_conc_4 AS INT64) as el_conc_4,
+  CAST(el_conc_5 AS INT64) as el_conc_5,
+  CAST(el_conc_6 AS INT64) as el_conc_6,
+
+  -- Election fairness perceptions (ordinal; -99 = skipped/refused; NULL = not asked)
+  CAST(el_fair_1 AS INT64) as el_fair_1,
+  CAST(el_fair_2 AS INT64) as el_fair_2,
+  CAST(el_fair_3 AS INT64) as el_fair_3,
+  CAST(el_fair_4 AS INT64) as el_fair_4,
+
+  -- Election challenge support (ordinal; -99 = skipped/refused; NULL = not asked)
+  CAST(el_chal_1 AS INT64) as el_chal_1,
+  CAST(el_chal_2 AS INT64) as el_chal_2,
+  CAST(el_chal_3 AS INT64) as el_chal_3,
+  CAST(el_chal_4 AS INT64) as el_chal_4,
+
+  -- Election trust (ordinal; -99 = skipped/refused; NULL = not asked)
+  CAST(el_trust_biden  AS INT64) as el_trust_biden,
+  CAST(el_trust_court  AS INT64) as el_trust_court,
+  CAST(el_trust_police AS INT64) as el_trust_police,
+
+  -- Ballot access / vote counting (ordinal; -99 = skipped/refused; NULL = not asked)
+  CAST(ballot_access        AS INT64) as ballot_access,
+  CAST(vote_counted         AS INT64) as vote_counted,
+  CAST(vote_counted_state   AS INT64) as vote_counted_state,
+  CAST(voted_counted_nation AS INT64) as voted_counted_nation,
+
+  -- Political trust extensions (ordinal; -99 = skipped/refused; NULL = not asked)
+  CAST(pol_trust_ai       AS INT64) as pol_trust_ai,
+  CAST(pol_trust_election AS INT64) as pol_trust_election,
+
+  -- LLM / AI attitude items (ordinal; -99 = skipped/refused; NULL = not asked)
+  CAST(llm_psych      AS INT64) as llm_psych,
+  CAST(llm_help       AS INT64) as llm_help,
+  CAST(ai_regulation  AS INT64) as ai_regulation,
+  CAST(ai_work_impact AS INT64) as ai_work_impact,
+
+  -- Self-reported AI/survey use (ordinal; -99 = skipped/refused; NULL = not asked)
+  CAST(survey_ai_use   AS INT64) as survey_ai_use,
+  CAST(survey_ai_agent AS INT64) as survey_ai_agent,
+  CAST(survey_ai_tools AS INT64) as survey_ai_tools,
+  CAST(survey_ai_mode  AS INT64) as survey_ai_mode,
+
+  -- AI tool usage frequency by position (ordinal 1–6; respondent's 1st–11th most-used tools)
+  CAST(ai_freq_x1  AS INT64) as ai_freq_x1,
+  CAST(ai_freq_x2  AS INT64) as ai_freq_x2,
+  CAST(ai_freq_x3  AS INT64) as ai_freq_x3,
+  CAST(ai_freq_x4  AS INT64) as ai_freq_x4,
+  CAST(ai_freq_x5  AS INT64) as ai_freq_x5,
+  CAST(ai_freq_x6  AS INT64) as ai_freq_x6,
+  CAST(ai_freq_x7  AS INT64) as ai_freq_x7,
+  CAST(ai_freq_x8  AS INT64) as ai_freq_x8,
+  CAST(ai_freq_x9  AS INT64) as ai_freq_x9,
+  CAST(ai_freq_x10 AS INT64) as ai_freq_x10,
+  CAST(ai_freq_x11 AS INT64) as ai_freq_x11,
+
+  -- AI tool why-use by position (binary 0/1; follows ai_freq_x* order; NULL = not asked)
+  CAST(ai_why_x1_1  AS INT64) as ai_why_x1_1,  CAST(ai_why_x1_2  AS INT64) as ai_why_x1_2,  CAST(ai_why_x1_3  AS INT64) as ai_why_x1_3,
+  CAST(ai_why_x2_1  AS INT64) as ai_why_x2_1,  CAST(ai_why_x2_2  AS INT64) as ai_why_x2_2,  CAST(ai_why_x2_3  AS INT64) as ai_why_x2_3,
+  CAST(ai_why_x3_1  AS INT64) as ai_why_x3_1,  CAST(ai_why_x3_2  AS INT64) as ai_why_x3_2,  CAST(ai_why_x3_3  AS INT64) as ai_why_x3_3,
+  CAST(ai_why_x4_1  AS INT64) as ai_why_x4_1,  CAST(ai_why_x4_2  AS INT64) as ai_why_x4_2,  CAST(ai_why_x4_3  AS INT64) as ai_why_x4_3,
+  CAST(ai_why_x5_1  AS INT64) as ai_why_x5_1,  CAST(ai_why_x5_2  AS INT64) as ai_why_x5_2,  CAST(ai_why_x5_3  AS INT64) as ai_why_x5_3,
+  CAST(ai_why_x6_1  AS INT64) as ai_why_x6_1,  CAST(ai_why_x6_2  AS INT64) as ai_why_x6_2,  CAST(ai_why_x6_3  AS INT64) as ai_why_x6_3,
+  CAST(ai_why_x7_1  AS INT64) as ai_why_x7_1,  CAST(ai_why_x7_2  AS INT64) as ai_why_x7_2,  CAST(ai_why_x7_3  AS INT64) as ai_why_x7_3,
+  CAST(ai_why_x8_1  AS INT64) as ai_why_x8_1,  CAST(ai_why_x8_2  AS INT64) as ai_why_x8_2,  CAST(ai_why_x8_3  AS INT64) as ai_why_x8_3,
+  CAST(ai_why_x9_1  AS INT64) as ai_why_x9_1,  CAST(ai_why_x9_2  AS INT64) as ai_why_x9_2,  CAST(ai_why_x9_3  AS INT64) as ai_why_x9_3,
+  CAST(ai_why_x10_1 AS INT64) as ai_why_x10_1, CAST(ai_why_x10_2 AS INT64) as ai_why_x10_2, CAST(ai_why_x10_3 AS INT64) as ai_why_x10_3,
+  CAST(ai_why_x11_1 AS INT64) as ai_why_x11_1, CAST(ai_why_x11_2 AS INT64) as ai_why_x11_2, CAST(ai_why_x11_3 AS INT64) as ai_why_x11_3,
+
+  -- AI tool why-use by named tool (binary 0/1; NULL = not asked)
+  CAST(ai_why_ai_1         AS INT64) as ai_why_ai_1,         CAST(ai_why_ai_2         AS INT64) as ai_why_ai_2,         CAST(ai_why_ai_3         AS INT64) as ai_why_ai_3,
+  CAST(ai_why_anyword_1    AS INT64) as ai_why_anyword_1,    CAST(ai_why_anyword_2    AS INT64) as ai_why_anyword_2,    CAST(ai_why_anyword_3    AS INT64) as ai_why_anyword_3,
+  CAST(ai_why_bard_1       AS INT64) as ai_why_bard_1,       CAST(ai_why_bard_2       AS INT64) as ai_why_bard_2,       CAST(ai_why_bard_3       AS INT64) as ai_why_bard_3,
+  CAST(ai_why_chatgpt_1    AS INT64) as ai_why_chatgpt_1,    CAST(ai_why_chatgpt_2    AS INT64) as ai_why_chatgpt_2,    CAST(ai_why_chatgpt_3    AS INT64) as ai_why_chatgpt_3,
+  CAST(ai_why_claude_1     AS INT64) as ai_why_claude_1,     CAST(ai_why_claude_2     AS INT64) as ai_why_claude_2,     CAST(ai_why_claude_3     AS INT64) as ai_why_claude_3,
+  CAST(ai_why_cohere_1     AS INT64) as ai_why_cohere_1,     CAST(ai_why_cohere_2     AS INT64) as ai_why_cohere_2,     CAST(ai_why_cohere_3     AS INT64) as ai_why_cohere_3,
+  CAST(ai_why_copilot_1    AS INT64) as ai_why_copilot_1,    CAST(ai_why_copilot_2    AS INT64) as ai_why_copilot_2,    CAST(ai_why_copilot_3    AS INT64) as ai_why_copilot_3,
+  CAST(ai_why_copy_1       AS INT64) as ai_why_copy_1,       CAST(ai_why_copy_2       AS INT64) as ai_why_copy_2,       CAST(ai_why_copy_3       AS INT64) as ai_why_copy_3,
+  CAST(ai_why_dalle_1      AS INT64) as ai_why_dalle_1,      CAST(ai_why_dalle_2      AS INT64) as ai_why_dalle_2,      CAST(ai_why_dalle_3      AS INT64) as ai_why_dalle_3,
+  CAST(ai_why_deepseek_1   AS INT64) as ai_why_deepseek_1,   CAST(ai_why_deepseek_2   AS INT64) as ai_why_deepseek_2,   CAST(ai_why_deepseek_3   AS INT64) as ai_why_deepseek_3,
+  CAST(ai_why_fake_1       AS INT64) as ai_why_fake_1,       CAST(ai_why_fake_2       AS INT64) as ai_why_fake_2,       CAST(ai_why_fake_3       AS INT64) as ai_why_fake_3,
+  CAST(ai_why_gemini_1     AS INT64) as ai_why_gemini_1,     CAST(ai_why_gemini_2     AS INT64) as ai_why_gemini_2,     CAST(ai_why_gemini_3     AS INT64) as ai_why_gemini_3,
+  CAST(ai_why_genai_1      AS INT64) as ai_why_genai_1,      CAST(ai_why_genai_2      AS INT64) as ai_why_genai_2,      CAST(ai_why_genai_3      AS INT64) as ai_why_genai_3,
+  CAST(ai_why_grok_1       AS INT64) as ai_why_grok_1,       CAST(ai_why_grok_2       AS INT64) as ai_why_grok_2,       CAST(ai_why_grok_3       AS INT64) as ai_why_grok_3,
+  CAST(ai_why_jasper_1     AS INT64) as ai_why_jasper_1,     CAST(ai_why_jasper_2     AS INT64) as ai_why_jasper_2,     CAST(ai_why_jasper_3     AS INT64) as ai_why_jasper_3,
+  CAST(ai_why_lechat_1     AS INT64) as ai_why_lechat_1,     CAST(ai_why_lechat_2     AS INT64) as ai_why_lechat_2,     CAST(ai_why_lechat_3     AS INT64) as ai_why_lechat_3,
+  CAST(ai_why_llama_1      AS INT64) as ai_why_llama_1,      CAST(ai_why_llama_2      AS INT64) as ai_why_llama_2,      CAST(ai_why_llama_3      AS INT64) as ai_why_llama_3,
+  CAST(ai_why_llm_1        AS INT64) as ai_why_llm_1,        CAST(ai_why_llm_2        AS INT64) as ai_why_llm_2,        CAST(ai_why_llm_3        AS INT64) as ai_why_llm_3,
+  CAST(ai_why_midjourney_1 AS INT64) as ai_why_midjourney_1, CAST(ai_why_midjourney_2 AS INT64) as ai_why_midjourney_2, CAST(ai_why_midjourney_3 AS INT64) as ai_why_midjourney_3,
+  CAST(ai_why_perplexity_1 AS INT64) as ai_why_perplexity_1, CAST(ai_why_perplexity_2 AS INT64) as ai_why_perplexity_2, CAST(ai_why_perplexity_3 AS INT64) as ai_why_perplexity_3,
+  CAST(ai_why_qwen_1       AS INT64) as ai_why_qwen_1,       CAST(ai_why_qwen_2       AS INT64) as ai_why_qwen_2,       CAST(ai_why_qwen_3       AS INT64) as ai_why_qwen_3,
+  CAST(ai_why_writesonic_1 AS INT64) as ai_why_writesonic_1, CAST(ai_why_writesonic_2 AS INT64) as ai_why_writesonic_2, CAST(ai_why_writesonic_3 AS INT64) as ai_why_writesonic_3,
+
+  -- AI tool how-use by named tool (binary 0/1; NULL = not asked)
+  CAST(ai_how_ai_1         AS INT64) as ai_how_ai_1,         CAST(ai_how_ai_2         AS INT64) as ai_how_ai_2,         CAST(ai_how_ai_3         AS INT64) as ai_how_ai_3,         CAST(ai_how_ai_4         AS INT64) as ai_how_ai_4,         CAST(ai_how_ai_5         AS INT64) as ai_how_ai_5,
+  CAST(ai_how_anyword_1    AS INT64) as ai_how_anyword_1,    CAST(ai_how_anyword_2    AS INT64) as ai_how_anyword_2,    CAST(ai_how_anyword_3    AS INT64) as ai_how_anyword_3,    CAST(ai_how_anyword_4    AS INT64) as ai_how_anyword_4,    CAST(ai_how_anyword_5    AS INT64) as ai_how_anyword_5,
+  CAST(ai_how_bard_1       AS INT64) as ai_how_bard_1,       CAST(ai_how_bard_2       AS INT64) as ai_how_bard_2,       CAST(ai_how_bard_3       AS INT64) as ai_how_bard_3,       CAST(ai_how_bard_4       AS INT64) as ai_how_bard_4,       CAST(ai_how_bard_5       AS INT64) as ai_how_bard_5,
+  CAST(ai_how_chatgpt_1    AS INT64) as ai_how_chatgpt_1,    CAST(ai_how_chatgpt_2    AS INT64) as ai_how_chatgpt_2,    CAST(ai_how_chatgpt_3    AS INT64) as ai_how_chatgpt_3,    CAST(ai_how_chatgpt_4    AS INT64) as ai_how_chatgpt_4,    CAST(ai_how_chatgpt_5    AS INT64) as ai_how_chatgpt_5,
+  CAST(ai_how_claude_1     AS INT64) as ai_how_claude_1,     CAST(ai_how_claude_2     AS INT64) as ai_how_claude_2,     CAST(ai_how_claude_3     AS INT64) as ai_how_claude_3,     CAST(ai_how_claude_4     AS INT64) as ai_how_claude_4,     CAST(ai_how_claude_5     AS INT64) as ai_how_claude_5,
+  CAST(ai_how_cohere_1     AS INT64) as ai_how_cohere_1,     CAST(ai_how_cohere_2     AS INT64) as ai_how_cohere_2,     CAST(ai_how_cohere_3     AS INT64) as ai_how_cohere_3,     CAST(ai_how_cohere_4     AS INT64) as ai_how_cohere_4,     CAST(ai_how_cohere_5     AS INT64) as ai_how_cohere_5,
+  CAST(ai_how_copilot_1    AS INT64) as ai_how_copilot_1,    CAST(ai_how_copilot_2    AS INT64) as ai_how_copilot_2,    CAST(ai_how_copilot_3    AS INT64) as ai_how_copilot_3,    CAST(ai_how_copilot_4    AS INT64) as ai_how_copilot_4,    CAST(ai_how_copilot_5    AS INT64) as ai_how_copilot_5,
+  CAST(ai_how_copy_1       AS INT64) as ai_how_copy_1,       CAST(ai_how_copy_2       AS INT64) as ai_how_copy_2,       CAST(ai_how_copy_3       AS INT64) as ai_how_copy_3,       CAST(ai_how_copy_4       AS INT64) as ai_how_copy_4,       CAST(ai_how_copy_5       AS INT64) as ai_how_copy_5,
+  CAST(ai_how_dalle_1      AS INT64) as ai_how_dalle_1,      CAST(ai_how_dalle_2      AS INT64) as ai_how_dalle_2,      CAST(ai_how_dalle_3      AS INT64) as ai_how_dalle_3,      CAST(ai_how_dalle_4      AS INT64) as ai_how_dalle_4,      CAST(ai_how_dalle_5      AS INT64) as ai_how_dalle_5,
+  CAST(ai_how_deepseek_1   AS INT64) as ai_how_deepseek_1,   CAST(ai_how_deepseek_2   AS INT64) as ai_how_deepseek_2,   CAST(ai_how_deepseek_3   AS INT64) as ai_how_deepseek_3,   CAST(ai_how_deepseek_4   AS INT64) as ai_how_deepseek_4,   CAST(ai_how_deepseek_5   AS INT64) as ai_how_deepseek_5,
+  CAST(ai_how_fake_1       AS INT64) as ai_how_fake_1,       CAST(ai_how_fake_2       AS INT64) as ai_how_fake_2,       CAST(ai_how_fake_3       AS INT64) as ai_how_fake_3,       CAST(ai_how_fake_4       AS INT64) as ai_how_fake_4,       CAST(ai_how_fake_5       AS INT64) as ai_how_fake_5,
+  CAST(ai_how_gemini_1     AS INT64) as ai_how_gemini_1,     CAST(ai_how_gemini_2     AS INT64) as ai_how_gemini_2,     CAST(ai_how_gemini_3     AS INT64) as ai_how_gemini_3,     CAST(ai_how_gemini_4     AS INT64) as ai_how_gemini_4,     CAST(ai_how_gemini_5     AS INT64) as ai_how_gemini_5,
+  CAST(ai_how_genai_1      AS INT64) as ai_how_genai_1,      CAST(ai_how_genai_2      AS INT64) as ai_how_genai_2,      CAST(ai_how_genai_3      AS INT64) as ai_how_genai_3,      CAST(ai_how_genai_4      AS INT64) as ai_how_genai_4,      CAST(ai_how_genai_5      AS INT64) as ai_how_genai_5,
+  CAST(ai_how_grok_1       AS INT64) as ai_how_grok_1,       CAST(ai_how_grok_2       AS INT64) as ai_how_grok_2,       CAST(ai_how_grok_3       AS INT64) as ai_how_grok_3,       CAST(ai_how_grok_4       AS INT64) as ai_how_grok_4,       CAST(ai_how_grok_5       AS INT64) as ai_how_grok_5,
+  CAST(ai_how_jasper_1     AS INT64) as ai_how_jasper_1,     CAST(ai_how_jasper_2     AS INT64) as ai_how_jasper_2,     CAST(ai_how_jasper_3     AS INT64) as ai_how_jasper_3,     CAST(ai_how_jasper_4     AS INT64) as ai_how_jasper_4,     CAST(ai_how_jasper_5     AS INT64) as ai_how_jasper_5,
+  CAST(ai_how_lechat_1     AS INT64) as ai_how_lechat_1,     CAST(ai_how_lechat_2     AS INT64) as ai_how_lechat_2,     CAST(ai_how_lechat_3     AS INT64) as ai_how_lechat_3,     CAST(ai_how_lechat_4     AS INT64) as ai_how_lechat_4,     CAST(ai_how_lechat_5     AS INT64) as ai_how_lechat_5,
+  CAST(ai_how_llama_1      AS INT64) as ai_how_llama_1,      CAST(ai_how_llama_2      AS INT64) as ai_how_llama_2,      CAST(ai_how_llama_3      AS INT64) as ai_how_llama_3,      CAST(ai_how_llama_4      AS INT64) as ai_how_llama_4,      CAST(ai_how_llama_5      AS INT64) as ai_how_llama_5,
+  CAST(ai_how_llm_1        AS INT64) as ai_how_llm_1,        CAST(ai_how_llm_2        AS INT64) as ai_how_llm_2,        CAST(ai_how_llm_3        AS INT64) as ai_how_llm_3,        CAST(ai_how_llm_4        AS INT64) as ai_how_llm_4,        CAST(ai_how_llm_5        AS INT64) as ai_how_llm_5,
+  CAST(ai_how_midjourney_1 AS INT64) as ai_how_midjourney_1, CAST(ai_how_midjourney_2 AS INT64) as ai_how_midjourney_2, CAST(ai_how_midjourney_3 AS INT64) as ai_how_midjourney_3, CAST(ai_how_midjourney_4 AS INT64) as ai_how_midjourney_4, CAST(ai_how_midjourney_5 AS INT64) as ai_how_midjourney_5,
+  CAST(ai_how_perplexity_1 AS INT64) as ai_how_perplexity_1, CAST(ai_how_perplexity_2 AS INT64) as ai_how_perplexity_2, CAST(ai_how_perplexity_3 AS INT64) as ai_how_perplexity_3, CAST(ai_how_perplexity_4 AS INT64) as ai_how_perplexity_4, CAST(ai_how_perplexity_5 AS INT64) as ai_how_perplexity_5,
+  CAST(ai_how_qwen_1       AS INT64) as ai_how_qwen_1,       CAST(ai_how_qwen_2       AS INT64) as ai_how_qwen_2,       CAST(ai_how_qwen_3       AS INT64) as ai_how_qwen_3,       CAST(ai_how_qwen_4       AS INT64) as ai_how_qwen_4,       CAST(ai_how_qwen_5       AS INT64) as ai_how_qwen_5,
+  CAST(ai_how_writesonic_1 AS INT64) as ai_how_writesonic_1, CAST(ai_how_writesonic_2 AS INT64) as ai_how_writesonic_2, CAST(ai_how_writesonic_3 AS INT64) as ai_how_writesonic_3, CAST(ai_how_writesonic_4 AS INT64) as ai_how_writesonic_4, CAST(ai_how_writesonic_5 AS INT64) as ai_how_writesonic_5
 
 FROM `social_media_demographics.panel_data`
 -- Exclude national sub-sample waves (Size != 'full' per Wave to Dates.xlsx).

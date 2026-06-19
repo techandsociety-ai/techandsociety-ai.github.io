@@ -252,6 +252,8 @@ POL_TRUST_COLUMNS = [
     "pol_trust_social",
     "pol_trust_google",
     "pol_trust_facebook",
+    "pol_trust_ai",        # trust in AI/AI companies (later waves)
+    "pol_trust_election",  # trust in election administration (later waves)
 ]
 
 # COVID-era institutional trust (early waves; ordinal 1–4; -99 = skipped/refused; NULL = not asked this wave)
@@ -344,6 +346,64 @@ ELECTION_COLUMNS = [
     "news_sat",     # news satisfaction (ordinal 1–5)
 ]
 
+# Fake news / misinformation belief items (ordinal; -99 = skipped/refused; NULL = not asked this wave)
+FAKE_NEWS_COLUMNS = [
+    "fn_1",  "fn_2",  "fn_3",  "fn_6",  "fn_8",  "fn_9",  "fn_10",
+    "fn_11", "fn_12", "fn_13", "fn_14", "fn_15", "fn_16", "fn_20",
+    "fn_21", "fn_22", "fn_23", "fn_30", "fn_31", "fn_33", "fn_34",
+    "fn_35", "fn_36", "fn_38", "fn_40", "fn_43", "fn_44", "fn_45", "fn_47",
+]
+
+# Fact-checking capacity / behavior (binary 0/1; NULL = not asked this wave)
+CAP_FN_COLUMNS = ["cap_fn_1", "cap_fn_2", "cap_fn_3", "cap_fn_4", "cap_fn_5", "cap_fn_6"]
+
+# Political discussion frequency follow-up items (ordinal; -99 = skipped/refused; NULL = not asked)
+FR_POL_COLUMNS = ["fr_pol_4", "fr_pol_6"]
+
+# Protest causes (binary 0/1; NULL = not asked this wave)
+PROT_COLUMNS = ["prot_cause_elect", "prot_pan_cause_2"]
+
+# Election confidence and integrity attitudes (ordinal; -99 = skipped/refused; NULL = not asked)
+ELECTION_INTEGRITY_COLUMNS = [
+    "el_conf",    "el_conf_22", "el_conf_24", "el_conf_26",
+    "el_count",
+    "el_fair_1",  "el_fair_2",  "el_fair_3",  "el_fair_4",
+    "el_chal_1",  "el_chal_2",  "el_chal_3",  "el_chal_4",
+    "el_trust_biden", "el_trust_court", "el_trust_police",
+    "ballot_access", "vote_counted", "vote_counted_state", "voted_counted_nation",
+]
+
+# Election concerns (binary 0/1; NULL = not asked this wave)
+ELECTION_CONCERN_COLUMNS = [
+    "el_conc_1", "el_conc_2", "el_conc_3", "el_conc_4", "el_conc_5", "el_conc_6",
+]
+
+# AI attitudes, regulation opinions, and self-reported survey/tool use (ordinal; -99 = skipped/refused)
+AI_ATTITUDE_COLUMNS = [
+    "ai_regulation", "ai_work_impact",
+    "llm_psych", "llm_help",
+    "survey_ai_use", "survey_ai_agent", "survey_ai_tools", "survey_ai_mode",
+    "pol_trust_ai", "pol_trust_election",
+]
+
+# AI tool usage frequency by mention position (ordinal 1–6; -99 = skipped/refused)
+# ai_freq_x1 = frequency of the first AI tool the respondent mentioned, etc.
+AI_FREQ_COLUMNS = [f"ai_freq_x{i}" for i in range(1, 12)]
+
+# AI why-use by mention position (binary 0/1; respondent's Nth mentioned tool; NULL = not asked)
+AI_WHY_POS_COLUMNS = [f"ai_why_x{i}_{j}" for i in range(1, 12) for j in [1, 2, 3]]
+
+# AI why-use by named tool (binary 0/1; NULL = not asked)
+_AI_NAMED_TOOLS = [
+    "ai", "anyword", "bard", "chatgpt", "claude", "cohere", "copilot", "copy",
+    "dalle", "deepseek", "fake", "gemini", "genai", "grok", "jasper", "lechat",
+    "llama", "llm", "midjourney", "perplexity", "qwen", "writesonic",
+]
+AI_WHY_TOOL_COLUMNS = [f"ai_why_{t}_{j}" for t in _AI_NAMED_TOOLS for j in [1, 2, 3]]
+
+# AI how-use by named tool (binary 0/1; NULL = not asked)
+AI_HOW_TOOL_COLUMNS = [f"ai_how_{t}_{j}" for t in _AI_NAMED_TOOLS for j in range(1, 6)]
+
 # Ozempic / GLP-1 questions (wave 35+; ordinal; -99 = skipped/refused)
 # ozempic_wt is a subsample weight, not an analysis variable — excluded here.
 OZEMPIC_COLUMNS = [
@@ -368,12 +428,16 @@ ALL_ORDINAL_COLUMNS = (
     ATTITUDINAL_COLUMNS + FREQ_COLUMNS + TRUST_COLUMNS +
     POL_POST_COLUMNS + GEN_POST_COLUMNS + POL_TRUST_COLUMNS +
     PHQ9_COLUMNS + OZEMPIC_COLUMNS + COV_BEH_COLUMNS + ELECTION_COLUMNS +
-    COV_TRUST_COLUMNS + W38_POLITICAL_COLUMNS
+    COV_TRUST_COLUMNS + W38_POLITICAL_COLUMNS +
+    FAKE_NEWS_COLUMNS + FR_POL_COLUMNS + ELECTION_INTEGRITY_COLUMNS +
+    AI_FREQ_COLUMNS + AI_ATTITUDE_COLUMNS
 )
 
 # All binary columns beyond the core use_* set
 ALL_BINARY_COLUMNS = (
-    SM_POST_COLUMNS + POL_NEWS_COLUMNS + POL_NEWS1_COLUMNS
+    SM_POST_COLUMNS + POL_NEWS_COLUMNS + POL_NEWS1_COLUMNS +
+    CAP_FN_COLUMNS + PROT_COLUMNS + ELECTION_CONCERN_COLUMNS +
+    AI_WHY_POS_COLUMNS + AI_WHY_TOOL_COLUMNS + AI_HOW_TOOL_COLUMNS
 )
 
 # ── Regression column sets ───────────────────────────────────────────────────
@@ -404,11 +468,25 @@ _ALL_REGRESSION_COLUMNS: set[str] = set(
     + ELECTION_COLUMNS
     + COV_TRUST_COLUMNS
     + W38_POLITICAL_COLUMNS
+    + FAKE_NEWS_COLUMNS
+    + FR_POL_COLUMNS
+    + ELECTION_INTEGRITY_COLUMNS
+    + ELECTION_CONCERN_COLUMNS
+    + AI_FREQ_COLUMNS
+    + AI_ATTITUDE_COLUMNS
+    + CAP_FN_COLUMNS
+    + PROT_COLUMNS
+    + AI_WHY_POS_COLUMNS
+    + AI_WHY_TOOL_COLUMNS
+    + AI_HOW_TOOL_COLUMNS
 )
 
 # Binary-outcome columns (valid for logistic regression)
 _BINARY_COLUMNS: set[str] = set(
     PLATFORM_COLUMNS + SM_POST_COLUMNS + POL_NEWS_COLUMNS + POL_NEWS1_COLUMNS
+    + RACE_BOOLEAN_COLUMNS + CAP_FN_COLUMNS + PROT_COLUMNS
+    + ELECTION_CONCERN_COLUMNS + AI_WHY_POS_COLUMNS
+    + AI_WHY_TOOL_COLUMNS + AI_HOW_TOOL_COLUMNS
 )
 
 # Derived columns: computed on the fly in SQL from a source column.
@@ -953,6 +1031,17 @@ async def get_available_variables() -> str:
             "phq9_columns": PHQ9_COLUMNS,
             "ozempic_columns": OZEMPIC_COLUMNS,
             "race_boolean_columns": RACE_BOOLEAN_COLUMNS,
+            "fake_news_columns": FAKE_NEWS_COLUMNS,
+            "cap_fn_columns": CAP_FN_COLUMNS,
+            "fr_pol_columns": FR_POL_COLUMNS,
+            "prot_columns": PROT_COLUMNS,
+            "election_integrity_columns": ELECTION_INTEGRITY_COLUMNS,
+            "election_concern_columns": ELECTION_CONCERN_COLUMNS,
+            "ai_attitude_columns": AI_ATTITUDE_COLUMNS,
+            "ai_freq_columns": AI_FREQ_COLUMNS,
+            "ai_why_pos_columns": AI_WHY_POS_COLUMNS,
+            "ai_why_tool_columns": AI_WHY_TOOL_COLUMNS,
+            "ai_how_tool_columns": AI_HOW_TOOL_COLUMNS,
             "derived_columns": {k: v["description"] for k, v in _DERIVED_COLUMNS.items()},
             "total_rows": int(row["total_rows"]),
             "unique_respondents": int(row["unique_respondents"]),
@@ -966,7 +1055,7 @@ async def get_available_variables() -> str:
                     "unweighted_n fields are raw respondent headcounts for reliability checks only — "
                     "never use unweighted_n to compute percentages or present as population estimates."
                 ),
-                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35.",
+                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35; ai_freq/ai_why/ai_how/ai_attitude/survey_ai/llm/pol_trust_ai/pol_trust_election from wave 35+; el_conf_26/ballot_access/vote_counted from wave 38+.",
                 "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors and in marginals/marginals_by_wave (returns adoption rate, like platform columns).",
                 "ozempic_regression": "Derived binary outcomes for logistic regression (wave 35 only): ozempic_binary (currently taking OR previously took [1,2] vs. never [3,4,5]), ozempic_current (currently taking [1] vs. never [3,4,5] — excludes stopped). ozempic/ozempic_why/ozempic_time_* are valid OLS outcomes. Always use wave='35'.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",

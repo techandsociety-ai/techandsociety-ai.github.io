@@ -469,7 +469,7 @@ AS SELECT
   -- Self-reported AI/survey use (ordinal; -99 = skipped/refused; NULL = not asked)
   CAST(survey_ai_use   AS INT64) as survey_ai_use,
   CAST(survey_ai_agent AS INT64) as survey_ai_agent,
-  CAST(survey_ai_tools AS INT64) as survey_ai_tools,
+  survey_ai_tools,                                    -- free-text: which tools used during survey
   CAST(survey_ai_mode  AS INT64) as survey_ai_mode,
 
   -- AI tool usage frequency by position (ordinal 1–6; respondent's 1st–11th most-used tools)
@@ -544,7 +544,12 @@ AS SELECT
   CAST(ai_how_midjourney_1 AS INT64) as ai_how_midjourney_1, CAST(ai_how_midjourney_2 AS INT64) as ai_how_midjourney_2, CAST(ai_how_midjourney_3 AS INT64) as ai_how_midjourney_3, CAST(ai_how_midjourney_4 AS INT64) as ai_how_midjourney_4, CAST(ai_how_midjourney_5 AS INT64) as ai_how_midjourney_5,
   CAST(ai_how_perplexity_1 AS INT64) as ai_how_perplexity_1, CAST(ai_how_perplexity_2 AS INT64) as ai_how_perplexity_2, CAST(ai_how_perplexity_3 AS INT64) as ai_how_perplexity_3, CAST(ai_how_perplexity_4 AS INT64) as ai_how_perplexity_4, CAST(ai_how_perplexity_5 AS INT64) as ai_how_perplexity_5,
   CAST(ai_how_qwen_1       AS INT64) as ai_how_qwen_1,       CAST(ai_how_qwen_2       AS INT64) as ai_how_qwen_2,       CAST(ai_how_qwen_3       AS INT64) as ai_how_qwen_3,       CAST(ai_how_qwen_4       AS INT64) as ai_how_qwen_4,       CAST(ai_how_qwen_5       AS INT64) as ai_how_qwen_5,
-  CAST(ai_how_writesonic_1 AS INT64) as ai_how_writesonic_1, CAST(ai_how_writesonic_2 AS INT64) as ai_how_writesonic_2, CAST(ai_how_writesonic_3 AS INT64) as ai_how_writesonic_3, CAST(ai_how_writesonic_4 AS INT64) as ai_how_writesonic_4, CAST(ai_how_writesonic_5 AS INT64) as ai_how_writesonic_5
+  CAST(ai_how_writesonic_1 AS INT64) as ai_how_writesonic_1, CAST(ai_how_writesonic_2 AS INT64) as ai_how_writesonic_2, CAST(ai_how_writesonic_3 AS INT64) as ai_how_writesonic_3, CAST(ai_how_writesonic_4 AS INT64) as ai_how_writesonic_4, CAST(ai_how_writesonic_5 AS INT64) as ai_how_writesonic_5,
+
+  -- County-level plumbing / infrastructure (from ACS; merged on respondent id)
+  fips,
+  NULLIF(county, '')  AS county,
+  running_water_pct
 
 FROM `social_media_demographics.panel_data`
 -- Exclude national sub-sample waves (Size != 'full' per Wave to Dates.xlsx).

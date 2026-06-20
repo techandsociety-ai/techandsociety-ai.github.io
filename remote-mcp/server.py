@@ -522,6 +522,18 @@ _DERIVED_COLUMNS: dict[str, dict] = {
 _ALL_REGRESSION_COLUMNS.update(_DERIVED_COLUMNS.keys())
 _BINARY_COLUMNS.update(k for k, v in _DERIVED_COLUMNS.items() if v.get("binary"))
 
+# Columns valid as the primary *column* argument in ordinal distribution tools.
+# Extends ALL_ORDINAL_COLUMNS to include binary (0/1) and derived columns.
+# Binary columns skip the -99 sentinel filter (they use 0/1, not -99 for refused).
+# Derived columns use a CASE WHEN SQL expression and a source-column NULL check.
+_ORDINAL_TOOL_COLUMNS: set[str] = (
+    set(ALL_ORDINAL_COLUMNS)
+    | set(PLATFORM_COLUMNS)
+    | set(RACE_BOOLEAN_COLUMNS)
+    | set(ALL_BINARY_COLUMNS)
+    | set(_DERIVED_COLUMNS.keys())
+)
+
 # ── Key historical events for trend annotation ───────────────────────────────
 # Injected into get_platform_trends / get_freq_trends responses.
 # Claude must annotate trend charts with vertical dashed lines at these waves.
@@ -2196,28 +2208,37 @@ async def get_ordinal_distribution(
     Note: PHQ-9 columns (phq9_1–phq9_12) are clinical mental health screening
     items. Only population-level aggregate distributions are returned.
     """
-    valid = ALL_ORDINAL_COLUMNS
-    if column not in valid:
+    if column not in _ORDINAL_TOOL_COLUMNS:
         raise ValueError(
-            f"Unknown ordinal column '{column}'. "
-            f"Choose from: {valid}"
+            f"Unknown column '{column}'. Call get_available_variables() to see valid column names."
         )
+
+    # SQL fragments: derived columns expand to CASE WHEN; binary columns skip the -99 sentinel.
+    if column in _DERIVED_COLUMNS:
+        _dc = _DERIVED_COLUMNS[column]
+        col_select = _dc["sql"]
+        col_null_src = _dc["source"]
+        col_sentinel = ""
+    else:
+        col_select = column
+        col_null_src = column
+        col_sentinel = f"AND {column} > 0" if column in _SENTINEL_COLUMNS else ""
 
     try:
         df = run_query(f"""
             SELECT
-              {column}                                                        AS value,
+              {col_select}                                                    AS value,
               COUNT(*)                                                        AS unweighted_n,
               ROUND(SUM(weight), 1)                                           AS weighted_n,
               ROUND(SUM(weight) * 100.0 / SUM(SUM(weight)) OVER(), 2)        AS pct,
               CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END   AS suppressed
             FROM {FULL_TABLE}
-            WHERE {column} IS NOT NULL
-              AND {column} > 0
+            WHERE {col_null_src} IS NOT NULL
+              {col_sentinel}
               AND weight IS NOT NULL
               {wave_clause(wave)}
-            GROUP BY {column}
-            ORDER BY {column}
+            GROUP BY 1
+            ORDER BY 1
         """)
 
         df.loc[df["suppressed"], ["weighted_n", "pct"]] = None
@@ -2286,12 +2307,23 @@ async def get_ordinal_distribution_by_demographic(
     Returns one row per (demographic_value × response_value) combination.
     pct is the within-group weighted percentage (rows sum to ~100% within each group).
     """
-    if column not in ALL_ORDINAL_COLUMNS:
-        raise ValueError(f"Unknown ordinal column '{column}'. Choose from: {ALL_ORDINAL_COLUMNS}")
+    if column not in _ORDINAL_TOOL_COLUMNS:
+        raise ValueError(f"Unknown column '{column}'. Call get_available_variables() to see valid column names.")
     if demographic not in _ALL_REGRESSION_COLUMNS:
         raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
-    demo_sentinel = f"AND {demographic} > 0" if demographic in ALL_ORDINAL_COLUMNS else ""
+    demo_sentinel = f"AND {demographic} > 0" if demographic in _SENTINEL_COLUMNS else ""
+
+    # SQL fragments for derived vs. regular vs. binary columns
+    if column in _DERIVED_COLUMNS:
+        _dc = _DERIVED_COLUMNS[column]
+        col_select = _dc["sql"]
+        col_null_src = _dc["source"]
+        col_sentinel = ""
+    else:
+        col_select = column
+        col_null_src = column
+        col_sentinel = f"AND {column} > 0" if column in _SENTINEL_COLUMNS else ""
 
     filter_sql = ""
     if filters:
@@ -2312,7 +2344,7 @@ async def get_ordinal_distribution_by_demographic(
         df = run_query(f"""
             SELECT
               {demographic}                                                              AS demographic_value,
-              {column}                                                                   AS value,
+              {col_select}                                                               AS value,
               COUNT(*)                                                                   AS unweighted_n,
               ROUND(SUM(weight), 1)                                                      AS weighted_n,
               ROUND(
@@ -2321,15 +2353,15 @@ async def get_ordinal_distribution_by_demographic(
               2)                                                                         AS pct,
               CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END             AS suppressed
             FROM {FULL_TABLE}
-            WHERE {column} IS NOT NULL
-              AND {column} > 0
+            WHERE {col_null_src} IS NOT NULL
+              {col_sentinel}
               AND {demographic} IS NOT NULL
               AND weight IS NOT NULL
               {demo_sentinel}
               {wave_clause(wave)}
               {filter_sql}
-            GROUP BY {demographic}, {column}
-            ORDER BY {demographic}, {column}
+            GROUP BY {demographic}, {col_select}
+            ORDER BY {demographic}, {col_select}
         """)
 
         df.loc[df["suppressed"], ["weighted_n", "pct"]] = None
@@ -2397,12 +2429,23 @@ async def get_ordinal_crosstab(
                       {"party3": ["Democrat"]}. Rows where the column value is NOT in the
                       list are dropped. Filter columns must not be the same as `demographic`.
     """
-    if column not in ALL_ORDINAL_COLUMNS:
-        raise ValueError(f"Unknown ordinal column '{column}'. Choose from: {ALL_ORDINAL_COLUMNS}")
+    if column not in _ORDINAL_TOOL_COLUMNS:
+        raise ValueError(f"Unknown column '{column}'. Call get_available_variables() to see valid column names.")
     if demographic not in _ALL_REGRESSION_COLUMNS:
         raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
-    demo_sentinel = f"AND {demographic} > 0" if demographic in ALL_ORDINAL_COLUMNS else ""
+    demo_sentinel = f"AND {demographic} > 0" if demographic in _SENTINEL_COLUMNS else ""
+
+    # SQL fragments for derived vs. regular vs. binary columns
+    if column in _DERIVED_COLUMNS:
+        _dc = _DERIVED_COLUMNS[column]
+        col_select = _dc["sql"]
+        col_null_src = _dc["source"]
+        col_sentinel = ""
+    else:
+        col_select = column
+        col_null_src = column
+        col_sentinel = f"AND {column} > 0" if column in _SENTINEL_COLUMNS else ""
 
     filter_sql = ""
     if filters:
@@ -2425,11 +2468,11 @@ async def get_ordinal_crosstab(
               {demographic}                                                        AS demographic_value,
               COUNT(*)                                                             AS unweighted_n,
               ROUND(SUM(weight), 1)                                                AS weighted_n,
-              ROUND(SUM({column} * weight) / SUM(weight), 3)                      AS weighted_mean,
+              ROUND(SUM(({col_select}) * weight) / SUM(weight), 3)                AS weighted_mean,
               CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END        AS suppressed
             FROM {FULL_TABLE}
-            WHERE {column} IS NOT NULL
-              AND {column} > 0
+            WHERE {col_null_src} IS NOT NULL
+              {col_sentinel}
               AND {demographic} IS NOT NULL
               AND weight IS NOT NULL
               {demo_sentinel}

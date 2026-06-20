@@ -266,6 +266,27 @@ above, roughly in priority order:
 16. **Polarization variable inventory for DDF demo.** Open — cross-check
     `ATTITUDINAL_COLUMNS`/`POL_*` against the survey text file for a first
     pass, then confirm completeness with Hong.
+17. **Design decision: should "analytics-only" batteries be restricted to
+    regression tools?** Open (2026-06-19) — `GEN_POST_COLUMNS`
+    (`sm_post_gen_*`), `COV_BEH_COLUMNS`, `COV_TRUST_COLUMNS`,
+    `ELECTION_COLUMNS` (`democ_1`, `cand24`, `vote24`, `news_elect_*`,
+    `source_elect`, `media_elect`, `news_sat`), and `W38_POLITICAL_COLUMNS`
+    (`state_dem`, `gerry_*`, `support_cuba`) are currently in
+    `ALL_ORDINAL_COLUMNS` and therefore accessible in `get_ordinal_distribution`,
+    `get_ordinal_crosstab`, and `get_ordinal_distribution_by_demographic` — even
+    though the PI's tool-access matrix marks them as blank (regression-only).
+    Decision needed: if the intent is truly regression-only, remove these
+    batteries from `ALL_ORDINAL_COLUMNS` into a separate `_REGRESSION_ONLY_ORDINAL`
+    list (still included in `_ALL_REGRESSION_COLUMNS` and `_SENTINEL_COLUMNS`).
+18. **Design decision: should `ozempic` and `ozempic_why` be removed from
+    `ALL_ORDINAL_COLUMNS`?** Open (2026-06-19) — both are currently in
+    `ALL_ORDINAL_COLUMNS` (via `OZEMPIC_COLUMNS`), which means the ordinal
+    distribution tools accept them. But their response codes are nominal/
+    non-linear (`ozempic`: 1=currently taking … 5=don't know; `ozempic_why`:
+    codes 1, 4, 5), so ordinal distributions are misleading. The purpose-built
+    `get_categorical_crosstab` is the correct tool for these two variables.
+    Consider removing them from `ALL_ORDINAL_COLUMNS` (while keeping
+    `ozempic_time_1` / `ozempic_time_2` there, as those are continuous).
 
 ## Architecture
 

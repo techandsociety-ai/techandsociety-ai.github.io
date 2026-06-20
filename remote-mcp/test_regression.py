@@ -24,16 +24,20 @@ import pytest
 # ---------------------------------------------------------------------------
 
 def _import_server():
-    bq_mod = types.ModuleType("google.cloud.bigquery")
     from unittest.mock import MagicMock
+    bq_mod = types.ModuleType("google.cloud.bigquery")
     bq_mod.Client = MagicMock()
+    gcs_mod = types.ModuleType("google.cloud.storage")
+    gcs_mod.Client = MagicMock()
     google_mod = types.ModuleType("google")
     cloud_mod = types.ModuleType("google.cloud")
     google_mod.cloud = cloud_mod
     cloud_mod.bigquery = bq_mod
+    cloud_mod.storage = gcs_mod
     sys.modules.setdefault("google", google_mod)
     sys.modules.setdefault("google.cloud", cloud_mod)
     sys.modules.setdefault("google.cloud.bigquery", bq_mod)
+    sys.modules.setdefault("google.cloud.storage", gcs_mod)
 
     fastmcp_mod = types.ModuleType("fastmcp")
     class _NoOpMCP:

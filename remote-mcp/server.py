@@ -379,12 +379,18 @@ ELECTION_CONCERN_COLUMNS = [
 ]
 
 # AI attitudes, regulation opinions, and self-reported survey/tool use (ordinal; -99 = skipped/refused)
+# survey_ai_tools is excluded here — it is a free-text open-ended field, not ordinal.
 AI_ATTITUDE_COLUMNS = [
     "ai_regulation", "ai_work_impact",
     "llm_psych", "llm_help",
-    "survey_ai_use", "survey_ai_agent", "survey_ai_tools", "survey_ai_mode",
+    "survey_ai_use", "survey_ai_agent", "survey_ai_mode",
     "pol_trust_ai", "pol_trust_election",
 ]
+
+# County-level plumbing / infrastructure (ACS; merged on respondent id)
+# running_water_pct is continuous FLOAT — no -99 sentinel, valid as OLS outcome/predictor.
+# fips and county are identifiers, not analysis variables.
+PLUMBING_COLUMNS = ["running_water_pct"]
 
 # AI tool usage frequency by mention position (ordinal 1–6; -99 = skipped/refused)
 # ai_freq_x1 = frequency of the first AI tool the respondent mentioned, etc.
@@ -479,6 +485,7 @@ _ALL_REGRESSION_COLUMNS: set[str] = set(
     + AI_WHY_POS_COLUMNS
     + AI_WHY_TOOL_COLUMNS
     + AI_HOW_TOOL_COLUMNS
+    + PLUMBING_COLUMNS
 )
 
 # Binary-outcome columns (valid for logistic regression)
@@ -1054,6 +1061,11 @@ async def get_available_variables() -> str:
             "ai_why_pos_columns": AI_WHY_POS_COLUMNS,
             "ai_why_tool_columns": AI_WHY_TOOL_COLUMNS,
             "ai_how_tool_columns": AI_HOW_TOOL_COLUMNS,
+            "plumbing_columns": {
+                "running_water_pct": "County-level % of households with complete indoor plumbing (ACS). Continuous FLOAT, range ~0–100. Valid as OLS outcome or predictor. Coverage: 97.6% of respondents matched to a county.",
+                "fips": "County FIPS code (INT). Identifier only — not an analysis variable.",
+                "county": "County name string. Identifier only — not an analysis variable.",
+            },
             "derived_columns": {k: v["description"] for k, v in _DERIVED_COLUMNS.items()},
             "total_rows": int(row["total_rows"]),
             "unique_respondents": int(row["unique_respondents"]),
@@ -1067,7 +1079,7 @@ async def get_available_variables() -> str:
                     "unweighted_n fields are raw respondent headcounts for reliability checks only — "
                     "never use unweighted_n to compute percentages or present as population estimates."
                 ),
-                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35; ai_freq/ai_why/ai_how/ai_attitude/survey_ai/llm/pol_trust_ai/pol_trust_election from wave 35+; el_conf_26/ballot_access/vote_counted from wave 38+.",
+                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35; ai_freq/ai_why/ai_how/ai_attitude/survey_ai/llm/pol_trust_ai/pol_trust_election from wave 35+; el_conf_26/ballot_access/vote_counted from wave 38+; running_water_pct/fips/county available across all waves (county-level ACS merge, 97.6% coverage).",
                 "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors and in marginals/marginals_by_wave (returns adoption rate, like platform columns).",
                 "ozempic_regression": "Derived binary outcomes for logistic regression (wave 35 only): ozempic_binary (currently taking OR previously took [1,2] vs. never [3,4,5]), ozempic_current (currently taking [1] vs. never [3,4,5] — excludes stopped). ozempic/ozempic_why/ozempic_time_* are valid OLS outcomes. Always use wave='35'.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",

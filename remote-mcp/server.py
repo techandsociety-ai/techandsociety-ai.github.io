@@ -529,6 +529,18 @@ _DERIVED_COLUMNS: dict[str, dict] = {
 _ALL_REGRESSION_COLUMNS.update(_DERIVED_COLUMNS.keys())
 _BINARY_COLUMNS.update(k for k, v in _DERIVED_COLUMNS.items() if v.get("binary"))
 
+
+def _derived_source(c: str) -> str:
+    """Underlying real column to use for NULL/sentinel checks on c."""
+    return _DERIVED_COLUMNS[c]["source"] if c in _DERIVED_COLUMNS else c
+
+
+def _derived_select_expr(c: str) -> str:
+    """SQL expression to SELECT/GROUP BY/ORDER BY for column c."""
+    if c in _DERIVED_COLUMNS:
+        return f"({_DERIVED_COLUMNS[c]['sql']})"
+    return c
+
 # Columns valid as the primary *column* argument in ordinal distribution tools.
 # Extends ALL_ORDINAL_COLUMNS to include binary (0/1) and derived columns.
 # Binary columns skip the -99 sentinel filter (they use 0/1, not -99 for refused).
@@ -787,6 +799,7 @@ async def introduce_mcp() -> str:
                 "platform_usage": "Binary (1=uses, 0=does not). late_platforms (truth, mastodon, post, threads, bluesky) have NULLs in earlier waves.",
                 "ordinal_sentinel": "All ordinal columns use -99 for skipped/refused — excluded automatically from all queries.",
                 "suppression": f"Cells with n<{MIN_CELL_SIZE} are suppressed for respondent privacy.",
+                "recoded_variables": "If suppression is hiding too many cells, use create_recoded_variable() to group an existing column's categories into coarser buckets on the fly (e.g. collapse an 8-category age variable into 3 bands). The new variable works in crosstab and regression tools just like any other column. See list_recoded_variables() / delete_recoded_variable().",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health screening measures. Only population-level aggregates are returned.",
                 "ozempic_coverage": "Ozempic columns only available in wave 35 (not fielded in later waves). Always specify wave='35' when querying ozempic variables.",
                 "ozempic_regression": "ozempic, ozempic_why, ozempic_time_1, ozempic_time_2 are valid regression outcomes/predictors.",
@@ -1083,6 +1096,7 @@ async def get_available_variables() -> str:
                 "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors and in marginals/marginals_by_wave (returns adoption rate, like platform columns).",
                 "ozempic_regression": "Derived binary outcomes for logistic regression (wave 35 only): ozempic_binary (currently taking OR previously took [1,2] vs. never [3,4,5]), ozempic_current (currently taking [1] vs. never [3,4,5] — excludes stopped). ozempic/ozempic_why/ozempic_time_* are valid OLS outcomes. Always use wave='35'.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",
+                "recoded_variables": "If a column's categories are too fine-grained and trigger cell suppression, use create_recoded_variable() to define a temporary, coarser-grouped variable (e.g. collapse age_cat_8's 8 brackets into 3 bands). It then works as a demographic/predictor in crosstab and regression tools exactly like a real column. Use generate_marginals() on the new variable to check bucket sizes, list_recoded_variables() to see what's defined, and delete_recoded_variable() to remove it.",
                 "missing_platform_waves": (
                     "Some waves exist in the panel but platform questions were not asked. "
                     "get_platform_trends and get_freq_trends will return a 'missing_waves' field "
@@ -1148,6 +1162,183 @@ async def get_question_wording(variables: Optional[str] = None) -> str:
     return json.dumps(out, indent=2)
 
 
+# ── Recoded (temporary, coarser) variables ──────────────────────────────────
+# User-created via create_recoded_variable(). Stored in-memory for the lifetime
+# of this server process — shared across all callers, not persisted to disk.
+_RECODED_VARIABLE_NAMES: set[str] = set()
+
+
+def _quote_sql_value(v: Any) -> str:
+    """Quote a literal for SQL IN(...); numeric-looking values are left unquoted."""
+    try:
+        float(v)
+        return str(v)
+    except (TypeError, ValueError):
+        return "'" + str(v).replace("'", "\\'") + "'"
+
+
+def _build_recode_case_sql(source_sql: str, mapping: Dict[str, str]) -> str:
+    """Build a CASE WHEN expression mapping source values to coarser bucket labels.
+
+    mapping: {original_value: bucket_label}. Values mapping to the same bucket_label
+    are grouped into one WHEN ... IN (...) clause. Source values not present in
+    mapping evaluate to NULL (dropped from analysis, same as any other missing value).
+    """
+    buckets: Dict[str, List[str]] = {}
+    for raw_value, bucket_label in mapping.items():
+        buckets.setdefault(str(bucket_label), []).append(raw_value)
+
+    when_clauses = []
+    for bucket_label, raw_values in buckets.items():
+        quoted = ", ".join(_quote_sql_value(v) for v in raw_values)
+        safe_label = str(bucket_label).replace("'", "\\'")
+        when_clauses.append(f"WHEN {source_sql} IN ({quoted}) THEN '{safe_label}'")
+
+    return "CASE " + " ".join(when_clauses) + " ELSE NULL END"
+
+
+@mcp.tool()
+async def create_recoded_variable(
+    name: str,
+    source_column: str,
+    mapping: Dict[str, str],
+    description: Optional[str] = None,
+) -> str:
+    """Create a temporary, coarser-grouped variable from an existing column, to use in
+    crosstabs or regressions when the original column's categories are too fine-grained
+    and trigger cell suppression (unweighted n < MIN_CELL_SIZE in a group).
+
+    Example — collapse an 8-category age variable into 3 broad bands:
+        create_recoded_variable(
+            name="age_cat_3",
+            source_column="age_cat_8",
+            mapping={
+                "18-24": "18-34", "25-34": "18-34",
+                "35-44": "35-54", "45-54": "35-54",
+                "55-64": "55+",   "65-74": "55+",  "75+": "55+",
+            },
+        )
+    Then use "age_cat_3" exactly like any other column:
+        generate_crosstab(platform="use_tiktok", demographic="age_cat_3")
+        run_ols_regression(outcome="phq9_total", predictors=["age_cat_3", "gender"])
+
+    Coarser buckets pool more respondents per group, which reduces (but does not
+    eliminate) cell suppression — suppression at n<MIN_CELL_SIZE still applies to the
+    new buckets. Call generate_marginals(name) right after creating the variable to
+    check the resulting bucket sizes before running a crosstab or regression.
+
+    Values not included in `mapping` become NULL for that variable (those rows are
+    excluded from analyses using it, same as any other missing value) — this is the
+    correct way to exclude a small/irrelevant category instead of recoding it.
+
+    Args:
+        name:          New variable name, e.g. "age_cat_3". Must be a valid identifier
+                       (letters, digits, underscores, not starting with a digit) and must
+                       not already be the name of a real column or another variable.
+        source_column: An existing column to recode — demographic, attitudinal, ordinal,
+                       or another derived/recoded variable. Call get_available_variables()
+                       to see valid names.
+        mapping:       {original_value: bucket_label}. Keys are the exact values found in
+                       source_column (as strings, e.g. "1" or "18-24"); values are the
+                       coarser bucket label to assign. Multiple keys may map to the same
+                       bucket label to merge categories.
+        description:   Optional human-readable note describing the recoding, shown in
+                       get_available_variables() and regression output.
+
+    This variable lives only in this server process's memory — it disappears on
+    restart and is visible to all callers, not just the one who created it.
+    """
+    import re as _re
+
+    if not _re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name):
+        raise ValueError(
+            f"Invalid name '{name}'. Must start with a letter or underscore and contain "
+            "only letters, digits, and underscores."
+        )
+    if name in _ALL_REGRESSION_COLUMNS or name in ("weight", "wave"):
+        raise ValueError(
+            f"'{name}' already exists as a column or variable. Choose a different name, "
+            f"or call delete_recoded_variable('{name}') first if you want to redefine it."
+        )
+    if source_column not in _ALL_REGRESSION_COLUMNS:
+        raise ValueError(
+            f"Unknown source_column '{source_column}'. Call get_available_variables() to see valid names."
+        )
+    if not mapping:
+        raise ValueError("mapping must not be empty.")
+
+    source_sql = _DERIVED_COLUMNS[source_column]["sql"] if source_column in _DERIVED_COLUMNS else source_column
+    case_sql = _build_recode_case_sql(source_sql, mapping)
+    underlying_source = _derived_source(source_column)
+    buckets = sorted(set(mapping.values()))
+
+    _DERIVED_COLUMNS[name] = {
+        "sql": case_sql,
+        "source": underlying_source,
+        "description": description or (
+            f"User-defined recode of '{source_column}' into {len(buckets)} coarser "
+            f"categories: {buckets}."
+        ),
+        "binary": False,
+        "user_defined": True,
+        "buckets": buckets,
+    }
+    _ALL_REGRESSION_COLUMNS.add(name)
+    _CATEGORICAL_COLUMNS.add(name)
+    _RECODED_VARIABLE_NAMES.add(name)
+
+    return json.dumps({
+        "created": name,
+        "source_column": source_column,
+        "buckets": buckets,
+        "n_source_values_mapped": len(mapping),
+        "note": (
+            f"'{name}' is now usable as a demographic/predictor in generate_crosstab, "
+            "generate_crosstab_by_wave, generate_crosstab_multi, get_ordinal_crosstab, "
+            "get_categorical_crosstab, get_ordinal_distribution_by_demographic, "
+            "generate_marginals, and run_ols_regression/run_logistic_regression. "
+            "Cell suppression (n<MIN_CELL_SIZE) still applies to the new, coarser buckets — "
+            "run generate_marginals(name) to check bucket sizes before analysis."
+        ),
+    }, indent=2)
+
+
+@mcp.tool()
+async def list_recoded_variables() -> str:
+    """List all temporary recoded variables created so far in this server session
+    (via create_recoded_variable), with their source column, buckets, and description.
+    """
+    return json.dumps({
+        "recoded_variables": {
+            name: {
+                "source_column": _DERIVED_COLUMNS[name]["source"],
+                "buckets": _DERIVED_COLUMNS[name].get("buckets"),
+                "description": _DERIVED_COLUMNS[name]["description"],
+            }
+            for name in sorted(_RECODED_VARIABLE_NAMES)
+        }
+    }, indent=2)
+
+
+@mcp.tool()
+async def delete_recoded_variable(name: str) -> str:
+    """Remove a temporary recoded variable created via create_recoded_variable().
+
+    Args:
+        name: The variable name to remove, e.g. "age_cat_3".
+    """
+    if name not in _RECODED_VARIABLE_NAMES:
+        raise ValueError(
+            f"'{name}' is not a recoded variable created in this session. "
+            "Call list_recoded_variables() to see what's available."
+        )
+    del _DERIVED_COLUMNS[name]
+    _ALL_REGRESSION_COLUMNS.discard(name)
+    _CATEGORICAL_COLUMNS.discard(name)
+    _RECODED_VARIABLE_NAMES.discard(name)
+    return json.dumps({"deleted": name})
+
+
 async def _generate_crosstab_impl(
     platform: str,
     demographic: str,
@@ -1158,10 +1349,12 @@ async def _generate_crosstab_impl(
     if demographic not in _ALL_REGRESSION_COLUMNS:
         raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
+    demo_expr = _derived_select_expr(demographic)
+
     try:
         df = run_query(f"""
             SELECT
-              {demographic}                                               AS demographic_value,
+              {demo_expr}                                                 AS demographic_value,
               COUNT(*)                                                    AS unweighted_n,
               ROUND(SUM(weight), 1)                                       AS weighted_n,
               ROUND(SUM({platform} * weight), 1)                          AS weighted_users,
@@ -1170,12 +1363,12 @@ async def _generate_crosstab_impl(
               CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END AS suppressed
             FROM {FULL_TABLE}
             WHERE {platform} IS NOT NULL
-              AND {demographic} IS NOT NULL
+              AND {demo_expr} IS NOT NULL
               AND weight IS NOT NULL
               {"AND " + demographic + " > 0" if demographic in ALL_ORDINAL_COLUMNS else ""}
               {wave_clause(wave)}
-            GROUP BY {demographic}
-            ORDER BY {demographic}
+            GROUP BY {demo_expr}
+            ORDER BY {demo_expr}
         """)
 
         # Apply suppression (based on unweighted_n to protect actual respondent privacy)
@@ -1228,7 +1421,8 @@ async def _generate_marginals_impl(
 ) -> str:
     all_valid = (
         DEMOGRAPHIC_COLUMNS + ATTITUDINAL_COLUMNS + PLATFORM_COLUMNS +
-        ALL_ORDINAL_COLUMNS + ALL_BINARY_COLUMNS + RACE_BOOLEAN_COLUMNS
+        ALL_ORDINAL_COLUMNS + ALL_BINARY_COLUMNS + RACE_BOOLEAN_COLUMNS +
+        list(_DERIVED_COLUMNS.keys())
     )
     if variable not in all_valid:
         raise ValueError(
@@ -1238,11 +1432,16 @@ async def _generate_marginals_impl(
             f"platforms: {PLATFORM_COLUMNS}, "
             f"ordinal: {ALL_ORDINAL_COLUMNS}, "
             f"binary: {ALL_BINARY_COLUMNS}, "
-            f"or race booleans: {RACE_BOOLEAN_COLUMNS}"
+            f"race booleans: {RACE_BOOLEAN_COLUMNS}, "
+            f"or derived/recoded: {list(_DERIVED_COLUMNS.keys())}"
         )
 
     # Binary columns: use_* and sm_post_*/pol_news2_* and race booleans — compute adoption rate
-    is_binary = variable in PLATFORM_COLUMNS or variable in ALL_BINARY_COLUMNS or variable in RACE_BOOLEAN_COLUMNS
+    is_binary = (
+        variable in PLATFORM_COLUMNS or variable in ALL_BINARY_COLUMNS or variable in RACE_BOOLEAN_COLUMNS
+        or _DERIVED_COLUMNS.get(variable, {}).get("binary", False)
+    )
+    var_expr = _derived_select_expr(variable)
 
     try:
         if is_binary:
@@ -1252,11 +1451,11 @@ async def _generate_marginals_impl(
                   '{variable}'                                              AS platform,
                   COUNT(*)                                                  AS unweighted_n,
                   ROUND(SUM(weight), 1)                                     AS weighted_n,
-                  ROUND(SUM({variable} * weight), 1)                        AS weighted_users,
-                  ROUND(SUM(weight) - SUM({variable} * weight), 1)          AS weighted_non_users,
-                  ROUND(SUM({variable} * weight) / SUM(weight) * 100, 2)    AS user_rate_pct
+                  ROUND(SUM({var_expr} * weight), 1)                        AS weighted_users,
+                  ROUND(SUM(weight) - SUM({var_expr} * weight), 1)          AS weighted_non_users,
+                  ROUND(SUM({var_expr} * weight) / SUM(weight) * 100, 2)    AS user_rate_pct
                 FROM {FULL_TABLE}
-                WHERE {variable} IS NOT NULL
+                WHERE {var_expr} IS NOT NULL
                   AND weight IS NOT NULL
                   {wave_clause(wave)}
             """)
@@ -1278,18 +1477,18 @@ async def _generate_marginals_impl(
             sentinel_filter = f"AND {variable} > 0" if variable in ALL_ORDINAL_COLUMNS else ""
             df = run_query(f"""
                 SELECT
-                  {variable}                                                   AS value,
+                  {var_expr}                                                   AS value,
                   COUNT(*)                                                      AS unweighted_n,
                   ROUND(SUM(weight), 1)                                         AS weighted_n,
                   ROUND(SUM(weight) * 100.0 / SUM(SUM(weight)) OVER(), 2)      AS pct,
                   CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END AS suppressed
                 FROM {FULL_TABLE}
-                WHERE {variable} IS NOT NULL
+                WHERE {var_expr} IS NOT NULL
                   AND weight IS NOT NULL
                   {sentinel_filter}
                   {wave_clause(wave)}
-                GROUP BY {variable}
-                ORDER BY {variable}
+                GROUP BY {var_expr}
+                ORDER BY {var_expr}
             """)
 
             df.loc[df["suppressed"], ["weighted_n", "pct"]] = None
@@ -1565,23 +1764,25 @@ async def generate_crosstab_by_wave(
     if demographic not in _ALL_REGRESSION_COLUMNS:
         raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
+    demo_expr = _derived_select_expr(demographic)
+
     try:
         df = run_query(f"""
             SELECT
               CAST(t.wave AS FLOAT64)                                                AS wave,
               wd.midpoint_date,
-              t.{demographic}                                                         AS demographic_value,
+              {demo_expr}                                                             AS demographic_value,
               COUNT(*)                                                               AS unweighted_n,
               ROUND(SUM(t.{platform} * t.weight) / SUM(t.weight) * 100, 2)           AS user_rate_pct,
               CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END           AS suppressed
             FROM {FULL_TABLE} t
             LEFT JOIN {WAVE_DATES_TABLE} wd ON CAST(t.wave AS FLOAT64) = wd.wave_num
             WHERE t.{platform} IS NOT NULL
-              AND t.{demographic} IS NOT NULL
+              AND {demo_expr} IS NOT NULL
               AND t.weight IS NOT NULL
               {"AND t." + demographic + " > 0" if demographic in ALL_ORDINAL_COLUMNS else ""}
-            GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date, t.{demographic}
-            ORDER BY CAST(t.wave AS FLOAT64), t.{demographic}
+            GROUP BY CAST(t.wave AS FLOAT64), wd.midpoint_date, {demo_expr}
+            ORDER BY CAST(t.wave AS FLOAT64), {demo_expr}
         """)
 
         df.loc[df["suppressed"], ["user_rate_pct"]] = None
@@ -2012,9 +2213,9 @@ async def generate_crosstab_multi(
     is_binary = variable in PLATFORM_COLUMNS or variable in RACE_BOOLEAN_COLUMNS
     is_ordinal = variable in ALL_ORDINAL_COLUMNS
 
-    group_cols = ", ".join(demographics)
-    select_cols = ",\n              ".join(demographics)
-    null_filters = "\n              ".join(f"AND {d} IS NOT NULL" for d in demographics)
+    group_cols = ", ".join(_derived_select_expr(d) for d in demographics)
+    select_cols = ",\n              ".join(f"{_derived_select_expr(d)} AS {d}" for d in demographics)
+    null_filters = "\n              ".join(f"AND {_derived_select_expr(d)} IS NOT NULL" for d in demographics)
     sentinel_filters = "\n              ".join(
         f"AND {d} > 0" for d in demographics if d in _SENTINEL_COLUMNS
     )
@@ -2324,6 +2525,7 @@ async def get_ordinal_distribution_by_demographic(
     if demographic not in _ALL_REGRESSION_COLUMNS:
         raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
+    demo_expr = _derived_select_expr(demographic)
     demo_sentinel = f"AND {demographic} > 0" if demographic in _SENTINEL_COLUMNS else ""
 
     # SQL fragments for derived vs. regular vs. binary columns
@@ -2355,25 +2557,25 @@ async def get_ordinal_distribution_by_demographic(
     try:
         df = run_query(f"""
             SELECT
-              {demographic}                                                              AS demographic_value,
+              {demo_expr}                                                                AS demographic_value,
               {col_select}                                                               AS value,
               COUNT(*)                                                                   AS unweighted_n,
               ROUND(SUM(weight), 1)                                                      AS weighted_n,
               ROUND(
                 SUM(weight) * 100.0
-                / SUM(SUM(weight)) OVER (PARTITION BY {demographic}),
+                / SUM(SUM(weight)) OVER (PARTITION BY {demo_expr}),
               2)                                                                         AS pct,
               CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END             AS suppressed
             FROM {FULL_TABLE}
             WHERE {col_null_src} IS NOT NULL
               {col_sentinel}
-              AND {demographic} IS NOT NULL
+              AND {demo_expr} IS NOT NULL
               AND weight IS NOT NULL
               {demo_sentinel}
               {wave_clause(wave)}
               {filter_sql}
-            GROUP BY {demographic}, {col_select}
-            ORDER BY {demographic}, {col_select}
+            GROUP BY {demo_expr}, {col_select}
+            ORDER BY {demo_expr}, {col_select}
         """)
 
         df.loc[df["suppressed"], ["weighted_n", "pct"]] = None
@@ -2446,6 +2648,7 @@ async def get_ordinal_crosstab(
     if demographic not in _ALL_REGRESSION_COLUMNS:
         raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
+    demo_expr = _derived_select_expr(demographic)
     demo_sentinel = f"AND {demographic} > 0" if demographic in _SENTINEL_COLUMNS else ""
 
     # SQL fragments for derived vs. regular vs. binary columns
@@ -2477,7 +2680,7 @@ async def get_ordinal_crosstab(
     try:
         df = run_query(f"""
             SELECT
-              {demographic}                                                        AS demographic_value,
+              {demo_expr}                                                          AS demographic_value,
               COUNT(*)                                                             AS unweighted_n,
               ROUND(SUM(weight), 1)                                                AS weighted_n,
               ROUND(SUM(({col_select}) * weight) / SUM(weight), 3)                AS weighted_mean,
@@ -2485,13 +2688,13 @@ async def get_ordinal_crosstab(
             FROM {FULL_TABLE}
             WHERE {col_null_src} IS NOT NULL
               {col_sentinel}
-              AND {demographic} IS NOT NULL
+              AND {demo_expr} IS NOT NULL
               AND weight IS NOT NULL
               {demo_sentinel}
               {wave_clause(wave)}
               {filter_sql}
-            GROUP BY {demographic}
-            ORDER BY {demographic}
+            GROUP BY {demo_expr}
+            ORDER BY {demo_expr}
         """)
 
         df.loc[df["suppressed"], ["weighted_n", "weighted_mean"]] = None
@@ -2562,6 +2765,7 @@ async def get_categorical_crosstab(
     if demographic not in _ALL_REGRESSION_COLUMNS:
         raise ValueError(f"Unknown column '{demographic}'. Call get_available_variables() to see valid names.")
 
+    demo_expr = _derived_select_expr(demographic)
     demo_sentinel = f"AND {demographic} > 0" if demographic in ALL_ORDINAL_COLUMNS else ""
 
     scale_labels = OZEMPIC_SCALE_LABELS if column == "ozempic" else OZEMPIC_WHY_SCALE_LABELS
@@ -2569,25 +2773,25 @@ async def get_categorical_crosstab(
     try:
         df = run_query(f"""
             SELECT
-              {demographic}                                                             AS demographic_value,
+              {demo_expr}                                                               AS demographic_value,
               {column}                                                                  AS response_value,
               COUNT(*)                                                                  AS unweighted_n,
               ROUND(SUM(weight), 1)                                                     AS weighted_n,
               ROUND(
                 SUM(weight) * 100.0
-                / SUM(SUM(weight)) OVER (PARTITION BY {demographic}),
+                / SUM(SUM(weight)) OVER (PARTITION BY {demo_expr}),
                 2
               )                                                                         AS pct_within_demo,
               CASE WHEN COUNT(*) < {MIN_CELL_SIZE} THEN TRUE ELSE FALSE END            AS suppressed
             FROM {FULL_TABLE}
             WHERE {column} IS NOT NULL
               AND {column} > 0
-              AND {demographic} IS NOT NULL
+              AND {demo_expr} IS NOT NULL
               AND weight IS NOT NULL
               {demo_sentinel}
               {wave_clause(wave)}
-            GROUP BY {demographic}, {column}
-            ORDER BY {demographic}, {column}
+            GROUP BY {demo_expr}, {column}
+            ORDER BY {demo_expr}, {column}
         """)
 
         df.loc[df["suppressed"], ["weighted_n", "pct_within_demo"]] = None
@@ -3011,18 +3215,10 @@ def _fetch_regression_data(
     """Pull individual-level rows needed for a regression from BigQuery."""
     cols = [outcome] + predictors
 
-    # Resolve derived columns: substitute SQL expressions in SELECT;
+    # Resolve derived/recoded columns: substitute SQL expressions in SELECT;
     # use source column for NOT NULL and sentinel (>0) checks.
-    def _real_col(c: str) -> str:
-        return _DERIVED_COLUMNS[c]["source"] if c in _DERIVED_COLUMNS else c
-
-    def _select_expr(c: str) -> str:
-        if c in _DERIVED_COLUMNS:
-            return f"{_DERIVED_COLUMNS[c]['sql']} AS {c}"
-        return c
-
-    real_cols = [_real_col(c) for c in cols]
-    select_cols = ", ".join(_select_expr(c) for c in cols) + ", weight"
+    real_cols = [_derived_source(c) for c in cols]
+    select_cols = ", ".join(f"{_derived_select_expr(c)} AS {c}" for c in cols) + ", weight"
 
     not_null = " AND ".join(f"{c} IS NOT NULL" for c in real_cols + ["weight"])
 

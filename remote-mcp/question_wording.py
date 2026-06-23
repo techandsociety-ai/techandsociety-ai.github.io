@@ -241,6 +241,13 @@ QUESTION_WORDING: dict[str, str] = {
     "sm_post_gen_rednote": "How often do you post anything on the following platforms? - Rednote",
     "sm_post_gen_twitch": "How often do you post anything on the following platforms? - Twitch",
 
+    # VACCINATION_COLUMNS
+    "vaccine_get": "How likely are you to get a COVID-19 vaccine when one is available to you? (1=Definitely will, 5=Definitely will not)",
+    "kff_vacc1": "Have you received at least one dose of a COVID-19 vaccine? (1=Yes, 2=No) — KFF COVID-19 Vaccine Monitor",
+    "vac_boost": "How many COVID-19 booster doses have you received? (0=None, 1–5=number of boosters; -99=skipped/refused)",
+    "vac_ref": "What is the main reason you have not gotten a COVID-19 vaccine? (ordinal 1–4; -99=skipped/refused)",
+    "vac_total": "Total number of COVID-19 vaccine doses received, including boosters (0=none; 99=don't know; -99=skipped/refused)",
+
     # COV_BEH_COLUMNS
     "cov_beh_1": "In the last week, how closely did you personally follow the health behaviors listed below? — Avoiding contact with other people",
     "cov_beh_2": "In the last week, how closely did you personally follow the health behaviors listed below? — Avoiding public or crowded places",

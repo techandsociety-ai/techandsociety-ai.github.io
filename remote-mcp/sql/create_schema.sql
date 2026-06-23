@@ -371,6 +371,14 @@ AS SELECT
   CAST(cov_trust_facebook    AS INT64) as cov_trust_facebook,
   CAST(cov_trust_twitter     AS INT64) as cov_trust_twitter,
 
+  -- COVID vaccination (ordinal; -99 = skipped/refused; NULL = not asked this wave)
+  -- vac_total: a small number of rows carry code 99 (unknown/don't know); treat as missing.
+  CAST(vaccine_get  AS INT64) as vaccine_get,
+  CAST(kff_vacc1    AS INT64) as kff_vacc1,
+  CAST(vac_boost    AS INT64) as vac_boost,
+  CAST(vac_ref      AS INT64) as vac_ref,
+  CAST(vac_total    AS INT64) as vac_total,
+
   -- Fake news / misinformation items (ordinal; -99 = skipped/refused; NULL = not asked this wave)
   CAST(fn_1  AS INT64) as fn_1,
   CAST(fn_2  AS INT64) as fn_2,

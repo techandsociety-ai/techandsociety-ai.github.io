@@ -333,6 +333,16 @@ COV_BEH_COLUMNS = [
     "cov_beh_5",
 ]
 
+# COVID vaccination attitudes and behavior (ordinal; -99 = skipped/refused; NULL = not asked this wave)
+# vac_total: rare code 99 (~112 rows) represents "don't know" — treat as missing when filtering col > 0.
+VACCINATION_COLUMNS = [
+    "vaccine_get",  # likelihood/willingness to get COVID vaccine (ordinal 1–5)
+    "kff_vacc1",    # KFF tracking: received at least one COVID vaccine dose (1=Yes, 2=No)
+    "vac_boost",    # number of COVID booster doses received (ordinal 0–5)
+    "vac_ref",      # primary reason for not getting vaccinated (ordinal 1–4)
+    "vac_total",    # total COVID vaccine doses received (ordinal 0–4; 99 = don't know)
+]
+
 # Democracy / 2024 election attitudes (NULL = not asked this wave; -99 = skipped/refused)
 ELECTION_COLUMNS = [
     "democ_1",      # democratic norms scale 0–100
@@ -433,7 +443,7 @@ CATEGORICAL_ORDINAL_COLUMNS = ["ozempic", "ozempic_why"]
 ALL_ORDINAL_COLUMNS = (
     ATTITUDINAL_COLUMNS + FREQ_COLUMNS + TRUST_COLUMNS +
     POL_POST_COLUMNS + GEN_POST_COLUMNS + POL_TRUST_COLUMNS +
-    PHQ9_COLUMNS + OZEMPIC_COLUMNS + COV_BEH_COLUMNS + ELECTION_COLUMNS +
+    PHQ9_COLUMNS + OZEMPIC_COLUMNS + COV_BEH_COLUMNS + VACCINATION_COLUMNS + ELECTION_COLUMNS +
     COV_TRUST_COLUMNS + W38_POLITICAL_COLUMNS +
     FAKE_NEWS_COLUMNS + FR_POL_COLUMNS + ELECTION_INTEGRITY_COLUMNS +
     AI_FREQ_COLUMNS + AI_ATTITUDE_COLUMNS
@@ -471,6 +481,7 @@ _ALL_REGRESSION_COLUMNS: set[str] = set(
     + POL_NEWS1_COLUMNS
     + RACE_BOOLEAN_COLUMNS
     + COV_BEH_COLUMNS
+    + VACCINATION_COLUMNS
     + ELECTION_COLUMNS
     + COV_TRUST_COLUMNS
     + W38_POLITICAL_COLUMNS
@@ -1074,6 +1085,7 @@ async def get_available_variables() -> str:
             "ai_why_pos_columns": AI_WHY_POS_COLUMNS,
             "ai_why_tool_columns": AI_WHY_TOOL_COLUMNS,
             "ai_how_tool_columns": AI_HOW_TOOL_COLUMNS,
+            "vaccination_columns": VACCINATION_COLUMNS,
             "plumbing_columns": {
                 "running_water_pct": "County-level % of households with complete indoor plumbing (ACS). Continuous FLOAT, range ~0–100. Valid as OLS outcome or predictor. Coverage: 97.6% of respondents matched to a county.",
                 "fips": "County FIPS code (INT). Identifier only — not an analysis variable.",
@@ -1092,7 +1104,7 @@ async def get_available_variables() -> str:
                     "unweighted_n fields are raw respondent headcounts for reliability checks only — "
                     "never use unweighted_n to compute percentages or present as population estimates."
                 ),
-                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35; ai_freq/ai_why/ai_how/ai_attitude/survey_ai/llm/pol_trust_ai/pol_trust_election from wave 35+; el_conf_26/ballot_access/vote_counted from wave 38+; running_water_pct/fips/county available across all waves (county-level ACS merge, 97.6% coverage).",
+                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35; ai_freq/ai_why/ai_how/ai_attitude/survey_ai/llm/pol_trust_ai/pol_trust_election from wave 35+; el_conf_26/ballot_access/vote_counted from wave 38+; running_water_pct/fips/county available across all waves (county-level ACS merge, 97.6% coverage); vaccination columns (vaccine_get/kff_vacc1/vac_boost/vac_ref/vac_total) from COVID-era waves only — vaccine_get is the broadest (~60% of rows), kff_vacc1/vac_ref/vac_total are sparse (<3% of rows).",
                 "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors and in marginals/marginals_by_wave (returns adoption rate, like platform columns).",
                 "ozempic_regression": "Derived binary outcomes for logistic regression (wave 35 only): ozempic_binary (currently taking OR previously took [1,2] vs. never [3,4,5]), ozempic_current (currently taking [1] vs. never [3,4,5] — excludes stopped). ozempic/ozempic_why/ozempic_time_* are valid OLS outcomes. Always use wave='35'.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",
@@ -1197,18 +1209,50 @@ def _build_recode_case_sql(source_sql: str, mapping: Dict[str, str]) -> str:
     return "CASE " + " ".join(when_clauses) + " ELSE NULL END"
 
 
+def _build_recode_range_sql(source_sql: str, ranges: List[Dict[str, Any]]) -> str:
+    """Build a CASE WHEN expression mapping numeric ranges to bucket labels.
+
+    Each range dict: {"label": str, "min": float|None, "max": float|None}.
+    Intervals are half-open [min, max) — min inclusive, max exclusive.
+    Omit "min" for no lower bound; omit "max" (or set to None) for no upper bound.
+    Values falling in no range evaluate to NULL.
+    """
+    when_clauses = []
+    for r in ranges:
+        label = str(r["label"]).replace("'", "\\'")
+        lo = r.get("min")
+        hi = r.get("max")
+        if lo is None and hi is None:
+            raise ValueError(
+                f"Range with label '{r['label']}' must have at least one of 'min' or 'max'."
+            )
+        parts = []
+        if lo is not None:
+            parts.append(f"{source_sql} >= {float(lo)}")
+        if hi is not None:
+            parts.append(f"{source_sql} < {float(hi)}")
+        cond = " AND ".join(parts)
+        when_clauses.append(f"WHEN {cond} THEN '{label}'")
+
+    return "CASE " + " ".join(when_clauses) + " ELSE NULL END"
+
+
 @mcp.tool()
 async def create_recoded_variable(
     name: str,
     source_column: str,
-    mapping: Dict[str, str],
+    mapping: Optional[Dict[str, str]] = None,
+    ranges: Optional[List[Dict[str, Any]]] = None,
     description: Optional[str] = None,
 ) -> str:
     """Create a temporary, coarser-grouped variable from an existing column, to use in
     crosstabs or regressions when the original column's categories are too fine-grained
     and trigger cell suppression (unweighted n < MIN_CELL_SIZE in a group).
 
-    Example — collapse an 8-category age variable into 3 broad bands:
+    Provide exactly one of `mapping` (for categorical/ordinal columns) or `ranges`
+    (for continuous/numeric columns).
+
+    --- Categorical example — collapse an 8-category age variable into 3 broad bands:
         create_recoded_variable(
             name="age_cat_3",
             source_column="age_cat_8",
@@ -1218,30 +1262,49 @@ async def create_recoded_variable(
                 "55-64": "55+",   "65-74": "55+",  "75+": "55+",
             },
         )
-    Then use "age_cat_3" exactly like any other column:
+
+    --- Continuous example — bin running_water_pct into quartile-ish bands:
+        create_recoded_variable(
+            name="water_access_band",
+            source_column="running_water_pct",
+            ranges=[
+                {"label": "Low (0–50%)",    "min": 0,  "max": 50},
+                {"label": "Medium (50–80%)", "min": 50, "max": 80},
+                {"label": "High (80–100%)",  "min": 80, "max": 101},
+            ],
+        )
+    Intervals are half-open [min, max) — min inclusive, max exclusive. Omit "min" for
+    no lower bound; omit "max" (or pass null) for no upper bound.
+
+    Then use the new variable exactly like any other column:
         generate_crosstab(platform="use_tiktok", demographic="age_cat_3")
-        run_ols_regression(outcome="phq9_total", predictors=["age_cat_3", "gender"])
+        run_ols_regression(outcome="phq9_total", predictors=["water_access_band", "gender"])
 
     Coarser buckets pool more respondents per group, which reduces (but does not
     eliminate) cell suppression — suppression at n<MIN_CELL_SIZE still applies to the
     new buckets. Call generate_marginals(name) right after creating the variable to
     check the resulting bucket sizes before running a crosstab or regression.
 
-    Values not included in `mapping` become NULL for that variable (those rows are
-    excluded from analyses using it, same as any other missing value) — this is the
-    correct way to exclude a small/irrelevant category instead of recoding it.
+    Values not covered by any mapping key or range become NULL for that variable (those
+    rows are excluded from analyses using it, same as any other missing value).
 
     Args:
         name:          New variable name, e.g. "age_cat_3". Must be a valid identifier
                        (letters, digits, underscores, not starting with a digit) and must
                        not already be the name of a real column or another variable.
         source_column: An existing column to recode — demographic, attitudinal, ordinal,
-                       or another derived/recoded variable. Call get_available_variables()
-                       to see valid names.
-        mapping:       {original_value: bucket_label}. Keys are the exact values found in
-                       source_column (as strings, e.g. "1" or "18-24"); values are the
-                       coarser bucket label to assign. Multiple keys may map to the same
-                       bucket label to merge categories.
+                       continuous, or another derived/recoded variable. Call
+                       get_available_variables() to see valid names.
+        mapping:       For categorical/ordinal columns. {original_value: bucket_label}.
+                       Keys are the exact values found in source_column (as strings,
+                       e.g. "1" or "18-24"); values are the coarser bucket label to
+                       assign. Multiple keys may map to the same bucket label to merge
+                       categories. Mutually exclusive with `ranges`.
+        ranges:        For continuous/numeric columns. List of
+                       {"label": str, "min": float|null, "max": float|null} dicts.
+                       Intervals are half-open [min, max). Omit or null-out "min"/"max"
+                       for unbounded ends. Rows not covered by any range become NULL.
+                       Mutually exclusive with `mapping`.
         description:   Optional human-readable note describing the recoding, shown in
                        get_available_variables() and regression output.
 
@@ -1264,13 +1327,25 @@ async def create_recoded_variable(
         raise ValueError(
             f"Unknown source_column '{source_column}'. Call get_available_variables() to see valid names."
         )
-    if not mapping:
-        raise ValueError("mapping must not be empty.")
+    if mapping and ranges:
+        raise ValueError("Provide exactly one of 'mapping' or 'ranges', not both.")
+    if not mapping and not ranges:
+        raise ValueError(
+            "Provide exactly one of 'mapping' (for categorical columns) or "
+            "'ranges' (for continuous columns)."
+        )
 
     source_sql = _DERIVED_COLUMNS[source_column]["sql"] if source_column in _DERIVED_COLUMNS else source_column
-    case_sql = _build_recode_case_sql(source_sql, mapping)
     underlying_source = _derived_source(source_column)
-    buckets = sorted(set(mapping.values()))
+
+    if mapping:
+        case_sql = _build_recode_case_sql(source_sql, mapping)
+        buckets = sorted(set(mapping.values()))
+        summary_key, summary_val = "n_source_values_mapped", len(mapping)
+    else:
+        case_sql = _build_recode_range_sql(source_sql, ranges)
+        buckets = list(dict.fromkeys(r["label"] for r in ranges))  # preserve order, deduplicate
+        summary_key, summary_val = "n_ranges", len(ranges)
 
     _DERIVED_COLUMNS[name] = {
         "sql": case_sql,
@@ -1291,7 +1366,7 @@ async def create_recoded_variable(
         "created": name,
         "source_column": source_column,
         "buckets": buckets,
-        "n_source_values_mapped": len(mapping),
+        summary_key: summary_val,
         "note": (
             f"'{name}' is now usable as a demographic/predictor in generate_crosstab, "
             "generate_crosstab_by_wave, generate_crosstab_multi, get_ordinal_crosstab, "

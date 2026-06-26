@@ -492,6 +492,9 @@ AS SELECT
   CAST(ai_freq_x9  AS INT64) as ai_freq_x9,
   CAST(ai_freq_x10 AS INT64) as ai_freq_x10,
   CAST(ai_freq_x11 AS INT64) as ai_freq_x11,
+  -- Aggregate AI frequency (ordinal 1–7; -99=refused; waves 32/35 only)
+  CAST(ai_freq_ai    AS INT64) as ai_freq_ai,    -- frequency of using any AI tool
+  CAST(ai_freq_genai AS INT64) as ai_freq_genai,  -- frequency of using any generative AI tool
 
   -- AI tool why-use by position (binary 0/1; follows ai_freq_x* order; NULL = not asked)
   CAST(ai_why_x1_1  AS INT64) as ai_why_x1_1,  CAST(ai_why_x1_2  AS INT64) as ai_why_x1_2,  CAST(ai_why_x1_3  AS INT64) as ai_why_x1_3,

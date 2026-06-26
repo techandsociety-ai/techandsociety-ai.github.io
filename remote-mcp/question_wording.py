@@ -380,6 +380,8 @@ QUESTION_WORDING: dict[str, str] = {
     "ai_freq_x9":  "Frequency of use — AI tool mentioned 9th by respondent (ordinal 1–6)",
     "ai_freq_x10": "Frequency of use — AI tool mentioned 10th by respondent (ordinal 1–6)",
     "ai_freq_x11": "Frequency of use — AI tool mentioned 11th by respondent (ordinal 1–6)",
+    "ai_freq_ai":    "Frequency of using any AI tool (ordinal 1–7; 1=rarely, 7=several times a day; waves 32/35)",
+    "ai_freq_genai": "Frequency of using any generative AI tool (ordinal 1–7; 1=rarely, 7=several times a day; waves 32/35)",
 
     # AI_WHY_POS_COLUMNS
     # Why the respondent uses the AI tool in position N (binary 0/1; 3 reasons asked per tool).

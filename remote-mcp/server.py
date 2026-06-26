@@ -404,7 +404,7 @@ PLUMBING_COLUMNS = ["running_water_pct"]
 
 # AI tool usage frequency by mention position (ordinal 1–6; -99 = skipped/refused)
 # ai_freq_x1 = frequency of the first AI tool the respondent mentioned, etc.
-AI_FREQ_COLUMNS = [f"ai_freq_x{i}" for i in range(1, 12)]
+AI_FREQ_COLUMNS = [f"ai_freq_x{i}" for i in range(1, 12)] + ["ai_freq_ai", "ai_freq_genai"]
 
 # AI why-use by mention position (binary 0/1; respondent's Nth mentioned tool; NULL = not asked)
 AI_WHY_POS_COLUMNS = [f"ai_why_x{i}_{j}" for i in range(1, 12) for j in [1, 2, 3]]

@@ -557,6 +557,25 @@ AS SELECT
   CAST(ai_how_qwen_1       AS INT64) as ai_how_qwen_1,       CAST(ai_how_qwen_2       AS INT64) as ai_how_qwen_2,       CAST(ai_how_qwen_3       AS INT64) as ai_how_qwen_3,       CAST(ai_how_qwen_4       AS INT64) as ai_how_qwen_4,       CAST(ai_how_qwen_5       AS INT64) as ai_how_qwen_5,
   CAST(ai_how_writesonic_1 AS INT64) as ai_how_writesonic_1, CAST(ai_how_writesonic_2 AS INT64) as ai_how_writesonic_2, CAST(ai_how_writesonic_3 AS INT64) as ai_how_writesonic_3, CAST(ai_how_writesonic_4 AS INT64) as ai_how_writesonic_4, CAST(ai_how_writesonic_5 AS INT64) as ai_how_writesonic_5,
 
+  -- AI tool awareness by mention position (binary 0/1; wave 31 only; NULL = not asked)
+  CAST(ai_know_1  AS INT64) as ai_know_1,  CAST(ai_know_2  AS INT64) as ai_know_2,  CAST(ai_know_3  AS INT64) as ai_know_3,
+  CAST(ai_know_4  AS INT64) as ai_know_4,  CAST(ai_know_5  AS INT64) as ai_know_5,  CAST(ai_know_6  AS INT64) as ai_know_6,
+  CAST(ai_know_7  AS INT64) as ai_know_7,  CAST(ai_know_8  AS INT64) as ai_know_8,  CAST(ai_know_9  AS INT64) as ai_know_9,
+  CAST(ai_know_10 AS INT64) as ai_know_10, CAST(ai_know_11 AS INT64) as ai_know_11,
+
+  -- AI tool awareness by named tool (binary 0/1; waves 32/35+; NULL = not asked)
+  CAST(ai_know_ai         AS INT64) as ai_know_ai,         CAST(ai_know_anyword    AS INT64) as ai_know_anyword,
+  CAST(ai_know_bard       AS INT64) as ai_know_bard,       CAST(ai_know_chatgpt    AS INT64) as ai_know_chatgpt,
+  CAST(ai_know_claude     AS INT64) as ai_know_claude,     CAST(ai_know_cohere     AS INT64) as ai_know_cohere,
+  CAST(ai_know_copilot    AS INT64) as ai_know_copilot,    CAST(ai_know_copy       AS INT64) as ai_know_copy,
+  CAST(ai_know_dalle      AS INT64) as ai_know_dalle,      CAST(ai_know_deepseek   AS INT64) as ai_know_deepseek,
+  CAST(ai_know_fake       AS INT64) as ai_know_fake,       CAST(ai_know_gemini     AS INT64) as ai_know_gemini,
+  CAST(ai_know_genai      AS INT64) as ai_know_genai,      CAST(ai_know_grok       AS INT64) as ai_know_grok,
+  CAST(ai_know_jasper     AS INT64) as ai_know_jasper,     CAST(ai_know_lechat     AS INT64) as ai_know_lechat,
+  CAST(ai_know_llama      AS INT64) as ai_know_llama,      CAST(ai_know_llm        AS INT64) as ai_know_llm,
+  CAST(ai_know_midjourney AS INT64) as ai_know_midjourney, CAST(ai_know_perplexity AS INT64) as ai_know_perplexity,
+  CAST(ai_know_qwen       AS INT64) as ai_know_qwen,       CAST(ai_know_writesonic AS INT64) as ai_know_writesonic,
+
   -- County-level plumbing / infrastructure (from ACS; merged on respondent id)
   fips,
   NULLIF(county, '')  AS county,

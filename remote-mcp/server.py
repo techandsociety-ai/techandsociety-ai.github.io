@@ -420,6 +420,12 @@ AI_WHY_TOOL_COLUMNS = [f"ai_why_{t}_{j}" for t in _AI_NAMED_TOOLS for j in [1, 2
 # AI how-use by named tool (binary 0/1; NULL = not asked)
 AI_HOW_TOOL_COLUMNS = [f"ai_how_{t}_{j}" for t in _AI_NAMED_TOOLS for j in range(1, 6)]
 
+# AI tool awareness by mention position (binary 0/1; wave 31 only)
+AI_KNOW_POS_COLUMNS = [f"ai_know_{i}" for i in range(1, 12)]
+
+# AI tool awareness by named tool (binary 0/1; waves 32/35+ depending on tool)
+AI_KNOW_TOOL_COLUMNS = [f"ai_know_{t}" for t in _AI_NAMED_TOOLS]
+
 # Ozempic / GLP-1 questions (wave 35+; ordinal; -99 = skipped/refused)
 # ozempic_wt is a subsample weight, not an analysis variable — excluded here.
 OZEMPIC_COLUMNS = [
@@ -453,7 +459,8 @@ ALL_ORDINAL_COLUMNS = (
 ALL_BINARY_COLUMNS = (
     SM_POST_COLUMNS + POL_NEWS_COLUMNS + POL_NEWS1_COLUMNS +
     CAP_FN_COLUMNS + PROT_COLUMNS + ELECTION_CONCERN_COLUMNS +
-    AI_WHY_POS_COLUMNS + AI_WHY_TOOL_COLUMNS + AI_HOW_TOOL_COLUMNS
+    AI_WHY_POS_COLUMNS + AI_WHY_TOOL_COLUMNS + AI_HOW_TOOL_COLUMNS +
+    AI_KNOW_POS_COLUMNS + AI_KNOW_TOOL_COLUMNS
 )
 
 # ── Regression column sets ───────────────────────────────────────────────────
@@ -496,6 +503,8 @@ _ALL_REGRESSION_COLUMNS: set[str] = set(
     + AI_WHY_POS_COLUMNS
     + AI_WHY_TOOL_COLUMNS
     + AI_HOW_TOOL_COLUMNS
+    + AI_KNOW_POS_COLUMNS
+    + AI_KNOW_TOOL_COLUMNS
     + PLUMBING_COLUMNS
 )
 
@@ -505,6 +514,7 @@ _BINARY_COLUMNS: set[str] = set(
     + RACE_BOOLEAN_COLUMNS + CAP_FN_COLUMNS + PROT_COLUMNS
     + ELECTION_CONCERN_COLUMNS + AI_WHY_POS_COLUMNS
     + AI_WHY_TOOL_COLUMNS + AI_HOW_TOOL_COLUMNS
+    + AI_KNOW_POS_COLUMNS + AI_KNOW_TOOL_COLUMNS
 )
 
 # Derived columns: computed on the fly in SQL from a source column.
@@ -1085,6 +1095,8 @@ async def get_available_variables() -> str:
             "ai_why_pos_columns": AI_WHY_POS_COLUMNS,
             "ai_why_tool_columns": AI_WHY_TOOL_COLUMNS,
             "ai_how_tool_columns": AI_HOW_TOOL_COLUMNS,
+            "ai_know_pos_columns": AI_KNOW_POS_COLUMNS,
+            "ai_know_tool_columns": AI_KNOW_TOOL_COLUMNS,
             "vaccination_columns": VACCINATION_COLUMNS,
             "plumbing_columns": {
                 "running_water_pct": "County-level % of households with complete indoor plumbing (ACS). Continuous FLOAT, range ~0–100. Valid as OLS outcome or predictor. Coverage: 97.6% of respondents matched to a county.",
@@ -1104,7 +1116,7 @@ async def get_available_variables() -> str:
                     "unweighted_n fields are raw respondent headcounts for reliability checks only — "
                     "never use unweighted_n to compute percentages or present as population estimates."
                 ),
-                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35; ai_freq/ai_why/ai_how/ai_attitude/survey_ai/llm/pol_trust_ai/pol_trust_election from wave 35+; el_conf_26/ballot_access/vote_counted from wave 38+; running_water_pct/fips/county available across all waves (county-level ACS merge, 97.6% coverage); vaccination columns (vaccine_get/kff_vacc1/vac_boost/vac_ref/vac_total) from COVID-era waves only — vaccine_get is the broadest (~60% of rows), kff_vacc1/vac_ref/vac_total are sparse (<3% of rows).",
+                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35; ai_freq/ai_why/ai_how/ai_attitude/survey_ai/llm/pol_trust_ai/pol_trust_election from wave 35+; ai_know_1-11 (positional awareness) wave 31 only; ai_know_<tool> (named-tool awareness) waves 32/35+ (newer tools like grok/deepseek wave 35 only); el_conf_26/ballot_access/vote_counted from wave 38+; running_water_pct/fips/county available across all waves (county-level ACS merge, 97.6% coverage); vaccination columns (vaccine_get/kff_vacc1/vac_boost/vac_ref/vac_total) from COVID-era waves only — vaccine_get is the broadest (~60% of rows), kff_vacc1/vac_ref/vac_total are sparse (<3% of rows).",
                 "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors and in marginals/marginals_by_wave (returns adoption rate, like platform columns).",
                 "ozempic_regression": "Derived binary outcomes for logistic regression (wave 35 only): ozempic_binary (currently taking OR previously took [1,2] vs. never [3,4,5]), ozempic_current (currently taking [1] vs. never [3,4,5] — excludes stopped). ozempic/ozempic_why/ozempic_time_* are valid OLS outcomes. Always use wave='35'.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",

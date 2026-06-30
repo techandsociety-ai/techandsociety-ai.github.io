@@ -9,9 +9,9 @@ import csv
 import sys
 from pathlib import Path
 
-CHIP50_CSV  = Path(__file__).parent.parent / "data" / "export_CHIP50_SocialMedia_vars_2026_06_26_11_35.csv"
+CHIP50_CSV  = Path(__file__).parent.parent / "data" / "export_CHIP50_SocialMedia_vars_2026_06_27_11_50.csv"
 PLUMBING_CSV = Path(__file__).parent.parent / "data" / "Plumbing_data_merged_with_CHIP50_respondents_v1_2026_06_18.csv"
-OUT_CSV     = Path(__file__).parent.parent / "data" / "export_CHIP50_SocialMedia_vars_2026_06_26_plumbing.csv"
+OUT_CSV     = Path(__file__).parent.parent / "data" / "export_CHIP50_SocialMedia_vars_2026_06_27_plumbing.csv"
 
 def strip_id(val):
     return val.replace("-", "").strip()

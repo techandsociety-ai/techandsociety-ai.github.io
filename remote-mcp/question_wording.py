@@ -420,6 +420,47 @@ QUESTION_WORDING: dict[str, str] = {
     "ai_why_x11_2": "Reason 2 for using AI tool mentioned 11th (binary 0/1)",
     "ai_why_x11_3": "Reason 3 for using AI tool mentioned 11th (binary 0/1)",
 
+    # AI_KNOW_POS_COLUMNS
+    # Whether respondent was already aware of the AI tool in mention position N before the survey.
+    # Binary 0/1; NULL = respondent did not mention an Nth tool. Wave 31 only.
+    "ai_know_1":  "Prior awareness of AI tool mentioned 1st by respondent (binary 0/1; wave 31)",
+    "ai_know_2":  "Prior awareness of AI tool mentioned 2nd by respondent (binary 0/1; wave 31)",
+    "ai_know_3":  "Prior awareness of AI tool mentioned 3rd by respondent (binary 0/1; wave 31)",
+    "ai_know_4":  "Prior awareness of AI tool mentioned 4th by respondent (binary 0/1; wave 31)",
+    "ai_know_5":  "Prior awareness of AI tool mentioned 5th by respondent (binary 0/1; wave 31)",
+    "ai_know_6":  "Prior awareness of AI tool mentioned 6th by respondent (binary 0/1; wave 31)",
+    "ai_know_7":  "Prior awareness of AI tool mentioned 7th by respondent (binary 0/1; wave 31)",
+    "ai_know_8":  "Prior awareness of AI tool mentioned 8th by respondent (binary 0/1; wave 31)",
+    "ai_know_9":  "Prior awareness of AI tool mentioned 9th by respondent (binary 0/1; wave 31)",
+    "ai_know_10": "Prior awareness of AI tool mentioned 10th by respondent (binary 0/1; wave 31)",
+    "ai_know_11": "Prior awareness of AI tool mentioned 11th by respondent (binary 0/1; wave 31)",
+
+    # AI_KNOW_TOOL_COLUMNS
+    # Whether respondent recognizes/is aware of each named AI tool (binary 0/1; NULL = not asked).
+    # Waves 32/35+ for most tools; wave 35 only for newer tools (grok, deepseek, lechat, llama, qwen).
+    "ai_know_ai":         "Awareness of AI generally (binary 0/1; waves 32/35)",
+    "ai_know_anyword":    "Awareness of Anyword (binary 0/1; waves 32/35)",
+    "ai_know_bard":       "Awareness of Bard/Gemini (binary 0/1; waves 32/35)",
+    "ai_know_chatgpt":    "Awareness of ChatGPT (binary 0/1; waves 32/35)",
+    "ai_know_claude":     "Awareness of Claude (binary 0/1; waves 32/35)",
+    "ai_know_cohere":     "Awareness of Cohere (binary 0/1; waves 32/35)",
+    "ai_know_copilot":    "Awareness of Microsoft Copilot (binary 0/1; waves 32/35)",
+    "ai_know_copy":       "Awareness of Copy.ai (binary 0/1; waves 32/35)",
+    "ai_know_dalle":      "Awareness of DALL-E (binary 0/1; waves 32/35)",
+    "ai_know_deepseek":   "Awareness of DeepSeek (binary 0/1; wave 35 only)",
+    "ai_know_fake":       "Awareness of unrecognized/made-up AI tool name — quality-control item (binary 0/1; waves 32/35)",
+    "ai_know_gemini":     "Awareness of Google Gemini (binary 0/1; waves 32/35)",
+    "ai_know_genai":      "Awareness of generative AI tools generically (binary 0/1; waves 32/35)",
+    "ai_know_grok":       "Awareness of Grok (binary 0/1; wave 35 only)",
+    "ai_know_jasper":     "Awareness of Jasper (binary 0/1; waves 32/35)",
+    "ai_know_lechat":     "Awareness of Le Chat / Mistral (binary 0/1; wave 35 only)",
+    "ai_know_llama":      "Awareness of Llama (binary 0/1; wave 35 only)",
+    "ai_know_llm":        "Awareness of LLMs generically (binary 0/1; waves 32/35)",
+    "ai_know_midjourney": "Awareness of Midjourney (binary 0/1; waves 32/35)",
+    "ai_know_perplexity": "Awareness of Perplexity (binary 0/1; waves 32/35)",
+    "ai_know_qwen":       "Awareness of Qwen (binary 0/1; wave 35 only)",
+    "ai_know_writesonic": "Awareness of Writesonic (binary 0/1; waves 32/35)",
+
     # AI_WHY_TOOL_COLUMNS
     # Why the respondent uses each named AI tool (binary 0/1; 3 reasons; NULL if tool not used)
     "ai_why_ai_1": "Reason 1 for using AI generally (binary 0/1)", "ai_why_ai_2": "Reason 2 for using AI generally (binary 0/1)", "ai_why_ai_3": "Reason 3 for using AI generally (binary 0/1)",

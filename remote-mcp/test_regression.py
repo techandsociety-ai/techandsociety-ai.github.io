@@ -52,9 +52,22 @@ def _import_server():
         "fastmcp.server.auth",
         "fastmcp.server.auth.providers",
         "fastmcp.server.auth.providers.google",
+        "fastmcp.server.auth.oauth_proxy",
+        "fastmcp.server.auth.oauth_proxy.models",
     ]:
         m = types.ModuleType(mod_name)
         m.GoogleProvider = MagicMock()
+        m.ProxyDCRClient = MagicMock()
+        sys.modules.setdefault(mod_name, m)
+
+    for mod_name in [
+        "key_value",
+        "key_value.aio",
+        "key_value.aio.stores",
+        "key_value.aio.stores.firestore",
+    ]:
+        m = types.ModuleType(mod_name)
+        m.FirestoreStore = MagicMock()
         sys.modules.setdefault(mod_name, m)
 
     import importlib.util, pathlib, os
@@ -78,12 +91,16 @@ def _import_server():
 
 _server = _import_server()
 
-wave_clause             = _server.wave_clause
+wave_clause              = _server.wave_clause
 _resolve_reference_level = _server._resolve_reference_level
-_encode_predictors      = _server._encode_predictors
-_CATEGORICAL_COLUMNS    = _server._CATEGORICAL_COLUMNS
-run_ols_regression      = _server.run_ols_regression
-run_logistic_regression = _server.run_logistic_regression
+_encode_predictors       = _server._encode_predictors
+_CATEGORICAL_COLUMNS     = _server._CATEGORICAL_COLUMNS
+run_ols_regression       = _server.run_ols_regression
+run_logistic_regression  = _server.run_logistic_regression
+create_recoded_variable  = _server.create_recoded_variable
+delete_recoded_variable  = _server.delete_recoded_variable
+_generate_crosstab_impl  = _server._generate_crosstab_impl
+generate_crosstab_multi  = _server.generate_crosstab_multi
 
 
 def _run(coro):
@@ -682,6 +699,325 @@ class TestRunLogisticRegression:
         )
         assert "error" in data
         assert "not_a_real_column" in data["error"]
+
+
+# ===========================================================================
+# 6. _build_binary_recode_sql — SQL output contracts
+# ===========================================================================
+
+class TestBuildBinaryRecodeSql:
+    _fn = staticmethod(_server._build_binary_recode_sql)
+
+    def test_vaccine_get_mapping_produces_correct_sql(self):
+        """vaccine_get: 1/2/4/5 → 1 (vaccinated), 3 → 0 (not)."""
+        sql = self._fn("vaccine_get", {"1": "1", "2": "1", "4": "1", "5": "1", "3": "0"})
+        assert "THEN 1" in sql
+        assert "THEN 0" in sql
+        # 1 must appear before 0 in the clause order
+        assert sql.index("THEN 1") < sql.index("THEN 0")
+
+    def test_output_is_unquoted_integers_not_strings(self):
+        """Numeric 0/1 must appear unquoted so BigQuery returns INT64, not STRING."""
+        sql = self._fn("vaccine_get", {"1": "1", "3": "0"})
+        assert "THEN '1'" not in sql
+        assert "THEN '0'" not in sql
+        assert "THEN 1" in sql
+        assert "THEN 0" in sql
+
+    def test_kff_vacc1_binary_sql(self):
+        sql = self._fn("kff_vacc1", {"1": "1", "2": "0"})
+        assert "kff_vacc1 IN (1)" in sql
+        assert "kff_vacc1 IN (2)" in sql
+
+    def test_raises_for_non_binary_mapping_values(self):
+        with pytest.raises(ValueError, match="0.*1|must be"):
+            self._fn("col", {"1": "vaccinated", "2": "not"})
+
+    def test_raises_for_mixed_valid_and_invalid_values(self):
+        with pytest.raises(ValueError):
+            self._fn("col", {"1": "1", "2": "yes"})
+
+    def test_else_null_is_present(self):
+        sql = self._fn("vaccine_get", {"1": "1", "3": "0"})
+        assert "ELSE NULL END" in sql
+
+    def test_multiple_source_values_grouped_in_one_in_clause(self):
+        """Source values mapping to the same label must be IN (...) not separate WHENs."""
+        sql = self._fn("vaccine_get", {"1": "1", "2": "1", "4": "1", "5": "1", "3": "0"})
+        # The four vaccinated values (1,2,4,5) must share one WHEN ... IN clause
+        when_1_clause = [c for c in sql.split("WHEN") if "THEN 1" in c]
+        assert len(when_1_clause) == 1
+        in_values = when_1_clause[0]
+        for v in ("1", "2", "4", "5"):
+            assert v in in_values
+
+
+# ===========================================================================
+# 7. create_recoded_variable(binary=True) — registration contracts
+# ===========================================================================
+
+class TestCreateRecodedVariableBinary:
+    """Tests that create/delete keep the five server-side sets consistent."""
+
+    VACC_MAPPING = {"1": "1", "2": "1", "4": "1", "5": "1", "3": "0"}
+
+    def setup_method(self):
+        # Clean up any leftover from a prior test
+        if "test_vaccinated" in _server._RECODED_VARIABLE_NAMES:
+            _run(delete_recoded_variable("test_vaccinated"))
+
+    def teardown_method(self):
+        if "test_vaccinated" in _server._RECODED_VARIABLE_NAMES:
+            _run(delete_recoded_variable("test_vaccinated"))
+
+    def _create(self, **kwargs):
+        return json.loads(_run(create_recoded_variable(
+            name="test_vaccinated",
+            source_column="vaccine_get",
+            mapping=self.VACC_MAPPING,
+            binary=True,
+            **kwargs,
+        )))
+
+    def test_creation_succeeds_and_returns_binary_true(self):
+        result = self._create()
+        assert result["binary"] is True
+
+    def test_added_to_binary_columns(self):
+        self._create()
+        assert "test_vaccinated" in _server._BINARY_COLUMNS
+
+    def test_not_added_to_categorical_columns(self):
+        self._create()
+        assert "test_vaccinated" not in _server._CATEGORICAL_COLUMNS
+
+    def test_added_to_all_regression_columns(self):
+        self._create()
+        assert "test_vaccinated" in _server._ALL_REGRESSION_COLUMNS
+
+    def test_added_to_ordinal_tool_columns(self):
+        self._create()
+        assert "test_vaccinated" in _server._ORDINAL_TOOL_COLUMNS
+
+    def test_added_to_recoded_variable_names(self):
+        self._create()
+        assert "test_vaccinated" in _server._RECODED_VARIABLE_NAMES
+
+    def test_derived_columns_entry_has_binary_true(self):
+        self._create()
+        assert _server._DERIVED_COLUMNS["test_vaccinated"]["binary"] is True
+
+    def test_derived_sql_contains_then_1_and_then_0(self):
+        self._create()
+        sql = _server._DERIVED_COLUMNS["test_vaccinated"]["sql"]
+        assert "THEN 1" in sql
+        assert "THEN 0" in sql
+
+    def test_delete_removes_from_binary_columns(self):
+        self._create()
+        _run(delete_recoded_variable("test_vaccinated"))
+        assert "test_vaccinated" not in _server._BINARY_COLUMNS
+
+    def test_delete_removes_from_ordinal_tool_columns(self):
+        self._create()
+        _run(delete_recoded_variable("test_vaccinated"))
+        assert "test_vaccinated" not in _server._ORDINAL_TOOL_COLUMNS
+
+    def test_delete_removes_from_all_regression_columns(self):
+        self._create()
+        _run(delete_recoded_variable("test_vaccinated"))
+        assert "test_vaccinated" not in _server._ALL_REGRESSION_COLUMNS
+
+    def test_raises_for_binary_with_ranges(self):
+        with pytest.raises((ValueError, Exception)):
+            _run(create_recoded_variable(
+                name="test_vaccinated",
+                source_column="running_water_pct",
+                ranges=[{"label": "Low", "min": 0, "max": 50}],
+                binary=True,
+            ))
+
+    def test_raises_for_non_binary_mapping_values(self):
+        with pytest.raises((ValueError, Exception)):
+            _run(create_recoded_variable(
+                name="test_vaccinated",
+                source_column="vaccine_get",
+                mapping={"1": "vaccinated", "3": "not"},
+                binary=True,
+            ))
+
+
+# ===========================================================================
+# 8. run_logistic_regression accepts user-defined binary recodes as outcome
+# ===========================================================================
+
+def _vacc_df():
+    """
+    100 rows: vaccine_get source → vaccinated 0/1 already recoded.
+    60 vaccinated (1), 40 not (0).  Female more vaccinated than Male.
+    """
+    female = pd.DataFrame({
+        "test_vaccinated": [1.0] * 35 + [0.0] * 15,
+        "gender":          ["Female"] * 50,
+        "weight":          [1.0] * 50,
+    })
+    male = pd.DataFrame({
+        "test_vaccinated": [1.0] * 25 + [0.0] * 25,
+        "gender":          ["Male"] * 50,
+        "weight":          [1.0] * 50,
+    })
+    return pd.concat([female, male], ignore_index=True)
+
+
+class TestLogisticRegressionWithBinaryRecode:
+
+    def setup_method(self):
+        if "test_vaccinated" not in _server._BINARY_COLUMNS:
+            _run(create_recoded_variable(
+                name="test_vaccinated",
+                source_column="vaccine_get",
+                mapping={"1": "1", "2": "1", "4": "1", "5": "1", "3": "0"},
+                binary=True,
+            ))
+
+    def teardown_method(self):
+        if "test_vaccinated" in _server._RECODED_VARIABLE_NAMES:
+            _run(delete_recoded_variable("test_vaccinated"))
+
+    def _call(self, df, **kwargs):
+        with patch.object(_server, "_fetch_regression_data", return_value=df):
+            return json.loads(_run(run_logistic_regression(**kwargs)))
+
+    def test_binary_recode_accepted_as_outcome(self):
+        data = self._call(
+            _vacc_df(),
+            outcome="test_vaccinated",
+            predictors=["gender"],
+            use_weights=False,
+        )
+        assert "error" not in data
+
+    def test_female_positive_coefficient_when_more_vaccinated(self):
+        """Female is more vaccinated (35/50 vs 25/50) → gender_Male log_odds should be negative."""
+        data = self._call(
+            _vacc_df(),
+            outcome="test_vaccinated",
+            predictors=["gender"],
+            use_weights=False,
+        )
+        coefs = {c["term"]: c["log_odds"] for c in data["coefficients"]}
+        assert coefs["gender_Male"] < 0
+
+    def test_non_binary_recode_still_rejected_as_outcome(self):
+        """A normal (non-binary) recode must not be accepted as a logistic outcome."""
+        _run(create_recoded_variable(
+            name="test_age_3",
+            source_column="age_cat_8",
+            mapping={"18-24": "young", "25-34": "young", "35-64": "mid", "65+": "old"},
+        ))
+        try:
+            data = self._call(
+                _vacc_df(),
+                outcome="test_age_3",
+                predictors=["gender"],
+            )
+            assert "error" in data
+        finally:
+            if "test_age_3" in _server._RECODED_VARIABLE_NAMES:
+                _run(delete_recoded_variable("test_age_3"))
+
+
+# ===========================================================================
+# 9. _generate_crosstab_impl / generate_crosstab_multi accept binary recodes
+# ===========================================================================
+
+def _crosstab_vacc_df():
+    """
+    Fake crosstab result: 3 water-decile buckets × vaccinated rate.
+    Returned by the mocked run_query.
+    """
+    return pd.DataFrame({
+        "demographic_value": ["Low", "Medium", "High"],
+        "unweighted_n":      [120, 130, 110],
+        "weighted_n":        [120.0, 130.0, 110.0],
+        "weighted_users":    [60.0, 78.0, 88.0],
+        "weighted_non_users":[60.0, 52.0, 22.0],
+        "user_rate_pct":     [50.0, 60.0, 80.0],
+        "suppressed":        [False, False, False],
+    })
+
+
+class TestCrosstabWithBinaryRecode:
+
+    def setup_method(self):
+        # Create binary recode for vaccination
+        if "test_vaccinated" not in _server._BINARY_COLUMNS:
+            _run(create_recoded_variable(
+                name="test_vaccinated",
+                source_column="vaccine_get",
+                mapping={"1": "1", "2": "1", "4": "1", "5": "1", "3": "0"},
+                binary=True,
+            ))
+        # Create categorical recode for water decile
+        if "test_water_band" not in _server._RECODED_VARIABLE_NAMES:
+            _run(create_recoded_variable(
+                name="test_water_band",
+                source_column="running_water_pct",
+                ranges=[
+                    {"label": "Low",    "min": 0,  "max": 50},
+                    {"label": "Medium", "min": 50, "max": 80},
+                    {"label": "High",   "min": 80, "max": 101},
+                ],
+            ))
+
+    def teardown_method(self):
+        for name in ("test_vaccinated", "test_water_band"):
+            if name in _server._RECODED_VARIABLE_NAMES:
+                _run(delete_recoded_variable(name))
+
+    def test_generate_crosstab_accepts_binary_recode_as_platform(self):
+        with patch.object(_server, "run_query", return_value=_crosstab_vacc_df()):
+            result = json.loads(_run(_generate_crosstab_impl(
+                platform="test_vaccinated",
+                demographic="test_water_band",
+            )))
+        assert "error" not in result
+        assert result["platform"] == "test_vaccinated"
+
+    def test_generate_crosstab_returns_user_rate_pct(self):
+        with patch.object(_server, "run_query", return_value=_crosstab_vacc_df()):
+            result = json.loads(_run(_generate_crosstab_impl(
+                platform="test_vaccinated",
+                demographic="test_water_band",
+            )))
+        rates = [row["user_rate_pct"] for row in result["data"]]
+        assert rates == [50.0, 60.0, 80.0]
+
+    def test_generate_crosstab_still_rejects_unknown_platform(self):
+        with pytest.raises((ValueError, Exception)):
+            _run(_generate_crosstab_impl(
+                platform="not_a_real_variable",
+                demographic="gender",
+            ))
+
+    def test_generate_crosstab_still_rejects_ordinal_as_platform(self):
+        """freq_facebook is ordinal, not binary — must be rejected."""
+        with pytest.raises((ValueError, Exception)):
+            _run(_generate_crosstab_impl(
+                platform="freq_facebook",
+                demographic="gender",
+            ))
+
+    def test_generate_crosstab_multi_accepts_binary_recode_as_variable(self):
+        multi_df = _crosstab_vacc_df().rename(columns={"demographic_value": "gender"})
+        multi_df["party3"] = "Democrat"
+        with patch.object(_server, "run_query", return_value=multi_df):
+            result = json.loads(_run(generate_crosstab_multi(
+                variable="test_vaccinated",
+                demographics=["gender", "party3"],
+            )))
+        assert "error" not in result
+        assert result["result_type"] == "adoption_rate"
 
 
 if __name__ == "__main__":

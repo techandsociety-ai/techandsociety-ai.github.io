@@ -317,39 +317,39 @@ QUESTION_WORDING: dict[str, str] = {
     "fr_pol_6": "Political discussion frequency follow-up item 6 (ordinal; -99 = skipped/refused)",
 
     # PROT_COLUMNS
-    "prot_cause_elect":    "Protest cause — election-related (binary 0/1; 1 = participated in election-related protest)",
-    "prot_pan_cause_2":    "Pandemic protest cause item 2 (binary 0/1)",
-    "prot_cause_race":     "Protest cause — racial justice (binary 0/1; waves 5,7,9,10,13)",
-    "prot_cause_reopen":   "Protest cause — reopen economy / anti-lockdown (binary 0/1; waves 5,7,9,10,13)",
-    "prot_cause_other":    "Protest cause — other / unspecified (binary 0/1; waves 5,7,9,10,13)",
-    "prot_cause_trump":    "Protest cause — Trump-related (binary 0/1; waves 13,14,16)",
-    "prot_cause_biden":    "Protest cause — Biden-related (binary 0/1; waves 13,14,16)",
-    "prot_cause_cause":    "Protest cause — specific policy cause (binary 0/1; waves 13,14,16)",
-    "prot_cause_memorial": "Protest cause — memorial or ceremonial (binary 0/1; waves 13,14,16)",
+    "prot_cause_elect":    "What was the rally, protest, or vigil about? — Election Fairness (binary 0/1; 1=selected; waves 14,16)",
+    "prot_pan_cause_2":    "Were any of those [pandemic] protests about…? — [W18: Ending quarantine or lockdown restrictions; W22-23: Overturning unfair election results] (1=YES, 2=NO; waves 18,22,23; meaning differs by wave)",
+    "prot_cause_race":     "What was the rally, protest, or vigil about? — Racism and/or police violence (binary 0/1; 1=selected; waves 5,7,9,10,13)",
+    "prot_cause_reopen":   "What was the rally, protest, or vigil about? — Reopening, quarantine, or coronavirus restrictions (binary 0/1; 1=selected; waves 5,7,9,10,13)",
+    "prot_cause_other":    "What was the rally, protest, or vigil about? — Other (binary 0/1; 1=selected; waves 5,7,9,10,13)",
+    "prot_cause_trump":    "What was the rally, protest, or vigil about? — Trump rally (binary 0/1; 1=selected; waves 13,14,16)",
+    "prot_cause_biden":    "What was the rally, protest, or vigil about? — Biden rally (binary 0/1; 1=selected; waves 13,14,16)",
+    "prot_cause_cause":    "What was the rally, protest, or vigil about? — Other candidate or political cause (binary 0/1; 1=selected; waves 13,14,16)",
+    "prot_cause_memorial": "What was the rally, protest, or vigil about? — Memorial for someone I knew personally (binary 0/1; 1=selected; waves 13,14,16)",
 
     # PROTEST_BEHAVIOR_COLUMNS
-    "prot_num_retro":   "Approximately how many protests have you attended in the past year? (ordinal 1–6; wave 14; -99 = skipped/refused)",
-    "protest_retro2":   "Retrospective protest participation — wave 16 (ordinal 1–2; -99 = skipped/refused)",
-    "prot_reopen_time": "When did you participate in reopen / anti-lockdown protests? (ordinal 1–4; wave 17; -99 = skipped/refused)",
-    "prot_pan":         "Did you participate in any protests related to the pandemic? (ordinal 1–2; waves 18,22,23; -99 = skipped/refused)",
-    "blm_protest":      "Have you participated in any Black Lives Matter protests or demonstrations? (ordinal 1–3; waves 35,37; -99 = skipped/refused)",
-    "trump_protest":    "Have you participated in any protests in support of or against Donald Trump? (ordinal 1–2; waves 35,37,38; -99 = skipped/refused)",
+    "prot_num_retro":   "How many days did you attend rallies, protests, or vigils in person? (1=One, 2=Two, 3=Three, 4=Four to ten, 5=Eleven to twenty, 6=Over twenty; wave 14; -99=skipped/refused)",
+    "protest_retro2":   "Did you attend a rally, protest, or vigil in person at some point during the past 12 months? (1=Yes, 2=No; wave 16; -99=skipped/refused)",
+    "prot_reopen_time": "When, if ever, did you last attend a rally, protest, or vigil about reopening, quarantine, or coronavirus restrictions? (1=Never, 2=More than a year ago, 3=More than a month but less than a year ago, 4=In the past month; wave 17; -99=skipped/refused)",
+    "prot_pan":         "Have you attended any protests since the start of the pandemic (since March 1, 2020)? (1=Yes, 2=No; waves 18,22,23; -99=skipped/refused)",
+    "blm_protest":      "In 2020, did you participate in a protest or rally against racism or police violence? (1=Yes, 2=No, 3=Not sure; waves 35,37; -99=skipped/refused)",
+    "trump_protest":    "In the last two months, have you participated in any protests against the Trump administration? (1=Yes, 2=No; waves 35,37,38; -99=skipped/refused)",
 
     # DEMNORMS_COLUMNS (wave 33.5)
-    "demnorms_dembranch":   "Democratic norms — To what extent do you support strong separation of powers between branches of government? (ordinal 1–5; wave 33.5; -99 = skipped/refused)",
-    "demnorms_demconseq":   "Democratic norms — How serious do you think the consequences are when elected officials violate democratic norms? (ordinal 1–5; wave 33.5; -99 = skipped/refused)",
-    "demnorms_journaccess": "Democratic norms — How important is it for journalists to have access to government officials and proceedings? (ordinal 1–5; wave 33.5; -99 = skipped/refused)",
+    "demnorms_dembranch":   "How important is it that the executive, legislative, and judicial branches of government keep one another from having too much power? (1=Not important at all, 2=A little important, 3=Moderately important, 4=Very important, 5=Extremely important; wave 33.5; -99=skipped/refused)",
+    "demnorms_demconseq":   "How important is it that elevated officials face serious consequences if they engage in misconduct? (1=Not important at all, 2=A little important, 3=Moderately important, 4=Very important, 5=Extremely important; wave 33.5; -99=skipped/refused)",
+    "demnorms_journaccess": "Do you favor, oppose, or neither favor nor oppose elected officials restricting journalists' access to information about government decision-making? (1=Favor, 4=Neither favor nor oppose, 5=Oppose; NOTE: non-standard non-monotonic coding — 1=Favor restriction, 5=Oppose restriction; wave 33.5; -99=skipped/refused)",
 
     # ELECTION_INTEGRITY_COLUMNS (wave 33.5 additions)
-    "votes_counted_red":   "How confident are you that votes in reliably Republican states were counted accurately? (ordinal 1–4; wave 33.5; -99 = skipped/refused)",
-    "votes_counted_blue":  "How confident are you that votes in reliably Democratic states were counted accurately? (ordinal 1–4; wave 33.5; -99 = skipped/refused)",
-    "votes_counted_swing": "How confident are you that votes in swing states were counted accurately? (ordinal 1–4; wave 33.5; -99 = skipped/refused)",
+    "votes_counted_red":   "How confident are you that votes in states that tend to vote for Republicans (red states) will be counted as intended? (1=Very confident, 2=Somewhat confident, 3=Not very confident, 4=Not at all confident; wave 33.5; -99=skipped/refused)",
+    "votes_counted_blue":  "How confident are you that votes in states that tend to vote for Democrats (blue states) will be counted as intended? (1=Very confident, 2=Somewhat confident, 3=Not very confident, 4=Not at all confident; wave 33.5; -99=skipped/refused)",
+    "votes_counted_swing": "How confident are you that votes in states that do not consistently vote for one party or another (battleground/swing states) will be counted as intended? (1=Very confident, 2=Somewhat confident, 3=Not very confident, 4=Not at all confident; wave 33.5; -99=skipped/refused)",
 
-    # W38_POLITICAL_COLUMNS (wave 33.5 additions)
-    "polviolence1": "How much do you agree or disagree that violence may be necessary to achieve important political goals? (ordinal 1–5; wave 33.5; -99 = skipped/refused)",
-    "food_stamps":  "Do you think the food stamp / SNAP program should be expanded, kept the same, or cut? (ordinal 1–2; wave 33.5; -99 = skipped/refused)",
-    "improve_1":    "Economic improvement scale item 1 — how much better or worse off are you financially than a year ago? (0–100 slider; wave 35; -99 = refused)",
-    "improve_2":    "Economic improvement scale item 2 — how much better or worse off do you expect to be financially in a year? (0–100 slider; wave 35; -99 = refused)",
+    # W38_POLITICAL_COLUMNS (wave 33.5 and wave 35 additions)
+    "polviolence1": "If it became clear to you that the presidential election was not conducted fairly, would you approve or disapprove of other people who reacted by using violence? (1=Strongly approve, 2=Somewhat approve, 3=Neither approve nor disapprove, 4=Somewhat disapprove, 5=Strongly disapprove; NOTE: higher values = more opposed to political violence; wave 33.5; -99=skipped/refused)",
+    "food_stamps":  "Did anyone in your household receive benefits from the Supplemental Nutrition Assistance Program (SNAP) or used a SNAP benefit card in 2024? (1=Yes, 2=No; wave 33.5; -99=skipped/refused)",
+    "improve_1":    "[improve] On a scale of 0 to 100 (0=Will never do, 100=Will definitely do), in the next 12 months, how likely that you might: Take part in a protest, march, or demonstration? (0–100 slider; wave 35; -99=refused)",
+    "improve_2":    "[improve] On a scale of 0 to 100 (0=Will never do, 100=Will definitely do), in the next 12 months, how likely that you might: Go to any political meetings, rallies, speeches, dinners or similar events in support of a particular political candidate? (0–100 slider; wave 35; -99=refused)",
 
     # ELECTION_INTEGRITY_COLUMNS
     "el_conf":    "How confident are you that votes in U.S. elections are counted accurately? (ordinal; -99 = skipped/refused)",

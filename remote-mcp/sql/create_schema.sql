@@ -4,7 +4,7 @@
 
 -- Create clustered table for fast querying by wave and demographics
 CREATE OR REPLACE TABLE `social_media_demographics.panel_data_indexed`
-CLUSTER BY wave, age_cat_8, gender, party3
+CLUSTER BY age_cat_8, gender, party3
 AS SELECT
   id,
   wave,
@@ -411,11 +411,8 @@ AS SELECT
   CAST(fn_47 AS INT64) as fn_47,
 
   -- Fact-checking capacity (binary 0/1; NULL = not asked this wave)
-  CAST(cap_fn_1 AS INT64) as cap_fn_1,
-  CAST(cap_fn_2 AS INT64) as cap_fn_2,
   CAST(cap_fn_3 AS INT64) as cap_fn_3,
   CAST(cap_fn_4 AS INT64) as cap_fn_4,
-  CAST(cap_fn_5 AS INT64) as cap_fn_5,
   CAST(cap_fn_6 AS INT64) as cap_fn_6,
 
   -- Political discussion (ordinal; -99 = skipped/refused; NULL = not asked this wave)
@@ -423,8 +420,23 @@ AS SELECT
   CAST(fr_pol_6 AS INT64) as fr_pol_6,
 
   -- Protest causes (binary 0/1; NULL = not asked this wave)
-  CAST(prot_cause_elect AS INT64) as prot_cause_elect,
-  CAST(prot_pan_cause_2 AS INT64) as prot_pan_cause_2,
+  CAST(prot_cause_elect    AS INT64) as prot_cause_elect,
+  CAST(prot_pan_cause_2    AS INT64) as prot_pan_cause_2,
+  CAST(prot_cause_race     AS INT64) as prot_cause_race,
+  CAST(prot_cause_reopen   AS INT64) as prot_cause_reopen,
+  CAST(prot_cause_other    AS INT64) as prot_cause_other,
+  CAST(prot_cause_trump    AS INT64) as prot_cause_trump,
+  CAST(prot_cause_biden    AS INT64) as prot_cause_biden,
+  CAST(prot_cause_cause    AS INT64) as prot_cause_cause,
+  CAST(prot_cause_memorial AS INT64) as prot_cause_memorial,
+
+  -- Protest behavior (ordinal; -99 = skipped/refused; NULL = not asked this wave)
+  CAST(prot_num_retro   AS INT64) as prot_num_retro,    -- wave 14; number of protests attended (1–6)
+  CAST(protest_retro2   AS INT64) as protest_retro2,    -- wave 16; retrospective protest participation (1–2)
+  CAST(prot_reopen_time AS INT64) as prot_reopen_time,  -- wave 17; timing of reopen protests (1–4)
+  CAST(prot_pan         AS INT64) as prot_pan,          -- waves 18,22,23; pandemic protest participation (1–2)
+  CAST(blm_protest      AS INT64) as blm_protest,       -- waves 35,37; BLM protest participation (1–3)
+  CAST(trump_protest    AS INT64) as trump_protest,     -- waves 35,37,38; Trump-related protest (1–2)
 
   -- Election confidence (ordinal; -99 = skipped/refused; NULL = not asked this wave)
   CAST(el_conf    AS INT64) as el_conf,
@@ -447,12 +459,6 @@ AS SELECT
   CAST(el_fair_3 AS INT64) as el_fair_3,
   CAST(el_fair_4 AS INT64) as el_fair_4,
 
-  -- Election challenge support (ordinal; -99 = skipped/refused; NULL = not asked)
-  CAST(el_chal_1 AS INT64) as el_chal_1,
-  CAST(el_chal_2 AS INT64) as el_chal_2,
-  CAST(el_chal_3 AS INT64) as el_chal_3,
-  CAST(el_chal_4 AS INT64) as el_chal_4,
-
   -- Election trust (ordinal; -99 = skipped/refused; NULL = not asked)
   CAST(el_trust_biden  AS INT64) as el_trust_biden,
   CAST(el_trust_court  AS INT64) as el_trust_court,
@@ -463,6 +469,22 @@ AS SELECT
   CAST(vote_counted         AS INT64) as vote_counted,
   CAST(vote_counted_state   AS INT64) as vote_counted_state,
   CAST(voted_counted_nation AS INT64) as voted_counted_nation,
+  CAST(votes_counted_red    AS INT64) as votes_counted_red,    -- wave 33.5; confidence in red-state vote counting (1–4)
+  CAST(votes_counted_blue   AS INT64) as votes_counted_blue,   -- wave 33.5; confidence in blue-state vote counting (1–4)
+  CAST(votes_counted_swing  AS INT64) as votes_counted_swing,  -- wave 33.5; confidence in swing-state vote counting (1–4)
+
+  -- Democratic norms (ordinal 1–5; wave 33.5; -99 = skipped/refused)
+  CAST(DEMNORMS_DEMBRANCH   AS INT64) as demnorms_dembranch,   -- support for democratic branch separation
+  CAST(DEMNORMS_DEMCONSEQ   AS INT64) as demnorms_demconseq,   -- beliefs about consequences of democratic norm violations
+  CAST(DEMNORMS_JOURNACCESS AS INT64) as demnorms_journaccess, -- support for journalist access to government
+
+  -- Political violence and policy attitudes (ordinal; wave 33.5; -99 = skipped/refused)
+  CAST(polviolence1 AS INT64) as polviolence1, -- political violence justification (1–5)
+  CAST(food_stamps  AS INT64) as food_stamps,  -- food stamps / SNAP program attitudes (1–2)
+
+  -- Economic improvement sliders (0–100; wave 35; -99 = refused)
+  CAST(improve_1 AS INT64) as improve_1,  -- economic improvement scale item 1
+  CAST(improve_2 AS INT64) as improve_2,  -- economic improvement scale item 2
 
   -- Political trust extensions (ordinal; -99 = skipped/refused; NULL = not asked)
   CAST(pol_trust_ai       AS INT64) as pol_trust_ai,
@@ -585,7 +607,7 @@ FROM `social_media_demographics.panel_data`
 -- Exclude national sub-sample waves (Size != 'full' per Wave to Dates.xlsx).
 -- Waves 4, 6, 8 = small; 11, 12 = medium; 15 = small.
 -- All analyses should use full-size waves only.
-WHERE CAST(wave AS STRING) NOT IN ('4', '6', '8', '11', '12', '15');
+WHERE wave NOT IN (4, 6, 8, 11, 12, 15);
 
 -- Validation summary
 SELECT

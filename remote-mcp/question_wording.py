@@ -307,11 +307,9 @@ QUESTION_WORDING: dict[str, str] = {
 
     # CAP_FN_COLUMNS
     # Fact-checking capacity / behavior items (binary 0/1; NULL = not asked this wave)
-    "cap_fn_1": "Fact-checking behavior / capacity item 1 (binary 0/1)",
-    "cap_fn_2": "Fact-checking behavior / capacity item 2 (binary 0/1)",
+    # cap_fn_1, cap_fn_2, cap_fn_5 dropped from 2026-07-06 export
     "cap_fn_3": "Fact-checking behavior / capacity item 3 (binary 0/1)",
     "cap_fn_4": "Fact-checking behavior / capacity item 4 (binary 0/1)",
-    "cap_fn_5": "Fact-checking behavior / capacity item 5 (binary 0/1)",
     "cap_fn_6": "Fact-checking behavior / capacity item 6 (binary 0/1)",
 
     # FR_POL_COLUMNS
@@ -319,8 +317,39 @@ QUESTION_WORDING: dict[str, str] = {
     "fr_pol_6": "Political discussion frequency follow-up item 6 (ordinal; -99 = skipped/refused)",
 
     # PROT_COLUMNS
-    "prot_cause_elect": "Protest cause — election-related (binary 0/1; 1 = participated in election-related protest)",
-    "prot_pan_cause_2": "Pandemic protest cause item 2 (binary 0/1)",
+    "prot_cause_elect":    "Protest cause — election-related (binary 0/1; 1 = participated in election-related protest)",
+    "prot_pan_cause_2":    "Pandemic protest cause item 2 (binary 0/1)",
+    "prot_cause_race":     "Protest cause — racial justice (binary 0/1; waves 5,7,9,10,13)",
+    "prot_cause_reopen":   "Protest cause — reopen economy / anti-lockdown (binary 0/1; waves 5,7,9,10,13)",
+    "prot_cause_other":    "Protest cause — other / unspecified (binary 0/1; waves 5,7,9,10,13)",
+    "prot_cause_trump":    "Protest cause — Trump-related (binary 0/1; waves 13,14,16)",
+    "prot_cause_biden":    "Protest cause — Biden-related (binary 0/1; waves 13,14,16)",
+    "prot_cause_cause":    "Protest cause — specific policy cause (binary 0/1; waves 13,14,16)",
+    "prot_cause_memorial": "Protest cause — memorial or ceremonial (binary 0/1; waves 13,14,16)",
+
+    # PROTEST_BEHAVIOR_COLUMNS
+    "prot_num_retro":   "Approximately how many protests have you attended in the past year? (ordinal 1–6; wave 14; -99 = skipped/refused)",
+    "protest_retro2":   "Retrospective protest participation — wave 16 (ordinal 1–2; -99 = skipped/refused)",
+    "prot_reopen_time": "When did you participate in reopen / anti-lockdown protests? (ordinal 1–4; wave 17; -99 = skipped/refused)",
+    "prot_pan":         "Did you participate in any protests related to the pandemic? (ordinal 1–2; waves 18,22,23; -99 = skipped/refused)",
+    "blm_protest":      "Have you participated in any Black Lives Matter protests or demonstrations? (ordinal 1–3; waves 35,37; -99 = skipped/refused)",
+    "trump_protest":    "Have you participated in any protests in support of or against Donald Trump? (ordinal 1–2; waves 35,37,38; -99 = skipped/refused)",
+
+    # DEMNORMS_COLUMNS (wave 33.5)
+    "demnorms_dembranch":   "Democratic norms — To what extent do you support strong separation of powers between branches of government? (ordinal 1–5; wave 33.5; -99 = skipped/refused)",
+    "demnorms_demconseq":   "Democratic norms — How serious do you think the consequences are when elected officials violate democratic norms? (ordinal 1–5; wave 33.5; -99 = skipped/refused)",
+    "demnorms_journaccess": "Democratic norms — How important is it for journalists to have access to government officials and proceedings? (ordinal 1–5; wave 33.5; -99 = skipped/refused)",
+
+    # ELECTION_INTEGRITY_COLUMNS (wave 33.5 additions)
+    "votes_counted_red":   "How confident are you that votes in reliably Republican states were counted accurately? (ordinal 1–4; wave 33.5; -99 = skipped/refused)",
+    "votes_counted_blue":  "How confident are you that votes in reliably Democratic states were counted accurately? (ordinal 1–4; wave 33.5; -99 = skipped/refused)",
+    "votes_counted_swing": "How confident are you that votes in swing states were counted accurately? (ordinal 1–4; wave 33.5; -99 = skipped/refused)",
+
+    # W38_POLITICAL_COLUMNS (wave 33.5 additions)
+    "polviolence1": "How much do you agree or disagree that violence may be necessary to achieve important political goals? (ordinal 1–5; wave 33.5; -99 = skipped/refused)",
+    "food_stamps":  "Do you think the food stamp / SNAP program should be expanded, kept the same, or cut? (ordinal 1–2; wave 33.5; -99 = skipped/refused)",
+    "improve_1":    "Economic improvement scale item 1 — how much better or worse off are you financially than a year ago? (0–100 slider; wave 35; -99 = refused)",
+    "improve_2":    "Economic improvement scale item 2 — how much better or worse off do you expect to be financially in a year? (0–100 slider; wave 35; -99 = refused)",
 
     # ELECTION_INTEGRITY_COLUMNS
     "el_conf":    "How confident are you that votes in U.S. elections are counted accurately? (ordinal; -99 = skipped/refused)",
@@ -332,10 +361,6 @@ QUESTION_WORDING: dict[str, str] = {
     "el_fair_2":  "Election fairness perception item 2 (ordinal; -99 = skipped/refused)",
     "el_fair_3":  "Election fairness perception item 3 (ordinal; -99 = skipped/refused)",
     "el_fair_4":  "Election fairness perception item 4 (ordinal; -99 = skipped/refused)",
-    "el_chal_1":  "Support for challenging election results — item 1 (ordinal; -99 = skipped/refused)",
-    "el_chal_2":  "Support for challenging election results — item 2 (ordinal; -99 = skipped/refused)",
-    "el_chal_3":  "Support for challenging election results — item 3 (ordinal; -99 = skipped/refused)",
-    "el_chal_4":  "Support for challenging election results — item 4 (ordinal; -99 = skipped/refused)",
     "el_trust_biden":  "How much do you trust the following to ensure fair elections? — Joe Biden (ordinal; -99 = skipped/refused)",
     "el_trust_court":  "How much do you trust the following to ensure fair elections? — The courts (ordinal; -99 = skipped/refused)",
     "el_trust_police": "How much do you trust the following to ensure fair elections? — The police (ordinal; -99 = skipped/refused)",

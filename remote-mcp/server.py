@@ -277,6 +277,10 @@ W38_POLITICAL_COLUMNS = [
     "gerry_amend",       # gerrymandering amendment support (ordinal)
     "gerry_state_aware", # gerrymandering state awareness (ordinal)
     "support_cuba",      # Cuba policy support (ordinal)
+    "polviolence1",      # political violence justification (1–5; wave 33.5)
+    "food_stamps",       # food stamps / SNAP program support (1–2; wave 33.5)
+    "improve_1",         # economic improvement scale item 1 (0–100 slider; wave 35)
+    "improve_2",         # economic improvement scale item 2 (0–100 slider; wave 35)
 ]
 
 # PHQ-9 depression screening items — SENSITIVE
@@ -367,22 +371,52 @@ FAKE_NEWS_COLUMNS = [
 ]
 
 # Fact-checking capacity / behavior (binary 0/1; NULL = not asked this wave)
-CAP_FN_COLUMNS = ["cap_fn_1", "cap_fn_2", "cap_fn_3", "cap_fn_4", "cap_fn_5", "cap_fn_6"]
+# cap_fn_1, cap_fn_2, cap_fn_5 were dropped from the 2026-07-06 export.
+CAP_FN_COLUMNS = ["cap_fn_3", "cap_fn_4", "cap_fn_6"]
 
 # Political discussion frequency follow-up items (ordinal; -99 = skipped/refused; NULL = not asked)
 FR_POL_COLUMNS = ["fr_pol_4", "fr_pol_6"]
 
 # Protest causes (binary 0/1; NULL = not asked this wave)
-PROT_COLUMNS = ["prot_cause_elect", "prot_pan_cause_2"]
+PROT_COLUMNS = [
+    "prot_cause_elect",    # waves 5,7,9,10,13,14,16; election-related protest
+    "prot_pan_cause_2",    # pandemic protest cause item 2
+    "prot_cause_race",     # waves 5,7,9,10,13; racial justice protest
+    "prot_cause_reopen",   # waves 5,7,9,10,13; reopen protest
+    "prot_cause_other",    # waves 5,7,9,10,13; other protest cause
+    "prot_cause_trump",    # waves 13,14,16; Trump-related protest cause
+    "prot_cause_biden",    # waves 13,14,16; Biden-related protest cause
+    "prot_cause_cause",    # waves 13,14,16; cause-driven protest
+    "prot_cause_memorial", # waves 13,14,16; memorial/ceremonial protest
+]
+
+# Protest behavior — ordinal items tracking frequency/timing of protest participation
+# (ordinal; -99 = skipped/refused; NULL = not asked this wave)
+PROTEST_BEHAVIOR_COLUMNS = [
+    "prot_num_retro",   # wave 14; number of protests attended retrospectively (1–6)
+    "protest_retro2",   # wave 16; retrospective protest participation (ordinal 1–2)
+    "prot_reopen_time", # wave 17; timing of reopen protests (ordinal 1–4)
+    "prot_pan",         # waves 18,22,23; pandemic protest participation (ordinal 1–2)
+    "blm_protest",      # waves 35,37; BLM protest participation (ordinal 1–3)
+    "trump_protest",    # waves 35,37,38; Trump-related protest participation (ordinal 1–2)
+]
+
+# Democratic norms battery (ordinal 1–5; wave 33.5; -99 = skipped/refused)
+DEMNORMS_COLUMNS = [
+    "demnorms_dembranch",   # support for democratic branch separation
+    "demnorms_demconseq",   # beliefs about consequences of democratic norm violations
+    "demnorms_journaccess", # support for journalist access to government
+]
 
 # Election confidence and integrity attitudes (ordinal; -99 = skipped/refused; NULL = not asked)
+# el_chal_1-4 were dropped from the 2026-07-06 export.
 ELECTION_INTEGRITY_COLUMNS = [
     "el_conf",    "el_conf_22", "el_conf_24", "el_conf_26",
     "el_count",
     "el_fair_1",  "el_fair_2",  "el_fair_3",  "el_fair_4",
-    "el_chal_1",  "el_chal_2",  "el_chal_3",  "el_chal_4",
     "el_trust_biden", "el_trust_court", "el_trust_police",
     "ballot_access", "vote_counted", "vote_counted_state", "voted_counted_nation",
+    "votes_counted_red", "votes_counted_blue", "votes_counted_swing",  # wave 33.5; by-party-state confidence
 ]
 
 # Election concerns (binary 0/1; NULL = not asked this wave)
@@ -454,7 +488,8 @@ ALL_ORDINAL_COLUMNS = (
     PHQ9_COLUMNS + OZEMPIC_COLUMNS + COV_BEH_COLUMNS + VACCINATION_COLUMNS + ELECTION_COLUMNS +
     COV_TRUST_COLUMNS + W38_POLITICAL_COLUMNS +
     FAKE_NEWS_COLUMNS + FR_POL_COLUMNS + ELECTION_INTEGRITY_COLUMNS +
-    AI_FREQ_COLUMNS + AI_ATTITUDE_COLUMNS
+    AI_FREQ_COLUMNS + AI_ATTITUDE_COLUMNS +
+    PROTEST_BEHAVIOR_COLUMNS + DEMNORMS_COLUMNS
 )
 
 # All binary columns beyond the core use_* set
@@ -508,6 +543,8 @@ _ALL_REGRESSION_COLUMNS: set[str] = set(
     + AI_KNOW_POS_COLUMNS
     + AI_KNOW_TOOL_COLUMNS
     + PLUMBING_COLUMNS
+    + PROTEST_BEHAVIOR_COLUMNS
+    + DEMNORMS_COLUMNS
 )
 
 # Binary-outcome columns (valid for logistic regression)
@@ -1090,6 +1127,8 @@ async def get_available_variables() -> str:
             "cap_fn_columns": CAP_FN_COLUMNS,
             "fr_pol_columns": FR_POL_COLUMNS,
             "prot_columns": PROT_COLUMNS,
+            "protest_behavior_columns": PROTEST_BEHAVIOR_COLUMNS,
+            "demnorms_columns": DEMNORMS_COLUMNS,
             "election_integrity_columns": ELECTION_INTEGRITY_COLUMNS,
             "election_concern_columns": ELECTION_CONCERN_COLUMNS,
             "ai_attitude_columns": AI_ATTITUDE_COLUMNS,
@@ -1118,7 +1157,7 @@ async def get_available_variables() -> str:
                     "unweighted_n fields are raw respondent headcounts for reliability checks only — "
                     "never use unweighted_n to compute percentages or present as population estimates."
                 ),
-                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35; ai_freq/ai_why/ai_how/ai_attitude/survey_ai/llm/pol_trust_ai/pol_trust_election from wave 35+; ai_know_1-11 (positional awareness) wave 31 only; ai_know_<tool> (named-tool awareness) waves 32/35+ (newer tools like grok/deepseek wave 35 only); el_conf_26/ballot_access/vote_counted from wave 38+; running_water_pct/fips/county available across all waves (county-level ACS merge, 97.6% coverage); vaccination columns (vaccine_get/kff_vacc1/vac_boost/vac_ref/vac_total) from COVID-era waves only — vaccine_get is the broadest (~60% of rows), kff_vacc1/vac_ref/vac_total are sparse (<3% of rows).",
+                "wave_coverage": "voted24 only from wave 34+; economy only waves 32/35+; sm_post_* variants only waves 27/28 and 33+; ozempic only wave 35; ai_freq/ai_why/ai_how/ai_attitude/survey_ai/llm/pol_trust_ai/pol_trust_election from wave 35+; ai_know_1-11 (positional awareness) wave 31 only; ai_know_<tool> (named-tool awareness) waves 32/35+ (newer tools like grok/deepseek wave 35 only); el_conf_26/ballot_access/vote_counted from wave 38+; running_water_pct/fips/county available across all waves (county-level ACS merge, 97.6% coverage); vaccination columns (vaccine_get/kff_vacc1/vac_boost/vac_ref/vac_total) from COVID-era waves only — vaccine_get is the broadest (~60% of rows), kff_vacc1/vac_ref/vac_total are sparse (<3% of rows); prot_cause_race/reopen/other waves 5,7,9,10,13; prot_cause_trump/biden/cause/memorial waves 13,14,16; prot_num_retro wave 14; protest_retro2 wave 16; prot_reopen_time wave 17; prot_pan waves 18,22,23; blm_protest waves 35,37; trump_protest waves 35,37,38; demnorms_*/votes_counted_red/blue/swing/polviolence1/food_stamps wave 33.5 only; improve_1/improve_2 wave 35 only.",
                 "race_booleans": "race_asian/black/hisp/natam/white/other are binary (0/1) flags replacing race_cat_5. Valid as regression predictors and in marginals/marginals_by_wave (returns adoption rate, like platform columns).",
                 "ozempic_regression": "Derived binary outcomes for logistic regression (wave 35 only): ozempic_binary (currently taking OR previously took [1,2] vs. never [3,4,5]), ozempic_current (currently taking [1] vs. never [3,4,5] — excludes stopped). ozempic/ozempic_why/ozempic_time_* are valid OLS outcomes. Always use wave='35'.",
                 "phq9_sensitivity": "PHQ-9 items are clinical mental health measures. Only aggregate statistics are returned.",

@@ -47,6 +47,35 @@ if [ ! -f "$DATA_FILE" ]; then
     exit 1
 fi
 
+# Generate explicit schema JSON so wave is FLOAT64 (handles fractional waves 33.5, 35.1).
+# --autodetect infers INT64 from the first rows (all wave=1) and then fails on fractional values.
+SCHEMA_FILE=$(mktemp /tmp/chip50_schema_XXXXXX.json)
+python3 - "$DATA_FILE" "$SCHEMA_FILE" <<'PYEOF'
+import csv, json, sys
+
+# Columns that must be STRING (categorical, identifier, or free-text)
+STRING_COLS = {
+    'id', 'state_code', 'race_cat_5', 'gender', 'party3', 'urban_type',
+    'age_cat_8', 'education_cat', 'race', 'county', 'survey_ai_tools',
+    'StartDate', 'EndDate',
+}
+
+csv_file, out_file = sys.argv[1], sys.argv[2]
+with open(csv_file, newline='') as f:
+    cols = csv.DictReader(f).fieldnames
+
+def col_type(col):
+    # Free-text open-ended fields
+    if col.endswith('_TEXT') or col in STRING_COLS:
+        return 'STRING'
+    return 'FLOAT64'
+
+schema = [{'name': col, 'type': col_type(col), 'mode': 'NULLABLE'} for col in cols]
+with open(out_file, 'w') as f:
+    json.dump(schema, f)
+print(f"Schema written: {len(schema)} columns")
+PYEOF
+
 # Load CSV into raw panel_data table (overwrite if exists)
 echo "Loading CSV into $RAW_TABLE (this may take a minute)..."
 bq load \
@@ -54,9 +83,10 @@ bq load \
     --source_format=CSV \
     --skip_leading_rows=1 \
     --replace \
-    --autodetect \
+    --schema="$SCHEMA_FILE" \
     "$RAW_TABLE" \
     "$DATA_FILE"
+rm -f "$SCHEMA_FILE"
 echo "Raw data loaded."
 
 # Rebuild clustered indexed table

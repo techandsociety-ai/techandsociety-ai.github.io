@@ -98,6 +98,8 @@ DEMOGRAPHIC_COLUMNS = [
     "urban_type",
     "state",
     "state_code",
+    "fips",
+    "county",
 ]
 
 PLATFORM_COLUMNS = [
@@ -399,7 +401,7 @@ AI_ATTITUDE_COLUMNS = [
 
 # County-level plumbing / infrastructure (ACS; merged on respondent id)
 # running_water_pct is continuous FLOAT — no -99 sentinel, valid as OLS outcome/predictor.
-# fips and county are identifiers, not analysis variables.
+# fips (INT) and county (STRING) are whitelisted as grouping demographics for geographic crosstabs.
 PLUMBING_COLUMNS = ["running_water_pct"]
 
 # AI tool usage frequency by mention position (ordinal 1–6; -99 = skipped/refused)
@@ -1100,8 +1102,8 @@ async def get_available_variables() -> str:
             "vaccination_columns": VACCINATION_COLUMNS,
             "plumbing_columns": {
                 "running_water_pct": "County-level % of households with complete indoor plumbing (ACS). Continuous FLOAT, range ~0–100. Valid as OLS outcome or predictor. Coverage: 97.6% of respondents matched to a county.",
-                "fips": "County FIPS code (INT). Identifier only — not an analysis variable.",
-                "county": "County name string. Identifier only — not an analysis variable.",
+                "fips": "County FIPS code (INT). Valid as a grouping demographic for geographic crosstabs (many categories — expect large result sets).",
+                "county": "County name string. Valid as a grouping demographic for geographic crosstabs (many categories — expect large result sets).",
             },
             "derived_columns": {k: v["description"] for k, v in _DERIVED_COLUMNS.items()},
             "total_rows": int(row["total_rows"]),

@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function(){
+  const HASH='808488bd49a9971556eefb6aeafde6f5b3f5434205fa3670b72362dafc6aee43';
+  if(sessionStorage.getItem('ts_auth')===HASH)return;
+  document.addEventListener('DOMContentLoaded',function(){
+    document.body.style.overflow='hidden';
+    var g=document.createElement('div');
+    g.id='ts-gate';
+    g.innerHTML=`
+<div id="ts-gate-box">
+  <div id="ts-gate-brand">
+    <svg width="28" height="28" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="5" cy="5" r="2.2" fill="#2DC4B6"/>
+      <circle cx="25" cy="8" r="1.6" fill="#EDAA1B"/>
+      <circle cx="15" cy="25" r="2" fill="#2DC4B6"/>
+      <circle cx="23" cy="21" r="1.3" fill="#BF4E2C"/>
+      <line x1="5" y1="5" x2="25" y2="8" stroke="#2DC4B6" stroke-width="0.7" stroke-opacity="0.5"/>
+      <line x1="25" y1="8" x2="23" y2="21" stroke="#192E4A" stroke-width="0.7"/>
+      <line x1="23" y1="21" x2="15" y2="25" stroke="#2DC4B6" stroke-width="0.7" stroke-opacity="0.5"/>
+      <line x1="5" y1="5" x2="15" y2="25" stroke="#192E4A" stroke-width="0.5" stroke-dasharray="2,2"/>
+    </svg>
+    <div>
+      <div id="ts-gate-l1">Tech &amp;</div>
+      <div id="ts-gate-l2">Society</div>
+    </div>
+  </div>
+  <p id="ts-gate-sub">Enter password to continue</p>
+  <input id="ts-gate-input" type="password" placeholder="Password" autocomplete="current-password">
+  <button id="ts-gate-btn">Continue</button>
+  <div id="ts-gate-err"></div>
+</div>`;
+    document.body.prepend(g);
+    function attempt(){
+      var val=document.getElementById('ts-gate-input').value;
+      crypto.subtle.digest('SHA-256',new TextEncoder().encode(val)).then(function(buf){
+        var hex=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+        if(hex===HASH){
+          sessionStorage.setItem('ts_auth',HASH);
+          document.getElementById('ts-gate').remove();
+          document.body.style.overflow='';
+        }else{
+          var e=document.getElementById('ts-gate-err');
+          e.textContent='Incorrect password.';
+          document.getElementById('ts-gate-input').value='';
+          document.getElementById('ts-gate-input').focus();
+        }
+      });
+    }
+    document.getElementById('ts-gate-btn').addEventListener('click',attempt);
+    document.getElementById('ts-gate-input').addEventListener('keydown',function(e){if(e.key==='Enter')attempt();});
+    setTimeout(function(){document.getElementById('ts-gate-input').focus();},60);
+  });
+})();
+</script>
+<style>
+#ts-gate{
+  position:fixed;inset:0;z-index:9999;
+  background:#091525;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Inter',system-ui,sans-serif;
+}
+#ts-gate-box{
+  width:100%;max-width:340px;
+  padding:44px 44px 40px;
+  background:#0C1D35;
+  border:1px solid #192E4A;
+  border-top:2px solid #2DC4B6;
+  text-align:center;
+}
+#ts-gate-brand{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  margin-bottom:28px;
+}
+#ts-gate-l1{
+  font-family:'Inter Tight',system-ui,sans-serif;
+  font-size:9.5px;font-weight:500;
+  letter-spacing:0.24em;text-transform:uppercase;
+  color:#7A8FA8;text-align:left;
+}
+#ts-gate-l2{
+  font-family:'Inter Tight',system-ui,sans-serif;
+  font-size:13px;font-weight:700;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:#2DC4B6;text-align:left;
+}
+#ts-gate-sub{
+  font-size:13.5px;color:#7A8FA8;
+  margin-bottom:22px;letter-spacing:0.01em;
+}
+#ts-gate-input{
+  width:100%;padding:10px 14px;
+  background:#091525;
+  border:1px solid #192E4A;
+  color:#EDE8D9;
+  font-family:inherit;font-size:15px;
+  outline:none;
+  margin-bottom:10px;
+  transition:border-color 0.15s;
+}
+#ts-gate-input:focus{border-color:#2DC4B6;}
+#ts-gate-input::placeholder{color:#4A607A;}
+#ts-gate-btn{
+  width:100%;padding:10px;
+  background:transparent;
+  border:1px solid #1A7A73;
+  color:#2DC4B6;
+  font-family:'Inter Tight',system-ui,sans-serif;
+  font-size:11px;font-weight:600;
+  letter-spacing:0.12em;text-transform:uppercase;
+  cursor:pointer;
+  transition:all 0.18s;
+}
+#ts-gate-btn:hover{background:rgba(45,196,182,0.1);border-color:#2DC4B6;}
+#ts-gate-err{
+  margin-top:10px;font-size:12.5px;
+  color:#BF4E2C;min-height:18px;
+  letter-spacing:0.02em;
+}
+</style>
+<title>Technology &amp; Society — Observatory of American Life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Inter:wght@300;400;500;600&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════
+   DESIGN TOKENS  (matched to Republic of Technology)
+═══════════════════════════════════════════════ */
+:root {
+  --bg:           #091525;   /* deep midnight navy */
+  --bg-card:      #0C1D35;   /* card surface       */
+  --bg-card-hover:#0F2440;
+  --border:       #192E4A;   /* primary border     */
+  --border-2:     #253F65;   /* brighter border    */
+
+  --cream:        #EDE8D9;   /* primary text       */
+  --cream-2:      #C5BFB1;   /* secondary text     */
+  --cream-dim:    #7A8FA8;   /* muted text / labels */
+
+  --teal:         #2DC4B6;   /* primary accent     */
+  --teal-dim:     #1A7A73;   /* muted teal         */
+  --teal-glow:    rgba(45,196,182,0.12);
+
+  --terracotta:   #BF4E2C;   /* italic subtitle    */
+  --amber:        #EDAA1B;   /* gold dots          */
+  --purple:       #7B6BA8;   /* bubble accent      */
+  --coral:        #C4706C;   /* bubble accent 2    */
+  --green-m:      #5B9A7A;   /* muted green        */
+  --sky:          #4BC5E8;   /* sky blue accent    */
+
+  --font-serif:   'Cormorant Garamond', Georgia, serif;
+  --font-sans:    'Inter', system-ui, sans-serif;
+  --font-tight:   'Inter Tight', system-ui, sans-serif;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET + BASE
+═══════════════════════════════════════════════ */
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 54px;
+  background: rgba(9,21,37,0.90);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+}
+.nav-inner {
+  max-width: 1240px; margin: 0 auto;
+  padding: 0 40px;
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* brand */
+.brand {
+  display: flex; align-items: center; gap: 11px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.brand-icon { width: 30px; height: 30px; }
+.brand-text { line-height: 1.1; }
+.brand-l1 {
+  display: block;
+  font-family: var(--font-tight);
+  font-size: 9.5px; font-weight: 500;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--cream-dim);
+}
+.brand-l2 {
+  display: block;
+  font-family: var(--font-tight);
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--teal);
+}
+
+/* nav links */
+.nav-links {
+  display: flex; gap: 2px; list-style: none;
+}
+.nav-links a {
+  font-family: var(--font-sans);
+  font-size: 13px; font-weight: 400;
+  color: var(--cream-dim);
+  text-decoration: none;
+  padding: 6px 14px; border-radius: 3px;
+  transition: color 0.18s;
+}
+.nav-links a:hover { color: var(--cream); }
+.nav-links a.active { color: var(--teal); }
+
+/* cta */
+.nav-cta {
+  font-family: var(--font-tight);
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--teal);
+  text-decoration: none;
+  padding: 6px 16px;
+  border: 1px solid var(--teal-dim);
+  border-radius: 3px;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.nav-cta:hover {
+  background: var(--teal-glow);
+  border-color: var(--teal);
+}
+
+/* ═══════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  height: 100vh; min-height: 680px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+#constellation {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.hero-inner {
+  position: relative; z-index: 2;
+  text-align: center;
+  padding: 0 40px;
+  max-width: 900px;
+}
+.hero-eyebrow {
+  font-family: var(--font-tight);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.26em; text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 30px;
+  opacity: 0; animation: up 0.9s cubic-bezier(.22,1,.36,1) 0.2s forwards;
+}
+.hero-eyebrow::before,
+.hero-eyebrow::after {
+  content: '·';
+  color: var(--border-2);
+  margin: 0 10px;
+}
+.hero-title {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(56px, 9vw, 104px);
+  line-height: 0.97;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+  margin-bottom: 26px;
+  opacity: 0; animation: up 1s cubic-bezier(.22,1,.36,1) 0.35s forwards;
+}
+.hero-sub {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(19px, 2.6vw, 28px);
+  color: var(--terracotta);
+  margin-bottom: 52px;
+  opacity: 0; animation: up 1s cubic-bezier(.22,1,.36,1) 0.5s forwards;
+}
+.hero-btns {
+  display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+  opacity: 0; animation: up 1s cubic-bezier(.22,1,.36,1) 0.65s forwards;
+}
+.btn-ghost {
+  font-family: var(--font-tight);
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 11px 26px;
+  border: 1px solid rgba(237,232,217,0.28);
+  color: var(--cream); text-decoration: none;
+  border-radius: 3px; transition: all 0.18s;
+}
+.btn-ghost:hover {
+  border-color: rgba(237,232,217,0.6);
+  background: rgba(237,232,217,0.05);
+}
+.btn-teal {
+  font-family: var(--font-tight);
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 11px 26px;
+  border: 1px solid var(--teal-dim);
+  color: var(--teal); text-decoration: none;
+  border-radius: 3px; transition: all 0.18s;
+}
+.btn-teal:hover {
+  background: var(--teal-glow);
+  border-color: var(--teal);
+}
+
+/* scroll caret */
+.hero-scroll {
+  position: absolute; bottom: 28px; left: 50%;
+  transform: translateX(-50%); z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  opacity: 0; animation: fadein 1s ease 1.4s forwards;
+}
+.hero-scroll-line {
+  width: 1px; height: 44px;
+  background: linear-gradient(to bottom, var(--teal), transparent);
+  animation: pulse 2.2s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════
+   SHARED LAYOUT
+═══════════════════════════════════════════════ */
+.container { max-width: 1240px; margin: 0 auto; }
+
+.section-tag {
+  font-family: var(--font-tight);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--teal);
+  display: flex; align-items: center; gap: 14px;
+}
+.section-tag::after {
+  content: '';
+  display: block;
+  width: 80px; height: 1px;
+  background: var(--border-2);
+}
+
+/* ═══════════════════════════════════════════════
+   MISSION
+═══════════════════════════════════════════════ */
+.mission {
+  padding: 96px 40px;
+  border-top: 1px solid var(--border);
+}
+.mission .section-tag { margin-bottom: 32px; }
+.mission-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(24px, 3.4vw, 44px);
+  line-height: 1.42;
+  color: var(--cream);
+  max-width: 960px;
+}
+.mission-text strong {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--teal);
+}
+
+/* ═══════════════════════════════════════════════
+   FEATURED REPORT
+═══════════════════════════════════════════════ */
+.featured {
+  padding: 0 40px 96px;
+}
+.featured .section-tag { margin-bottom: 32px; }
+.featured-card {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  overflow: hidden;
+}
+.feat-viz {
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  min-height: 420px;
+  padding: 32px;
+  position: relative; overflow: hidden;
+}
+.feat-content {
+  padding: 52px 52px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.rmeta {
+  font-family: var(--font-tight);
+  font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--cream-dim);
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+}
+.rmeta .accent { color: var(--teal); }
+.feat-title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(28px, 3.2vw, 42px);
+  line-height: 1.12;
+  color: var(--cream);
+  margin-bottom: 16px;
+}
+.feat-desc {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px; line-height: 1.6;
+  color: var(--cream-2);
+  margin-bottom: 28px;
+}
+.tags { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 30px; }
+.tag {
+  font-family: var(--font-tight);
+  font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 10px;
+  border: 1px solid var(--border-2);
+  color: var(--teal); border-radius: 2px;
+}
+.feat-body {
+  font-size: 14px; line-height: 1.75;
+  color: var(--cream-dim);
+  margin-bottom: 32px;
+}
+.read-link {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--font-tight);
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--teal); text-decoration: none;
+  padding: 10px 22px;
+  border: 1px solid var(--teal-dim);
+  border-radius: 3px;
+  transition: all 0.18s; width: fit-content;
+}
+.read-link:hover { background: var(--teal-glow); border-color: var(--teal); }
+.read-link .arrow { transition: transform 0.18s; }
+.read-link:hover .arrow { transform: translateX(4px); }
+
+/* ═══════════════════════════════════════════════
+   REPORTS LIST
+═══════════════════════════════════════════════ */
+.reports { padding: 0 40px 96px; }
+.reports-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+.reports-count {
+  font-family: var(--font-tight);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.12em; color: var(--cream-dim);
+}
+.report-row {
+  display: grid;
+  grid-template-columns: 116px 1fr;
+  border-bottom: 1px solid var(--border);
+  padding: 26px 0;
+  text-decoration: none; color: inherit;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.report-row:hover { background: rgba(255,255,255,0.018); }
+.rthumb {
+  width: 104px; height: 68px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.rinfo {
+  padding-left: 26px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.rrow-meta {
+  font-family: var(--font-tight);
+  font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--cream-dim);
+  margin-bottom: 9px;
+}
+.rrow-meta .t { color: var(--teal); }
+.rrow-title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 23px; line-height: 1.18;
+  color: var(--cream);
+  margin-bottom: 7px;
+}
+.rrow-desc {
+  font-size: 13px; line-height: 1.58;
+  color: var(--cream-dim);
+}
+
+/* ═══════════════════════════════════════════════
+   HOW IT WORKS
+═══════════════════════════════════════════════ */
+.how {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 96px 40px;
+}
+.how-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 88px;
+  align-items: start;
+}
+.how-intro .section-tag { margin-bottom: 28px; }
+.how-intro h2 {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(32px, 4vw, 54px);
+  line-height: 1.12;
+  color: var(--cream);
+  margin-bottom: 20px;
+}
+.how-intro p {
+  font-size: 14.5px; line-height: 1.75;
+  color: var(--cream-dim);
+  margin-bottom: 32px;
+}
+.how-steps { display: flex; flex-direction: column; }
+.how-step {
+  display: flex; gap: 22px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+}
+.how-step:first-child { padding-top: 0; }
+.how-step:last-child { border-bottom: none; padding-bottom: 0; }
+.snum {
+  font-family: var(--font-tight);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--teal);
+  min-width: 28px; padding-top: 4px;
+}
+.step-title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 21px; line-height: 1.2;
+  color: var(--cream);
+  margin-bottom: 7px;
+}
+.step-desc {
+  font-size: 13px; line-height: 1.65;
+  color: var(--cream-dim);
+}
+.tool-chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-top: 12px;
+}
+.tc {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 10.5px;
+  color: var(--cream-dim);
+  padding: 3px 9px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════════════
+   STATS
+═══════════════════════════════════════════════ */
+.data { padding: 96px 40px; }
+.data .section-tag { margin-bottom: 40px; }
+.data-intro {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 20px; line-height: 1.55;
+  color: var(--cream-2);
+  max-width: 720px;
+  margin-bottom: 52px;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--border);
+}
+.stat {
+  padding: 44px 36px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+.stat:last-child { border-right: none; }
+.stat-val {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 58px; line-height: 1;
+  color: var(--cream);
+  margin-bottom: 10px;
+}
+.stat-lbl {
+  font-family: var(--font-tight);
+  font-size: 9.5px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--cream-dim);
+}
+
+/* coverage grid */
+.cov-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-top: 52px;
+}
+.cov-cell {
+  background: var(--bg-card);
+  padding: 28px 28px 24px;
+}
+.cov-label {
+  font-family: var(--font-tight);
+  font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.cov-items {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.cov-items li {
+  font-size: 13px; color: var(--cream-dim);
+  display: flex; align-items: baseline; gap: 8px;
+}
+.cov-items li::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--teal-dim);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ═══════════════════════════════════════════════
+   ABOUT / CONNECT
+═══════════════════════════════════════════════ */
+.connect {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 96px 40px;
+}
+.connect-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 88px;
+  align-items: start;
+}
+.connect-left h2 {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(30px, 3.8vw, 50px);
+  line-height: 1.15;
+  color: var(--cream);
+  margin-bottom: 20px;
+}
+.connect-left p {
+  font-size: 14.5px; line-height: 1.75;
+  color: var(--cream-dim);
+  margin-bottom: 14px;
+}
+.connect-steps { display: flex; flex-direction: column; gap: 0; }
+.connect-step {
+  display: flex; gap: 18px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border);
+}
+.connect-step:last-child { border-bottom: none; }
+.cstep-body {}
+.cstep-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--cream);
+  margin-bottom: 4px;
+}
+.cstep-desc {
+  font-size: 13px; line-height: 1.6;
+  color: var(--cream-dim);
+}
+.url-box {
+  margin-top: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: 11.5px;
+  color: var(--teal);
+  border-radius: 2px;
+  word-break: break-all;
+}
+
+/* ═══════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 36px 40px;
+}
+.footer-inner {
+  max-width: 1240px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.footer-brand {
+  font-family: var(--font-tight);
+  font-size: 11px; letter-spacing: 0.06em;
+  color: var(--cream-dim);
+}
+.footer-links {
+  display: flex; gap: 24px;
+}
+.footer-links a {
+  font-size: 12px; color: var(--cream-dim);
+  text-decoration: none; transition: color 0.15s;
+}
+.footer-links a:hover { color: var(--cream); }
+
+/* ═══════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════ */
+@keyframes up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse {
+  0%,100% { opacity: 0.35; transform: scaleY(0.9); }
+  50%      { opacity: 1;    transform: scaleY(1.05); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(.22,1,.36,1),
+              transform 0.7s cubic-bezier(.22,1,.36,1);
+}
+.reveal.in { opacity: 1; transform: translateY(0); }
+.reveal[data-delay="1"] { transition-delay: 0.07s; }
+.reveal[data-delay="2"] { transition-delay: 0.14s; }
+.reveal[data-delay="3"] { transition-delay: 0.21s; }
+.reveal[data-delay="4"] { transition-delay: 0.28s; }
+.reveal[data-delay="5"] { transition-delay: 0.35s; }
+.reveal[data-delay="6"] { transition-delay: 0.42s; }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media (max-width: 960px) {
+  .featured-card,
+  .how-grid,
+  .connect-grid { grid-template-columns: 1fr; }
+  .feat-viz { min-height: 280px; border-right: none; border-bottom: 1px solid var(--border); }
+  .feat-content { padding: 40px 36px; }
+  .how-grid, .connect-grid { gap: 52px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat:nth-child(2) { border-right: none; }
+  .stat:nth-child(3) { border-top: 1px solid var(--border); }
+  .cov-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 720px) {
+  .nav-links, .nav-cta { display: none; }
+  .mission-text { font-size: clamp(22px, 5.5vw, 30px); }
+  .stats-grid { grid-template-columns: 1fr; }
+  .stat { border-right: none; border-bottom: 1px solid var(--border); }
+  .stat:last-child { border-bottom: none; }
+  .cov-grid { grid-template-columns: 1fr; }
+  .report-row { grid-template-columns: 1fr; }
+  .rthumb { width: 100%; height: 120px; }
+  .rinfo { padding-left: 0; padding-top: 14px; }
+  section, .how, .data, .connect, .featured { padding-left: 20px; padding-right: 20px; }
+  .nav-inner { padding: 0 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     NAV
+══════════════════════════════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="brand">
+      <svg class="brand-icon" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="5"  cy="5"  r="2.2" fill="#2DC4B6"/>
+        <circle cx="25" cy="8"  r="1.6" fill="#EDAA1B"/>
+        <circle cx="15" cy="25" r="2.0" fill="#2DC4B6"/>
+        <circle cx="23" cy="21" r="1.3" fill="#BF4E2C"/>
+        <circle cx="7"  cy="22" r="1.4" fill="#7B6BA8"/>
+        <line x1="5"  y1="5"  x2="25" y2="8"  stroke="#2DC4B6" stroke-width="0.7" stroke-opacity="0.5"/>
+        <line x1="25" y1="8"  x2="23" y2="21" stroke="#192E4A" stroke-width="0.7" stroke-opacity="0.9"/>
+        <line x1="23" y1="21" x2="15" y2="25" stroke="#2DC4B6" stroke-width="0.7" stroke-opacity="0.5"/>
+        <line x1="15" y1="25" x2="7"  y2="22" stroke="#192E4A" stroke-width="0.7" stroke-opacity="0.8"/>
+        <line x1="7"  y1="22" x2="5"  y2="5"  stroke="#192E4A" stroke-width="0.7" stroke-opacity="0.6"/>
+        <line x1="5"  y1="5"  x2="15" y2="25" stroke="#192E4A" stroke-width="0.5" stroke-opacity="0.3" stroke-dasharray="2,2"/>
+      </svg>
+      <div class="brand-text">
+        <span class="brand-l1">Tech &amp;</span>
+        <span class="brand-l2">Society</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#reports">Reports</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#data">The Data</a></li>
+      <li><a href="#connect">Connect</a></li>
+    </ul>
+    <a href="https://chip50.org/CHIP50-MCP-Docs" class="nav-cta" target="_blank">Get Access</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <canvas id="constellation"></canvas>
+
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Observatory of American Life &nbsp;·&nbsp; Nanocentury AI &nbsp;·&nbsp; 2026</div>
+    <h1 class="hero-title">Technology<br>&amp;&nbsp;Society</h1>
+    <p class="hero-sub">How AI reveals the way Americans connect,<br>vote, trust, and live online.</p>
+    <div class="hero-btns">
+      <a href="#reports" class="btn-ghost">See the Reports</a>
+      <a href="#how"     class="btn-teal">Explore the MCP</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     MISSION
+══════════════════════════════════════════ -->
+<section class="mission" id="about">
+  <div class="container">
+    <div class="section-tag reveal">Mission</div>
+    <p class="mission-text reveal" data-delay="1">
+      A rigorous, ongoing assessment of how technology reshapes <strong>political life, social trust, and mental health</strong> in America — now powered by an AI research assistant that queries 38 waves of national panel data and delivers publication-ready findings in minutes.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FEATURED REPORT
+══════════════════════════════════════════ -->
+<section class="featured" id="featured">
+  <div class="container">
+    <div class="section-tag reveal" style="margin-bottom:28px;">Featured Report</div>
+    <div class="featured-card reveal" data-delay="1">
+
+      <!-- LEFT: bubble chart visualization -->
+      <div class="feat-viz">
+        <svg viewBox="0 0 520 400" width="100%" style="max-height:400px; overflow:visible;" xmlns="http://www.w3.org/2000/svg">
+          <!-- grid lines -->
+          <line x1="70" y1="20"  x2="70"  y2="340" stroke="#192E4A" stroke-width="1"/>
+          <line x1="70" y1="340" x2="490" y2="340" stroke="#192E4A" stroke-width="1"/>
+          <line x1="280" y1="20" x2="280" y2="340" stroke="#192E4A" stroke-width="0.6" stroke-dasharray="5,5" stroke-opacity="0.6"/>
+          <line x1="70"  y1="180" x2="490" y2="180" stroke="#192E4A" stroke-width="0.6" stroke-dasharray="5,5" stroke-opacity="0.6"/>
+
+          <!-- axis labels -->
+          <text x="280" y="370" text-anchor="middle" font-family="Inter Tight" font-size="10" letter-spacing="0.18em" fill="#7A8FA8" text-transform="uppercase">LIBERAL · · · CONSERVATIVE</text>
+          <text x="36" y="180" text-anchor="middle" font-family="Inter Tight" font-size="10" letter-spacing="0.14em" fill="#7A8FA8" transform="rotate(-90 36 180)">TRUST IN SCIENCE</text>
+
+          <!-- plate label -->
+          <text x="80" y="16" font-family="Inter Tight" font-size="9" letter-spacing="0.16em" fill="#4A607A">PLATE 01 · WHERE PLATFORMS STAND</text>
+
+          <!-- bubbles: positioned (x=ideology, y=trust inverted) -->
+          <!-- Bluesky: far left, very high trust -->
+          <circle cx="108" cy="62"  r="22" fill="#2DC4B6" fill-opacity="0.72"/>
+          <text x="108" y="44" text-anchor="middle" font-family="Inter" font-size="10" fill="#2DC4B6">Bluesky</text>
+
+          <!-- Mastodon: left, high trust -->
+          <circle cx="140" cy="92"  r="14" fill="#2DC4B6" fill-opacity="0.48"/>
+          <text x="140" y="77" text-anchor="middle" font-family="Inter" font-size="9" fill="#2DC4B6" fill-opacity="0.8">Mastodon</text>
+
+          <!-- Reddit: left-center, fairly high trust -->
+          <circle cx="182" cy="118" r="22" fill="#5B9A7A" fill-opacity="0.68"/>
+          <text x="182" y="118" text-anchor="middle" dominant-baseline="middle" font-family="Inter" font-size="9" fill="#EDE8D9" fill-opacity="0.85">Reddit</text>
+
+          <!-- LinkedIn: center-left, high trust -->
+          <circle cx="230" cy="96" r="18" fill="#4BC5E8" fill-opacity="0.56"/>
+          <text x="230" y="96" text-anchor="middle" dominant-baseline="middle" font-family="Inter" font-size="9" fill="#EDE8D9" fill-opacity="0.85">LinkedIn</text>
+
+          <!-- YouTube: center, moderate trust – large -->
+          <circle cx="268" cy="158" r="36" fill="#4BC5E8" fill-opacity="0.52"/>
+          <text x="268" y="158" text-anchor="middle" dominant-baseline="middle" font-family="Inter" font-size="9" fill="#EDE8D9">YouTube</text>
+
+          <!-- Instagram: center, moderate -->
+          <circle cx="238" cy="176" r="26" fill="#C4706C" fill-opacity="0.60"/>
+          <text x="238" y="176" text-anchor="middle" dominant-baseline="middle" font-family="Inter" font-size="9" fill="#EDE8D9" fill-opacity="0.9">IG</text>
+
+          <!-- Facebook: center-right -->
+          <circle cx="298" cy="172" r="30" fill="#7B6BA8" fill-opacity="0.62"/>
+          <text x="298" y="172" text-anchor="middle" dominant-baseline="middle" font-family="Inter" font-size="9" fill="#EDE8D9">Facebook</text>
+
+          <!-- TikTok: center-left, lower trust -->
+          <circle cx="210" cy="210" r="28" fill="#BF4E2C" fill-opacity="0.58"/>
+          <text x="210" y="210" text-anchor="middle" dominant-baseline="middle" font-family="Inter" font-size="9" fill="#EDE8D9" fill-opacity="0.9">TikTok</text>
+
+          <!-- X/Twitter: center-right, low-mod trust -->
+          <circle cx="340" cy="232" r="22" fill="#C5BFB1" fill-opacity="0.36"/>
+          <text x="340" y="216" text-anchor="middle" font-family="Inter" font-size="9" fill="#C5BFB1" fill-opacity="0.8">X / Twitter</text>
+
+          <!-- Parler: far right, low trust -->
+          <circle cx="420" cy="284" r="13" fill="#EDAA1B" fill-opacity="0.52"/>
+          <text x="420" y="273" text-anchor="middle" font-family="Inter" font-size="9" fill="#EDAA1B" fill-opacity="0.8">Parler</text>
+
+          <!-- Truth Social: far right, very low trust -->
+          <circle cx="448" cy="302" r="18" fill="#EDAA1B" fill-opacity="0.78"/>
+          <text x="448" y="286" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#EDAA1B">Truth Social</text>
+          <!-- amber dot accent -->
+          <circle cx="448" cy="302" r="3.5" fill="#EDAA1B"/>
+
+          <!-- Gab -->
+          <circle cx="438" cy="270" r="11" fill="#EDAA1B" fill-opacity="0.38"/>
+
+          <!-- WhatsApp -->
+          <circle cx="186" cy="148" r="16" fill="#5B9A7A" fill-opacity="0.50"/>
+
+          <!-- Pinterest: center-left, mod trust -->
+          <circle cx="200" cy="188" r="14" fill="#C4706C" fill-opacity="0.48"/>
+
+          <!-- teal accent dot on Bluesky -->
+          <circle cx="108" cy="62" r="4" fill="#2DC4B6"/>
+        </svg>
+      </div>
+
+      <!-- RIGHT: content -->
+      <div class="feat-content">
+        <div class="rmeta">
+          REPORT <span class="accent">·</span> JULY 2026
+          <span class="accent">·</span> PLATFORMS
+          <span class="accent">·</span> DEMOCRACY
+        </div>
+        <h2 class="feat-title">Where Platforms Stand</h2>
+        <p class="feat-desc">Trust, partisanship, and political expression across 20 social media platforms — and what the diverging landscape means for democratic discourse.</p>
+        <div class="tags">
+          <span class="tag">Platforms</span>
+          <span class="tag">Trust</span>
+          <span class="tag">Democracy</span>
+          <span class="tag">Partisanship</span>
+        </div>
+        <p class="feat-body">Using 38 waves of CHIP50 panel data, this report maps where 20 platforms fall on axes of political ideology and institutional trust — revealing a deeply sorted information landscape. Bluesky and Mastodon anchor the liberal-high-trust corner; Truth Social and Parler anchor the conservative-low-trust corner. The mainstream platforms cluster at center, but the cluster is thinning.</p>
+        <a href="#" class="read-link">Read the Report <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     REPORTS LIST
+══════════════════════════════════════════ -->
+<section class="reports" id="reports">
+  <div class="container">
+    <div class="reports-header reveal">
+      <div class="section-tag" style="margin-bottom:0;">Reports</div>
+      <div class="reports-count">6 ENTRIES · 2025–2026</div>
+    </div>
+
+    <!-- 01 -->
+    <a class="report-row reveal" href="#" data-delay="1">
+      <div class="rthumb">
+        <svg viewBox="0 0 104 68" xmlns="http://www.w3.org/2000/svg" width="104" height="68">
+          <rect width="104" height="68" fill="#0C1D35"/>
+          <polyline points="6,54 18,46 30,49 44,36 58,27 72,20 88,15 100,11"
+            stroke="#2DC4B6" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <polyline points="6,34 18,39 30,44 44,42 58,50 72,54 88,58 100,62"
+            stroke="#C4706C" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <polyline points="6,60 18,57 30,50 44,38 58,32 72,28 88,24 100,20"
+            stroke="#EDAA1B" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-opacity="0.7"/>
+          <circle cx="100" cy="11" r="2.8" fill="#2DC4B6"/>
+          <circle cx="100" cy="62" r="2.8" fill="#C4706C"/>
+          <circle cx="100" cy="20" r="2.5" fill="#EDAA1B" fill-opacity="0.8"/>
+        </svg>
+      </div>
+      <div class="rinfo">
+        <div class="rrow-meta">REPORT · JUNE 2026 · <span class="t">Platforms, Democracy</span></div>
+        <div class="rrow-title">Splintering the Public Square</div>
+        <div class="rrow-desc">The demographics of alt-tech platforms — Truth Social, Gab, Parler, Mastodon, and Bluesky — and what platform sorting means for the digital commons.</div>
+      </div>
+    </a>
+
+    <!-- 02 -->
+    <a class="report-row reveal" href="#" data-delay="2">
+      <div class="rthumb">
+        <svg viewBox="0 0 104 68" xmlns="http://www.w3.org/2000/svg" width="104" height="68">
+          <rect width="104" height="68" fill="#0C1D35"/>
+          <rect x="4"  y="4"  width="46" height="34" fill="#2DC4B6" fill-opacity="0.65" rx="1"/>
+          <rect x="54" y="4"  width="22" height="34" fill="#BF4E2C" fill-opacity="0.62" rx="1"/>
+          <rect x="80" y="4"  width="20" height="34" fill="#7B6BA8" fill-opacity="0.60" rx="1"/>
+          <rect x="4"  y="42" width="28" height="22" fill="#5B9A7A" fill-opacity="0.60" rx="1"/>
+          <rect x="36" y="42" width="32" height="22" fill="#C4706C" fill-opacity="0.55" rx="1"/>
+          <rect x="72" y="42" width="28" height="22" fill="#EDAA1B" fill-opacity="0.48" rx="1"/>
+        </svg>
+      </div>
+      <div class="rinfo">
+        <div class="rrow-meta">REPORT · MAY 2026 · <span class="t">Platforms, Safety</span></div>
+        <div class="rrow-title">Digital Battlegrounds</div>
+        <div class="rrow-desc">A map of online abuse and harassment across major platforms — and the demographic groups most often targeted, from 2022 to 2026.</div>
+      </div>
+    </a>
+
+    <!-- 03 -->
+    <a class="report-row reveal" href="#" data-delay="3">
+      <div class="rthumb">
+        <svg viewBox="0 0 104 68" xmlns="http://www.w3.org/2000/svg" width="104" height="68">
+          <rect width="104" height="68" fill="#0C1D35"/>
+          <path d="M8 48 Q20 28 34 42 Q46 54 60 34 Q74 18 90 32" stroke="#BF4E2C" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <path d="M8 44 Q20 34 34 40 Q46 46 60 36 Q74 26 90 36" stroke="#BF4E2C" stroke-width="0.7" fill="none" stroke-linecap="round" stroke-opacity="0.3"/>
+          <circle cx="60" cy="34" r="2.2" fill="#EDAA1B"/>
+          <circle cx="34" cy="42" r="2.0" fill="#EDAA1B" fill-opacity="0.7"/>
+          <!-- clock icon -->
+          <circle cx="20" cy="36" r="12" stroke="#2DC4B6" stroke-width="1" fill="none" stroke-opacity="0.45"/>
+          <line x1="20" y1="36" x2="20" y2="26" stroke="#2DC4B6" stroke-width="1.2" stroke-opacity="0.7" stroke-linecap="round"/>
+          <line x1="20" y1="36" x2="27" y2="36" stroke="#2DC4B6" stroke-width="0.9" stroke-opacity="0.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="rinfo">
+        <div class="rrow-meta">REPORT · APRIL 2026 · <span class="t">Health, Platforms</span></div>
+        <div class="rrow-title">Scrolling Away Sleep</div>
+        <div class="rrow-desc">How problematic TikTok use disrupts sleep, attention, and mental health — a PHQ-9 analysis across 38 survey waves of nationally representative data.</div>
+      </div>
+    </a>
+
+    <!-- 04 -->
+    <a class="report-row reveal" href="#" data-delay="4">
+      <div class="rthumb">
+        <svg viewBox="0 0 104 68" xmlns="http://www.w3.org/2000/svg" width="104" height="68">
+          <rect width="104" height="68" fill="#0C1D35"/>
+          <!-- sankey-style flow -->
+          <rect x="4"  y="6"  width="9" height="56" fill="#2DC4B6" fill-opacity="0.55" rx="1"/>
+          <rect x="91" y="4"  width="9" height="20" fill="#2DC4B6" fill-opacity="0.68" rx="1"/>
+          <rect x="91" y="27" width="9" height="15" fill="#7B6BA8" fill-opacity="0.65" rx="1"/>
+          <rect x="91" y="45" width="9" height="19" fill="#C4706C" fill-opacity="0.58" rx="1"/>
+          <path d="M13 16 Q52 16 91 12" stroke="#2DC4B6" stroke-width="9" fill="none" stroke-opacity="0.28"/>
+          <path d="M13 36 Q52 36 91 33" stroke="#7B6BA8" stroke-width="6" fill="none" stroke-opacity="0.30"/>
+          <path d="M13 52 Q52 56 91 52" stroke="#C4706C" stroke-width="7" fill="none" stroke-opacity="0.28"/>
+        </svg>
+      </div>
+      <div class="rinfo">
+        <div class="rrow-meta">REPORT · MARCH 2026 · <span class="t">Platforms, Democracy</span></div>
+        <div class="rrow-title">Migration After Musk</div>
+        <div class="rrow-desc">Who left X after the Elon Musk acquisition — and where they went. A logistic regression analysis of platform migration by demographics and partisan identity.</div>
+      </div>
+    </a>
+
+    <!-- 05 -->
+    <a class="report-row reveal" href="#" data-delay="5">
+      <div class="rthumb">
+        <svg viewBox="0 0 104 68" xmlns="http://www.w3.org/2000/svg" width="104" height="68">
+          <rect width="104" height="68" fill="#0C1D35"/>
+          <line x1="8" y1="62" x2="96" y2="62" stroke="#192E4A" stroke-width="1"/>
+          <rect x="10" y="20" width="14" height="42" fill="#2DC4B6" fill-opacity="0.68" rx="1"/>
+          <rect x="28" y="30" width="14" height="32" fill="#2DC4B6" fill-opacity="0.50" rx="1"/>
+          <rect x="46" y="42" width="14" height="20" fill="#EDAA1B" fill-opacity="0.58" rx="1"/>
+          <rect x="64" y="36" width="14" height="26" fill="#BF4E2C" fill-opacity="0.58" rx="1"/>
+          <rect x="82" y="24" width="14" height="38" fill="#BF4E2C" fill-opacity="0.78" rx="1"/>
+        </svg>
+      </div>
+      <div class="rinfo">
+        <div class="rrow-meta">REPORT · FEBRUARY 2026 · <span class="t">Trust, Politics</span></div>
+        <div class="rrow-title">Who Trusts What</div>
+        <div class="rrow-desc">Institutional trust in science, government, and media across the partisan spectrum — and how the rise of AI chatbots is reshaping the trust landscape.</div>
+      </div>
+    </a>
+
+    <!-- 06 -->
+    <a class="report-row reveal" href="#" data-delay="6">
+      <div class="rthumb">
+        <svg viewBox="0 0 104 68" xmlns="http://www.w3.org/2000/svg" width="104" height="68">
+          <rect width="104" height="68" fill="#0C1D35"/>
+          <!-- simple choropleth-style grid -->
+          <g opacity="0.85">
+            <rect x="4"  y="4"  width="10" height="8" fill="#2DC4B6" fill-opacity="0.30" rx="0.5"/>
+            <rect x="16" y="4"  width="10" height="8" fill="#2DC4B6" fill-opacity="0.50" rx="0.5"/>
+            <rect x="28" y="4"  width="10" height="8" fill="#2DC4B6" fill-opacity="0.80" rx="0.5"/>
+            <rect x="40" y="4"  width="10" height="8" fill="#7B6BA8" fill-opacity="0.40" rx="0.5"/>
+            <rect x="52" y="4"  width="10" height="8" fill="#BF4E2C" fill-opacity="0.45" rx="0.5"/>
+            <rect x="64" y="4"  width="10" height="8" fill="#BF4E2C" fill-opacity="0.68" rx="0.5"/>
+            <rect x="76" y="4"  width="10" height="8" fill="#BF4E2C" fill-opacity="0.88" rx="0.5"/>
+            <rect x="88" y="4"  width="12" height="8" fill="#EDAA1B" fill-opacity="0.55" rx="0.5"/>
+
+            <rect x="4"  y="15" width="10" height="8" fill="#2DC4B6" fill-opacity="0.55" rx="0.5"/>
+            <rect x="16" y="15" width="10" height="8" fill="#2DC4B6" fill-opacity="0.38" rx="0.5"/>
+            <rect x="28" y="15" width="10" height="8" fill="#7B6BA8" fill-opacity="0.48" rx="0.5"/>
+            <rect x="40" y="15" width="10" height="8" fill="#7B6BA8" fill-opacity="0.60" rx="0.5"/>
+            <rect x="52" y="15" width="10" height="8" fill="#BF4E2C" fill-opacity="0.38" rx="0.5"/>
+            <rect x="64" y="15" width="10" height="8" fill="#BF4E2C" fill-opacity="0.58" rx="0.5"/>
+            <rect x="76" y="15" width="10" height="8" fill="#BF4E2C" fill-opacity="0.78" rx="0.5"/>
+            <rect x="88" y="15" width="12" height="8" fill="#BF4E2C" fill-opacity="0.50" rx="0.5"/>
+
+            <rect x="4"  y="26" width="22" height="8" fill="#2DC4B6" fill-opacity="0.48" rx="0.5"/>
+            <rect x="28" y="26" width="10" height="8" fill="#7B6BA8" fill-opacity="0.42" rx="0.5"/>
+            <rect x="40" y="26" width="20" height="8" fill="#BF4E2C" fill-opacity="0.50" rx="0.5"/>
+            <rect x="62" y="26" width="38" height="8" fill="#BF4E2C" fill-opacity="0.65" rx="0.5"/>
+          </g>
+          <!-- legend -->
+          <rect x="4"  y="52" width="8" height="4" fill="#2DC4B6" fill-opacity="0.7" rx="0.5"/>
+          <text x="15" y="57" font-family="Inter" font-size="6.5" fill="#7A8FA8">More liberal</text>
+          <rect x="60" y="52" width="8" height="4" fill="#BF4E2C" fill-opacity="0.7" rx="0.5"/>
+          <text x="71" y="57" font-family="Inter" font-size="6.5" fill="#7A8FA8">More conservative</text>
+        </svg>
+      </div>
+      <div class="rinfo">
+        <div class="rrow-meta">REPORT · JANUARY 2026 · <span class="t">Geography, Platforms</span></div>
+        <div class="rrow-title">The Geography of the Feed</div>
+        <div class="rrow-desc">A state-by-state analysis of platform adoption, political posting, and how geography shapes the American social media experience.</div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════════════ -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="how-grid">
+      <div class="how-intro reveal">
+        <div class="section-tag" style="margin-bottom:28px;">How It Works</div>
+        <h2>Ask a question.<br>Get a publication-ready report.</h2>
+        <p>The CHIP50 MCP server connects Claude AI directly to 38+ waves of national panel data on social media use, political attitudes, and mental health. Ask a research question in plain English — no SQL, no scripting required.</p>
+        <p>Claude selects from 24 specialized analysis tools, runs population-weighted queries against the CHIP50 BigQuery database, and delivers tables, trend analyses, regression output, and full PDF reports — ready for a paper, brief, or press release.</p>
+        <a href="https://chip50.org/CHIP50-MCP-Docs" class="btn-teal" target="_blank" style="display:inline-flex;align-items:center;gap:9px;margin-top:8px;">View MCP Documentation <span>→</span></a>
+      </div>
+      <div class="how-steps reveal" data-delay="1">
+        <div class="how-step">
+          <div class="snum">01</div>
+          <div class="step-body">
+            <div class="step-title">Connect Claude to the MCP</div>
+            <div class="step-desc">Add the CHIP50 connector in Claude's settings. Authenticate with Google OAuth. The server is already live — no installation, no API keys.</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="snum">02</div>
+          <div class="step-body">
+            <div class="step-title">Ask your research question</div>
+            <div class="step-desc">Type any research question in plain English. Claude automatically selects the right combination of tools and executes them in sequence or parallel.</div>
+            <div class="tool-chips">
+              <div class="tc">generate_crosstab</div>
+              <div class="tc">get_platform_trends</div>
+              <div class="tc">run_ols_regression</div>
+              <div class="tc">run_logistic_regression</div>
+              <div class="tc">generate_marginals_by_wave</div>
+              <div class="tc">generate_pdf_report</div>
+            </div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="snum">03</div>
+          <div class="step-body">
+            <div class="step-title">Receive publication-ready output</div>
+            <div class="step-desc">Population-weighted tables, trend charts, regression results with confidence intervals, and full PDF reports — with title pages, methodology sections, and reproducibility appendices.</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="snum">04</div>
+          <div class="step-body">
+            <div class="step-title">Privacy-by-design, throughout</div>
+            <div class="step-desc">Cell suppression (n&nbsp;&lt;&nbsp;30) at the SQL layer. PHQ-9 returned as population-level aggregates only. No PII. OAuth authentication. All outputs are weighted, anonymized estimates.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     THE DATA
+══════════════════════════════════════════ -->
+<section class="data" id="data">
+  <div class="container">
+    <div class="section-tag reveal" style="margin-bottom:24px;">The Data</div>
+    <p class="data-intro reveal" data-delay="1">CHIP50 is a large-scale, nationally representative repeated-wave panel survey tracking how Americans use social media — and how that connects to political attitudes and mental health — since 2020.</p>
+
+    <!-- stats -->
+    <div class="stats-grid reveal" data-delay="2">
+      <div class="stat">
+        <div class="stat-val" data-count="38" data-suffix="+">0</div>
+        <div class="stat-lbl">Survey Waves</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" data-count="10" data-suffix="K+">0</div>
+        <div class="stat-lbl">Respondents Per Wave</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" data-count="20" data-suffix="">0</div>
+        <div class="stat-lbl">Platforms Tracked</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" data-count="24" data-suffix="">0</div>
+        <div class="stat-lbl">AI Analysis Tools</div>
+      </div>
+    </div>
+
+    <!-- coverage grid -->
+    <div class="cov-grid reveal" data-delay="3">
+      <div class="cov-cell">
+        <div class="cov-label">Social Media Platforms</div>
+        <ul class="cov-items">
+          <li>Facebook, Instagram, X/Twitter</li>
+          <li>TikTok, YouTube, Snapchat</li>
+          <li>LinkedIn, Reddit, WhatsApp</li>
+          <li>Truth Social, Gab, Parler</li>
+          <li>Mastodon, Bluesky, Threads</li>
+          <li>Usage · Frequency · Trust · Posting</li>
+        </ul>
+      </div>
+      <div class="cov-cell">
+        <div class="cov-label">Demographics &amp; Politics</div>
+        <ul class="cov-items">
+          <li>Age (8-category), Gender</li>
+          <li>Race / Ethnicity (5-category)</li>
+          <li>Education, Income (10-category)</li>
+          <li>Party ID (3-point and 7-point)</li>
+          <li>Ideology (7-point scale)</li>
+          <li>All 50 states + DC</li>
+        </ul>
+      </div>
+      <div class="cov-cell">
+        <div class="cov-label">Health &amp; Attitudes</div>
+        <ul class="cov-items">
+          <li>Full PHQ-9 mental health scale</li>
+          <li>Depressive symptom severity</li>
+          <li>Institutional trust (6 items)</li>
+          <li>Trust in science, gov., media</li>
+          <li>Conspiracy beliefs</li>
+          <li>Voting behavior, protest activity</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CONNECT / SETUP
+══════════════════════════════════════════ -->
+<section class="connect" id="connect">
+  <div class="container">
+    <div class="connect-grid">
+      <div class="connect-left reveal">
+        <div class="section-tag" style="margin-bottom:28px;">Get Access</div>
+        <h2>Connect in four steps.<br>Start researching in five.</h2>
+        <p>The CHIP50 MCP server is live on Google Cloud Run. All you need is a Claude account and a Google login. Access is managed — request it at the authentication screen.</p>
+        <p style="margin-top:6px;">Once connected, try:</p>
+        <div class="url-box" style="margin-top:10px; color: var(--cream-2); font-style:italic;">"What variables are available in the CHIP50 dataset? Show me how TikTok usage has changed across all waves."</div>
+      </div>
+      <div class="connect-steps reveal" data-delay="1">
+        <div class="connect-step">
+          <div class="snum">01</div>
+          <div class="cstep-body">
+            <div class="cstep-title">Open Claude Settings</div>
+            <div class="cstep-desc">In Claude Desktop or claude.ai, navigate to <strong>Settings → Connectors → Add custom connector</strong></div>
+          </div>
+        </div>
+        <div class="connect-step">
+          <div class="snum">02</div>
+          <div class="cstep-body">
+            <div class="cstep-title">Enter the connector URL</div>
+            <div class="url-box">https://social-media-demographics-mcp-dnbn5uv2jq-uc.a.run.app/mcp</div>
+          </div>
+        </div>
+        <div class="connect-step">
+          <div class="snum">03</div>
+          <div class="cstep-body">
+            <div class="cstep-title">Authenticate with Google</div>
+            <div class="cstep-desc">Claude will redirect you to a Google sign-in page. Log in with your authorized Google account. Request access if prompted — you'll be notified once approved.</div>
+          </div>
+        </div>
+        <div class="connect-step">
+          <div class="snum">04</div>
+          <div class="cstep-body">
+            <div class="cstep-title">Start your analysis</div>
+            <div class="cstep-desc">The CHIP50 connector will appear as active. Call <code style="background:var(--bg);padding:2px 6px;border:1px solid var(--border);border-radius:2px;font-size:11px;color:var(--teal);">introduce_mcp()</code> first for a full schema overview, then ask your first research question.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      CHIP50 Research &nbsp;·&nbsp; Nanocentury AI &nbsp;·&nbsp; Observatory of American Life &nbsp;·&nbsp; MIT License
+    </div>
+    <div class="footer-links">
+      <a href="https://chip50.org/CHIP50-MCP-Docs" target="_blank">MCP Docs</a>
+      <a href="https://github.com/nanocentury-ai/DDFchip50" target="_blank">GitHub</a>
+      <a href="https://chip50.org" target="_blank">chip50.org</a>
+      <a href="mailto:stefan.j.wojcik@gmail.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════ -->
+<script>
+/* ── CONSTELLATION CANVAS ── */
+(function () {
+  const canvas = document.getElementById('constellation');
+  const ctx    = canvas.getContext('2d');
+
+  const DOT_COUNT = 32;
+  const CONNECT   = 200;
+
+  const COLORS = [
+    'rgba(45,196,182,0.85)',   // teal
+    'rgba(237,170,27,0.90)',   // amber
+    'rgba(191,78,44,0.75)',    // terracotta
+    'rgba(123,107,168,0.75)',  // purple
+    'rgba(196,112,108,0.70)',  // coral
+    'rgba(237,232,217,0.55)',  // cream
+  ];
+
+  let W, H, dots;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+    init();
+  }
+
+  function init() {
+    dots = [];
+    for (let i = 0; i < DOT_COUNT; i++) {
+      /* bias towards edges — matching the PPT corner-constellation feel */
+      let x, y;
+      if (Math.random() < 0.55) {
+        x = Math.random() < 0.5 ? Math.random() * W * 0.30 : W * 0.70 + Math.random() * W * 0.30;
+        y = Math.random() * H;
+      } else {
+        x = Math.random() * W;
+        y = Math.random() < 0.5 ? Math.random() * H * 0.28 : H * 0.72 + Math.random() * H * 0.28;
+      }
+      dots.push({
+        x, y,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: (Math.random() - 0.5) * 0.22,
+        r:  Math.random() < 0.18 ? 3.2 : Math.random() < 0.45 ? 2.0 : 1.4,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    /* lines */
+    for (let i = 0; i < dots.length; i++) {
+      for (let j = i + 1; j < dots.length; j++) {
+        const dx = dots[i].x - dots[j].x;
+        const dy = dots[i].y - dots[j].y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d < CONNECT) {
+          const a = (1 - d / CONNECT) * 0.22;
+          ctx.strokeStyle = `rgba(26,46,74,${a * 9})`;
+          ctx.lineWidth   = 0.65;
+          ctx.beginPath();
+          ctx.moveTo(dots[i].x, dots[i].y);
+          ctx.lineTo(dots[j].x, dots[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    /* dots */
+    for (const d of dots) {
+      ctx.fillStyle = d.color;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function tick() {
+    for (const d of dots) {
+      d.x += d.vx;
+      d.y += d.vy;
+      if (d.x < 0 || d.x > W) { d.vx *= -1; d.x = Math.max(0, Math.min(W, d.x)); }
+      if (d.y < 0 || d.y > H) { d.vy *= -1; d.y = Math.max(0, Math.min(H, d.y)); }
+    }
+  }
+
+  function loop() {
+    tick();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  loop();
+})();
+
+/* ── SCROLL REVEAL ── */
+(function () {
+  const els = document.querySelectorAll('.reveal');
+  const io  = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -36px 0px' });
+  els.forEach(el => io.observe(el));
+})();
+
+/* ── STAT COUNTERS ── */
+(function () {
+  const els = document.querySelectorAll('[data-count]');
+  const io  = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el     = e.target;
+      const target = parseInt(el.dataset.count, 10);
+      const suffix = el.dataset.suffix || '';
+      let start    = 0;
+      const total  = 60;
+      let frame    = 0;
+      const timer  = setInterval(() => {
+        frame++;
+        const t = frame / total;
+        const ease = 1 - Math.pow(1 - t, 3);
+        const cur  = Math.ceil(ease * target);
+        el.textContent = cur < target ? cur : target + suffix;
+        if (frame >= total) clearInterval(timer);
+      }, 18);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+  els.forEach(el => io.observe(el));
+})();
+
+/* ── ACTIVE NAV on scroll ── */
+(function () {
+  const sections = document.querySelectorAll('section[id]');
+  const links    = document.querySelectorAll('.nav-links a');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.4 });
+  sections.forEach(s => io.observe(s));
+})();
+</script>
+</body>
+</html>

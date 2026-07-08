@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function() {
+  const HASH = 'e54ded1da53ef07852ac2264a0e60e41ec6a76ffd36415f82d3baf176d653bc3';
+  if (sessionStorage.getItem('chip50auth') === HASH) return;
+  document.addEventListener('DOMContentLoaded', function() {
+    document.body.style.overflow = 'hidden';
+    var gate = document.createElement('div');
+    gate.id = 'gate';
+    gate.innerHTML = `
+      <div id="gate-box">
+        <img src="chip50.png" alt="CHIP50" style="height:52px;margin-bottom:20px;">
+        <div id="gate-title">CHIP50 MCP Documentation</div>
+        <div id="gate-sub">Enter the access password to continue</div>
+        <input id="gate-input" type="password" placeholder="Password" autocomplete="current-password">
+        <button id="gate-btn">Continue</button>
+        <div id="gate-error"></div>
+      </div>`;
+    document.body.prepend(gate);
+    function attempt() {
+      var val = document.getElementById('gate-input').value;
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(val)).then(function(buf) {
+        var hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+        if (hex === HASH) {
+          sessionStorage.setItem('chip50auth', HASH);
+          document.getElementById('gate').remove();
+          document.body.style.overflow = '';
+        } else {
+          var err = document.getElementById('gate-error');
+          err.textContent = 'Incorrect password.';
+          document.getElementById('gate-input').value = '';
+          document.getElementById('gate-input').focus();
+        }
+      });
+    }
+    document.getElementById('gate-btn').addEventListener('click', attempt);
+    document.getElementById('gate-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') attempt();
+    });
+    setTimeout(function() { document.getElementById('gate-input').focus(); }, 50);
+  });
+})();
+</script>
+<style>
+  #gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #f8f9fb;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #gate-box {
+    background: #fff;
+    border: 1px solid #dde3ed;
+    border-top: 3px solid #1c3461;
+    border-radius: 10px;
+    padding: 40px 44px 36px;
+    box-shadow: 0 4px 24px rgba(28,52,97,0.12);
+    text-align: center;
+    width: 100%;
+    max-width: 360px;
+  }
+  #gate-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800; font-size: 17px;
+    color: #1c3461; margin-bottom: 6px;
+  }
+  #gate-sub {
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px; color: #5a6680;
+    margin-bottom: 24px;
+  }
+  #gate-input {
+    width: 100%; padding: 10px 14px;
+    border: 1px solid #dde3ed; border-radius: 6px;
+    font-family: 'Barlow', sans-serif; font-size: 15px;
+    color: #1a2340; outline: none;
+    margin-bottom: 12px;
+    transition: border-color 0.15s;
+  }
+  #gate-input:focus { border-color: #1c3461; }
+  #gate-btn {
+    width: 100%; padding: 10px;
+    background: #1c3461; color: #fff;
+    border: none; border-radius: 6px;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600; font-size: 14px;
+    cursor: pointer; transition: background 0.15s;
+  }
+  #gate-btn:hover { background: #264d8c; }
+  #gate-error {
+    margin-top: 10px; font-size: 13px;
+    color: #b91c1c; font-family: 'Barlow', sans-serif;
+    min-height: 18px;
+  }
+</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHIP50 MCP — Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:       #1c3461;
+      --navy-dark:  #152748;
+      --navy-mid:   #264d8c;
+      --blue:       #2d5fa6;
+      --blue-light: #e8eef8;
+      --blue-xlight:#f0f4fb;
+      --white:      #ffffff;
+      --off-white:  #f8f9fb;
+      --border:     #dde3ed;
+      --text:       #1a2340;
+      --text-muted: #5a6680;
+      --text-light: #8896b0;
+      --green:      #1a7a4a;
+      --green-bg:   #e8f5ee;
+      --amber:      #b45309;
+      --amber-bg:   #fef3c7;
+      --red:        #b91c1c;
+      --red-bg:     #fee2e2;
+      --code-bg:    #f1f4f9;
+      --code-border:#dde3ed;
+      --radius:     6px;
+      --radius-lg:  10px;
+      --shadow-sm:  0 1px 3px rgba(28,52,97,0.08);
+      --shadow:     0 2px 8px rgba(28,52,97,0.10);
+      --shadow-md:  0 4px 16px rgba(28,52,97,0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Barlow', system-ui, sans-serif;
+      font-weight: 400;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.65;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: 2px solid var(--navy);
+      box-shadow: 0 1px 0 var(--border);
+    }
+    .nav-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .nav-brand img {
+      height: 34px;
+      width: auto;
+    }
+    .nav-brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+    .nav-brand-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--navy);
+      letter-spacing: 0.02em;
+    }
+    .nav-brand-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 500;
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      gap: 4px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      transition: all 0.15s;
+    }
+    .nav-links a:hover {
+      color: var(--navy);
+      background: var(--blue-xlight);
+    }
+    .nav-chip50-link {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--navy);
+      text-decoration: none;
+      padding: 6px 14px;
+      border: 1.5px solid var(--navy);
+      border-radius: var(--radius);
+      transition: all 0.15s;
+      margin-left: 8px;
+    }
+    .nav-chip50-link:hover {
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--navy);
+      color: var(--white);
+      padding: 72px 32px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    }
+    .hero-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: clamp(30px, 4.5vw, 50px);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      max-width: 760px;
+      margin: 0 auto 18px;
+    }
+    .hero-desc {
+      font-size: clamp(15px, 2vw, 18px);
+      color: rgba(255,255,255,0.68);
+      max-width: 620px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      border-radius: var(--radius);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .btn-white {
+      background: var(--white);
+      color: var(--navy);
+    }
+    .btn-white:hover { background: #f0f4fb; transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .btn-outline {
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border: 1.5px solid rgba(255,255,255,0.3);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+
+    .hero-stats {
+      display: flex;
+      gap: 0;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 56px;
+      padding-top: 36px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+    .hero-stat {
+      text-align: center;
+      padding: 0 32px;
+      border-right: 1px solid rgba(255,255,255,0.12);
+    }
+    .hero-stat:last-child { border-right: none; }
+    .hero-stat-value {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1;
+    }
+    .hero-stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      margin-top: 5px;
+    }
+
+    /* ── SECTIONS ── */
+    .section { padding: 72px 32px; }
+    .section-alt { background: var(--off-white); }
+    .section-blue { background: var(--blue-xlight); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .container { max-width: 1160px; margin: 0 auto; }
+
+    .section-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: clamp(24px, 3vw, 34px);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: var(--navy);
+      margin-bottom: 14px;
+    }
+    .section-intro {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 680px;
+      line-height: 1.7;
+      margin-bottom: 44px;
+      font-weight: 300;
+    }
+
+    /* ── OVERVIEW ── */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 52px;
+      align-items: start;
+    }
+    @media (max-width: 800px) {
+      .overview-grid { grid-template-columns: 1fr; gap: 32px; }
+      .nav-links, .nav-chip50-link { display: none; }
+      .hero-stat { padding: 0 18px; }
+    }
+    .prose p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.75;
+      font-size: 16px;
+      font-weight: 400;
+    }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose strong { color: var(--text); font-weight: 600; }
+
+    .how-box {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--navy);
+      border-radius: var(--radius-lg);
+      padding: 28px 28px 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .how-box-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--navy);
+      letter-spacing: 0.01em;
+      margin-bottom: 22px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .step {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 0;
+    }
+    .step + .step-spacer + .step,
+    .step-spacer + .step { margin-top: 0; }
+    .step-spacer {
+      width: 1px;
+      height: 14px;
+      background: var(--border);
+      margin: 0 0 0 15px;
+    }
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-body { flex: 1; padding-top: 4px; }
+    .step-title {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+    .step-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    /* ── DATA COVERAGE ── */
+    .coverage-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    @media (max-width: 900px) { .coverage-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 500px) { .coverage-grid { grid-template-columns: 1fr; } }
+
+    .cov-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px 22px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .cov-card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .cov-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius);
+      background: var(--blue-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .cov-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--navy);
+    }
+    .cov-card ul { list-style: none; }
+    .cov-card li {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 3px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      border-bottom: 1px solid #f0f3f8;
+    }
+    .cov-card li:last-child { border-bottom: none; }
+    .cov-card li::before {
+      content: '—';
+      color: var(--blue);
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+
+    /* ── QUERY TABS ── */
+    .tabs-row {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .tab-btn {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 10px 22px;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab-btn:hover { color: var(--navy); }
+    .tab-btn.active {
+      color: var(--navy);
+      border-bottom-color: var(--navy);
+    }
+    .tab-badge {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 100px;
+      letter-spacing: 0.04em;
+    }
+    .badge-quick  { background: var(--green-bg);  color: var(--green); }
+    .badge-medium { background: var(--amber-bg);  color: var(--amber); }
+    .badge-deep   { background: var(--red-bg);    color: var(--red); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── QUERY CARDS ── */
+    .query-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.15s;
+    }
+    .query-card:hover { box-shadow: var(--shadow); }
+    .query-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px 24px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--off-white);
+    }
+    .query-num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-light);
+      min-width: 24px;
+      padding-top: 2px;
+    }
+    .query-meta { flex: 1; }
+    .query-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 5px;
+      flex-wrap: wrap;
+    }
+    .query-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--navy);
+    }
+    .query-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      font-weight: 400;
+    }
+    .query-body { padding: 20px 24px; }
+    .query-tools {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .tool-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: var(--radius);
+      background: var(--blue-light);
+      color: var(--navy-mid);
+      letter-spacing: 0.03em;
+      border: 1px solid var(--border);
+    }
+    .query-prompt-label,
+    .query-output-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+    .query-prompt {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-left: 3px solid var(--navy);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text);
+      font-style: italic;
+      margin-bottom: 18px;
+      font-weight: 400;
+    }
+    .query-output {
+      border-top: 1px dashed var(--border);
+      padding-top: 16px;
+    }
+    .query-output-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      font-weight: 400;
+    }
+
+    /* ── TOOLS REFERENCE ── */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 700px) { .tools-grid { grid-template-columns: 1fr; } }
+    .tool-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .tool-fn {
+      font-family: 'Barlow Condensed', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--blue);
+      background: var(--blue-light);
+      padding: 3px 9px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: inline-block;
+      margin-bottom: 9px;
+    }
+    .tool-card h4 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--navy);
+      margin-bottom: 5px;
+    }
+    .tool-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      font-weight: 400;
+    }
+
+    /* ── SETUP ── */
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    @media (max-width: 800px) { .setup-grid { grid-template-columns: 1fr; } }
+
+    .prereq-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .prereq-card h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--navy);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .prereq-list { list-style: none; }
+    .prereq-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid #f0f3f8;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .prereq-list li:last-child { border-bottom: none; }
+    .prereq-check {
+      color: var(--navy);
+      font-weight: 700;
+      flex-shrink: 0;
+      font-size: 13px;
+    }
+    .prereq-list strong { color: var(--text); font-weight: 600; }
+
+    .setup-steps .step-num { background: var(--navy); }
+    pre {
+      background: var(--text);
+      color: #cdd9f0;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 12.5px;
+      line-height: 1.75;
+      overflow-x: auto;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      margin-top: 10px;
+    }
+    pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+    code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      background: var(--code-bg);
+      color: var(--navy-mid);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 12.5px;
+      border: 1px solid var(--code-border);
+    }
+    .setup-step-block {
+      margin-bottom: 22px;
+    }
+    .setup-step-block:last-child { margin-bottom: 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy-dark);
+      border-top: 3px solid var(--navy);
+      padding: 36px 32px;
+      text-align: center;
+      color: rgba(255,255,255,0.45);
+      font-size: 13px;
+      font-family: 'Barlow', sans-serif;
+    }
+    footer a { color: rgba(255,255,255,0.7); text-decoration: none; }
+    footer a:hover { color: var(--white); text-decoration: underline; }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .footer-divider { color: rgba(255,255,255,0.2); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <img src="chip50.png" alt="CHIP50 Logo">
+      <div class="nav-brand-text">
+        <span class="nav-brand-title">CHIP50</span>
+        <span class="nav-brand-sub">MCP Documentation</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#data">Data</a></li>
+      <li><a href="#queries">Queries</a></li>
+      <li><a href="#tools">Tools</a></li>
+      <li><a href="#setup">Setup</a></li>
+    </ul>
+    <a href="https://www.chip50.org" class="nav-chip50-link" target="_blank">chip50.org ↗</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Model Context Protocol · AI-Powered Research Interface</div>
+  <h1>Ask research questions.<br>Get statistically rigorous answers.</h1>
+  <p class="hero-desc">The CHIP50 MCP server connects Claude AI directly to 38+ waves of national panel data on social media use, political attitudes, and mental health — no SQL, no scripting required.</p>
+  <div class="hero-ctas">
+    <a href="#queries" class="btn btn-white">See Sample Queries</a>
+    <a href="#setup" class="btn btn-outline">Connect in 4 Steps</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-value">38+</div>
+      <div class="hero-stat-label">Survey Waves</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">~10K</div>
+      <div class="hero-stat-label">Respondents / Wave</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">20</div>
+      <div class="hero-stat-label">Platforms Tracked</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">232</div>
+      <div class="hero-stat-label">Variables</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">24</div>
+      <div class="hero-stat-label">AI Tools</div>
+    </div>
+  </div>
+</section>
+
+<!-- OVERVIEW -->
+<section class="section" id="overview">
+  <div class="container">
+    <div class="overview-grid">
+      <div>
+        <div class="section-label">Overview</div>
+        <h2>A research assistant that knows the data</h2>
+        <div class="prose">
+          <p><strong>CHIP50 is a large-scale, nationally representative panel survey</strong> that has tracked how Americans use social media — and how that use connects to political attitudes and mental health — across 38+ waves since 2020. Each wave includes approximately 10,000 respondents, weighted to match the U.S. adult population.</p>
+          <p>This project gives you a way to <strong>query that data through conversation</strong>. Instead of writing SQL or running statistical software, you describe what you want to know in plain English. Claude selects the appropriate analysis tools, runs population-weighted queries against the CHIP50 BigQuery database, and returns tables, trend analyses, regression output, and prose summaries.</p>
+          <p>The system uses the <strong>Model Context Protocol (MCP)</strong>, an open standard that lets AI assistants call external tools. The CHIP50 MCP server is deployed on Google Cloud Run and exposes 24 specialized analysis tools — from simple crosstabs to full OLS and logistic regression with survey weights, and publication-quality PDF report generation.</p>
+        </div>
+      </div>
+      <div class="how-box">
+        <div class="how-box-title">How it works</div>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">You ask a question in plain English</div>
+            <div class="step-desc">Type a research question inside Claude Desktop or Claude.ai — no special syntax required.</div>
+          </div>
+        </div>
+        <div class="step-spacer"></div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Claude selects the right tools</div>
+            <div class="step-desc">Claude automatically chooses from 24 specialized tools — crosstabs, trend lines, regressions, platform summaries, PDF report generation — based on your question.</div>
+          </div>
+        </div>
+        <div class="step-spacer"></div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">The MCP server queries BigQuery</div>
+            <div class="step-desc">A cloud server runs population-weighted queries against the CHIP50 panel data with automatic privacy protections (cell suppression n &lt; 30).</div>
+          </div>
+        </div>
+        <div class="step-spacer"></div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">You get an answer ready to use</div>
+            <div class="step-desc">Results come back as formatted tables, trend charts, regression output, and plain-English summaries — ready for a paper, presentation, or further analysis.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DATA -->
+<section class="section section-blue" id="data">
+  <div class="container">
+    <div class="section-label">The Data</div>
+    <h2>What's in the dataset</h2>
+    <p class="section-intro">CHIP50 covers 232 variables across platforms, demographics, political attitudes, media consumption, and mental health.</p>
+    <div class="coverage-grid">
+      <div class="cov-card">
+        <div class="cov-card-head">
+          <div class="cov-icon">📱</div>
+          <div class="cov-title">Platforms (20)</div>
+        </div>
+        <ul>
+          <li>Facebook, Instagram, X/Twitter</li>
+          <li>TikTok, YouTube, Snapchat</li>
+          <li>LinkedIn, Reddit, WhatsApp</li>
+          <li>Pinterest, Messenger, Tumblr</li>
+          <li>Truth Social, Gab, Parler</li>
+          <li>Mastodon, Bluesky, Threads, 4chan</li>
+          <li>Usage, frequency, trust, posting</li>
+        </ul>
+      </div>
+      <div class="cov-card">
+        <div class="cov-card-head">
+          <div class="cov-icon">👥</div>
+          <div class="cov-title">Demographics (9)</div>
+        </div>
+        <ul>
+          <li>Age (8-category)</li>
+          <li>Gender</li>
+          <li>Race / Ethnicity (5-category)</li>
+          <li>Education level</li>
+          <li>Income (10-category)</li>
+          <li>Party ID (3- and 7-point)</li>
+          <li>Urban / suburban / rural type</li>
+          <li>All 50 states + DC</li>
+        </ul>
+      </div>
+      <div class="cov-card">
+        <div class="cov-card-head">
+          <div class="cov-icon">🧠</div>
+          <div class="cov-title">Mental Health</div>
+        </div>
+        <ul>
+          <li>Full PHQ-9 scale (9 items)</li>
+          <li>Depressive symptom severity</li>
+          <li>Suicidal ideation item</li>
+          <li>Sleep, concentration, energy</li>
+          <li>Anhedonia, hopelessness</li>
+          <li>Clinical cutoff scoring</li>
+        </ul>
+      </div>
+      <div class="cov-card">
+        <div class="cov-card-head">
+          <div class="cov-icon">🗳️</div>
+          <div class="cov-title">Political Attitudes</div>
+        </div>
+        <ul>
+          <li>Ideology (7-point scale)</li>
+          <li>Voting behavior</li>
+          <li>Institutional trust (6 items)</li>
+          <li>Trust in science, government</li>
+          <li>Trust in media &amp; tech platforms</li>
+          <li>Political posting behavior</li>
+        </ul>
+      </div>
+      <div class="cov-card">
+        <div class="cov-card-head">
+          <div class="cov-icon">📅</div>
+          <div class="cov-title">Waves &amp; Coverage</div>
+        </div>
+        <ul>
+          <li>Waves 14–38+ (ongoing)</li>
+          <li>~10,000 respondents per wave</li>
+          <li>Survey weights provided</li>
+          <li>Panel design (repeat measures)</li>
+          <li>Wave-specific date ranges</li>
+        </ul>
+      </div>
+      <div class="cov-card">
+        <div class="cov-card-head">
+          <div class="cov-icon">🔒</div>
+          <div class="cov-title">Privacy Protections</div>
+        </div>
+        <ul>
+          <li>Aggregated data only — no records</li>
+          <li>Cell suppression (n &lt; 30)</li>
+          <li>PHQ-9: aggregate outputs only</li>
+          <li>Sentinel values filtered (−99)</li>
+          <li>No personally identifiable info</li>
+          <li>OAuth authentication required</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUERIES -->
+<section class="section section-alt" id="queries">
+  <div class="container">
+    <div class="section-label">Sample Queries</div>
+    <h2>What you can ask</h2>
+    <p class="section-intro">From a quick one-liner to a full research paper — examples of what the system can handle, in order of complexity.</p>
+
+    <div class="tabs-row">
+      <button class="tab-btn active" onclick="showTab('quick', this)">
+        Quick Insights <span class="tab-badge badge-quick">Simple</span>
+      </button>
+      <button class="tab-btn" onclick="showTab('medium', this)">
+        Deeper Analysis <span class="tab-badge badge-medium">Moderate</span>
+      </button>
+      <button class="tab-btn" onclick="showTab('deep', this)">
+        Research Projects <span class="tab-badge badge-deep">Complex</span>
+      </button>
+    </div>
+
+    <!-- QUICK -->
+    <div class="tab-panel active" id="tab-quick">
+
+      <div class="query-card">
+        <div class="query-card-header">
+          <div class="query-num">01</div>
+          <div class="query-meta">
+            <div class="query-title-row">
+              <span class="query-title">Suicidal Ideation by State</span>
+              <span class="tab-badge badge-quick">Quick</span>
+            </div>
+            <div class="query-desc">Generate a choropleth map showing variation in suicidal ideation (PHQ-9 item 9) prevalence across all 50 states + DC.</div>
+          </div>
+        </div>
+        <div class="query-body">
+          <div class="query-tools">
+            <span class="tool-tag">generate_crosstab</span>
+            <span class="tool-tag">generate_marginals</span>
+          </div>
+          <div class="query-prompt-label">Prompt</div>
+          <div class="query-prompt">Create a choropleth map showing variation in suicidal ideation at the state level. Use the PHQ-9 item 9 data and display results as a percentage of respondents who reported any suicidal ideation (score ≥ 1).</div>
+          <div class="query-output">
+            <div class="query-output-label">What you get</div>
+            <div class="query-output-desc">A population-weighted state-level table of PHQ-9 item 9 prevalence (suppressed for states with n &lt; 30), ready to be visualized as a choropleth map — or rendered directly using Claude's code generation. States with the highest and lowest rates are highlighted in a brief summary.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="query-card">
+        <div class="query-card-header">
+          <div class="query-num">02</div>
+          <div class="query-meta">
+            <div class="query-title-row">
+              <span class="query-title">TikTok Adoption by Age and Party</span>
+              <span class="tab-badge badge-quick">Quick</span>
+            </div>
+            <div class="query-desc">Cross-tabulate TikTok usage against age group and political party in the most recent wave.</div>
+          </div>
+        </div>
+        <div class="query-body">
+          <div class="query-tools">
+            <span class="tool-tag">generate_crosstab_batch</span>
+          </div>
+          <div class="query-prompt-label">Prompt</div>
+          <div class="query-prompt">Show me TikTok adoption rates broken down by age group and by political party in the most recent wave. Format as a table with percentages.</div>
+          <div class="query-output">
+            <div class="query-output-label">What you get</div>
+            <div class="query-output-desc">Two population-weighted tables showing what share of each age group and each partisan group uses TikTok, with sample sizes. Both crosstabs run in parallel.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="query-card">
+        <div class="query-card-header">
+          <div class="query-num">03</div>
+          <div class="query-meta">
+            <div class="query-title-row">
+              <span class="query-title">Twitter/X Usage Trend Across All Waves</span>
+              <span class="tab-badge badge-quick">Quick</span>
+            </div>
+            <div class="query-desc">Plot the trajectory of Twitter/X adoption including the period surrounding the Musk acquisition.</div>
+          </div>
+        </div>
+        <div class="query-body">
+          <div class="query-tools">
+            <span class="tool-tag">get_platform_trends</span>
+          </div>
+          <div class="query-prompt-label">Prompt</div>
+          <div class="query-prompt">Show me how Twitter/X usage has changed across all available survey waves. Plot the trend and note any sharp increases or decreases.</div>
+          <div class="query-output">
+            <div class="query-output-label">What you get</div>
+            <div class="query-output-desc">A wave-by-wave time series of Twitter/X adoption rates with exact field dates, with percentage-point changes between waves flagged for significant shifts.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="query-card">
+        <div class="query-card-header">
+          <div class="query-num">04</div>
+          <div class="query-meta">
+            <div class="query-title-row">
+              <span class="query-title">Institutional Trust by Political Party</span>
+              <span class="tab-badge badge-quick">Quick</span>
+            </div>
+            <div class="query-desc">Compare trust levels in science, government, social media companies, and specific platforms across partisan groups.</div>
+          </div>
+        </div>
+        <div class="query-body">
+          <div class="query-tools">
+            <span class="tool-tag">get_ordinal_crosstab</span>
+            <span class="tool-tag">generate_marginals_batch</span>
+          </div>
+          <div class="query-prompt-label">Prompt</div>
+          <div class="query-prompt">Compare trust in science, trust in social media companies, and trust in Facebook and Twitter broken down by political party. Use the most recent wave.</div>
+          <div class="query-output">
+            <div class="query-output-label">What you get</div>
+            <div class="query-output-desc">Mean trust scores (1–4 scale) for each institution by partisan group, in a comparison table with statistically meaningful differences highlighted.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-quick -->
+
+    <!-- MEDIUM -->
+    <div class="tab-panel" id="tab-medium">
+
+      <div class="query-card">
+        <div class="query-card-header">
+          <div class="query-num">01</div>
+          <div class="query-meta">
+            <div class="query-title-row">
+              <span class="query-title">Demographic Profiles of the Top 10 Platforms Over Time</span>
+              <span class="tab-badge badge-medium">Moderate</span>
+            </div>
+            <div class="query-desc">For each of the 10 most-used platforms, describe the full demographic profile and show how it has shifted across waves — with comparisons to published third-party data.</div>
+          </div>
+        </div>
+        <div class="query-body">
+          <div class="query-tools">
+            <span class="tool-tag">get_platform_posting_summary</span>
+            <span class="tool-tag">generate_crosstab_batch</span>
+            <span class="tool-tag">get_platform_trends</span>
+          </div>
+          <div class="query-prompt-label">Prompt</div>
+          <div class="query-prompt">What are the demographic profiles of the top 10 social media platforms by usage, and how have those profiles changed over time? For each platform, show breakdowns by age, gender, race/ethnicity, income, education, and party ID, and track how these have shifted across survey waves. Where possible, note how the CHIP50 data aligns with or diverges from publicly available platform demographic data.</div>
+          <div class="query-output">
+            <div class="query-output-label">What you get</div>
+            <div class="query-output-desc">One section per platform: a demographic heatmap table for the most recent wave, a trend chart of overall adoption, a brief narrative profile, and a note on how patterns compare to published third-party research.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="query-card">
+        <div class="query-card-header">
+          <div class="query-num">02</div>
+          <div class="query-meta">
+            <div class="query-title-row">
+              <span class="query-title">Platform Migration After the Musk Acquisition</span>
+              <span class="tab-badge badge-medium">Moderate</span>
+            </div>
+            <div class="query-desc">Examine whether Twitter/X users migrated to alternative platforms after October 2022, and which demographic groups drove any shift.</div>
+          </div>
+        </div>
+        <div class="query-body">
+          <div class="query-tools">
+            <span class="tool-tag">get_platform_trends</span>
+            <span class="tool-tag">generate_crosstab_filtered</span>
+            <span class="tool-tag">run_logistic_regression</span>
+          </div>
+          <div class="query-prompt-label">Prompt</div>
+          <div class="query-prompt">Analyze platform migration away from Twitter/X following the Musk acquisition. Show trends in Twitter/X usage alongside adoption trends for Mastodon, Bluesky, and other alternatives. Break down which demographic and partisan groups drove any observed decline. Run a logistic regression predicting Twitter/X abandonment as a function of demographics and political affiliation.</div>
+          <div class="query-output">
+            <div class="query-output-label">What you get</div>
+            <div class="query-output-desc">A side-by-side trend analysis, a demographic breakdown of who left vs. who stayed, and a logistic regression table showing odds ratios for platform abandonment by demographic group — with a plain-English summary of key findings.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="query-card">
+        <div class="query-card-header">
+          <div class="query-num">03</div>
+          <div class="query-meta">
+            <div class="query-title-row">
+              <span class="query-title">Political Sorting Across Platforms Over Time</span>
+              <span class="tab-badge badge-medium">Moderate</span>
+            </div>
+            <div class="query-desc">Estimate the partisan composition of each platform's user base and examine how ideological clustering has changed across waves.</div>
+          </div>
+        </div>
+        <div class="query-body">
+          <div class="query-tools">
+            <span class="tool-tag">generate_crosstab_batch</span>
+            <span class="tool-tag">get_platform_trends</span>
+            <span class="tool-tag">get_ordinal_crosstab</span>
+          </div>
+          <div class="query-prompt-label">Prompt</div>
+          <div class="query-prompt">For each major social media platform, show the partisan composition of the user base (% Democrat, % Republican, % Independent) in the most recent wave. Then show how ideological balance has shifted across waves for the five most politically skewed platforms. Also show mean ideology scores (7-point scale) for users of each platform.</div>
+          <div class="query-output">
+            <div class="query-output-label">What you get</div>
+            <div class="query-output-desc">A ranked table of platforms by partisan skew, trend lines for the most polarized platforms, and a mean ideology score comparison across all platforms — illustrating which have become more ideologically sorted over time.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-medium -->
+
+    <!-- DEEP -->
+    <div class="tab-panel" id="tab-deep">
+
+      <div class="query-card">
+        <div class="query-card-header">
+          <div class="query-num">01</div>
+          <div class="query-meta">
+            <div class="query-title-row">
+              <span class="query-title">Research Paper: Social Media Use and Depression</span>
+              <span class="tab-badge badge-deep">Complex</span>
+            </div>
+            <div class="query-desc">Generate a complete academic paper — theory-grounded hypotheses, research design, empirical tests with regression tables, and a discussion with references.</div>
+          </div>
+        </div>
+        <div class="query-body">
+          <div class="query-tools">
+            <span class="tool-tag">run_ols_regression</span>
+            <span class="tool-tag">run_logistic_regression</span>
+            <span class="tool-tag">get_platform_trends</span>
+            <span class="tool-tag">generate_crosstab_batch</span>
+            <span class="tool-tag">get_ordinal_distribution</span>
+          </div>
+          <div class="query-prompt-label">Prompt</div>
+          <div class="query-prompt">Write a research paper on social media use and depression using the CHIP50 data. Structure it in four sections:
+
+1. Hypotheses — lay out theoretically grounded hypotheses about the relationship between social media use and depression, drawing on the literature (displacement theory, social comparison, passive vs. active use, platform-specific effects, demographic moderation).
+
+2. Research Design — describe how to test each hypothesis using the available CHIP50 variables, specifying the outcome measure, key predictors, controls, and appropriate statistical approach.
+
+3. Results — test each hypothesis with the data, producing regression tables with coefficients, standard errors, and significance levels, plus a brief paragraph per hypothesis on whether it is supported, partially supported, or rejected.
+
+4. Discussion and Conclusion — summarize key findings, note limitations, and situate results in the broader literature. Provide a reference list.</div>
+          <div class="query-output">
+            <div class="query-output-label">What you get</div>
+            <div class="query-output-desc">A full draft research paper (~3,000–5,000 words) with a literature-grounded theory section, methods with variable operationalization, actual regression tables run against CHIP50 data (survey-weighted, proper reference categories), hypothesis-by-hypothesis results writeups, a discussion section addressing limitations, and an APA-format reference list.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="query-card">
+        <div class="query-card-header">
+          <div class="query-num">02</div>
+          <div class="query-meta">
+            <div class="query-title-row">
+              <span class="query-title">Social Media Use and Political Polarization</span>
+              <span class="tab-badge badge-deep">Complex</span>
+            </div>
+            <div class="query-desc">Investigate whether heavy social media use predicts more extreme political attitudes, and whether the effect varies by platform and demographic group.</div>
+          </div>
+        </div>
+        <div class="query-body">
+          <div class="query-tools">
+            <span class="tool-tag">run_ols_regression</span>
+            <span class="tool-tag">generate_crosstab_filtered</span>
+            <span class="tool-tag">get_ordinal_crosstab</span>
+            <span class="tool-tag">get_platform_trends</span>
+          </div>
+          <div class="query-prompt-label">Prompt</div>
+          <div class="query-prompt">Investigate whether social media use predicts more extreme ideological positions. Using ideology (7-point scale) as the outcome, run OLS regressions with platform usage frequency as predictors, controlling for demographics. Test whether the relationship differs by platform. Also run interaction models to test whether the effect of social media use on ideology is moderated by age, education, or party ID. Produce a full set of regression tables and a narrative summary.</div>
+          <div class="query-output">
+            <div class="query-output-label">What you get</div>
+            <div class="query-output-desc">A series of OLS models — baseline demographics, platform-specific, and interaction models — with tables showing platform-by-platform coefficients for ideology and a narrative discussing which platforms show the strongest associations and how those effects vary across groups.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="query-card">
+        <div class="query-card-header">
+          <div class="query-num">03</div>
+          <div class="query-meta">
+            <div class="query-title-row">
+              <span class="query-title">The Geography of Social Media Use</span>
+              <span class="tab-badge badge-deep">Complex</span>
+            </div>
+            <div class="query-desc">A comprehensive geographic analysis of platform adoption, usage intensity, and political posting across U.S. states and urban/rural typology.</div>
+          </div>
+        </div>
+        <div class="query-body">
+          <div class="query-tools">
+            <span class="tool-tag">generate_crosstab</span>
+            <span class="tool-tag">generate_crosstab_filtered</span>
+            <span class="tool-tag">run_ols_regression</span>
+            <span class="tool-tag">get_freq_trends</span>
+          </div>
+          <div class="query-prompt-label">Prompt</div>
+          <div class="query-prompt">Conduct a comprehensive geographic analysis of social media use. First, produce state-level adoption rates for the five largest platforms and identify regional patterns. Second, examine how urban/rural typology mediates platform choice. Third, analyze political posting behavior geographically — which states and urban/rural categories show the highest rates? Fourth, run a regression predicting frequency of political posting with state partisanship, urban type, age, and income as predictors. Generate choropleth-ready data tables for each major finding.</div>
+          <div class="query-output">
+            <div class="query-output-label">What you get</div>
+            <div class="query-output-desc">State-level data tables for each platform (choropleth-ready), an urban/rural platform preference analysis, a political posting geography table, and a regression model of political posting determinants — with a structured narrative connecting the geographic patterns.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-deep -->
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section class="section" id="tools">
+  <div class="container">
+    <div class="section-label">Tools Reference</div>
+    <h2>What Claude can call</h2>
+    <p class="section-intro">Claude automatically selects the appropriate tools for your question. All queries return population-weighted estimates with cell suppression for privacy.</p>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-fn">get_question_wording</div>
+        <h4>Survey Question Wording</h4>
+        <p>Returns the exact survey text for any CHIP50 variable — the question stem, response labels, and scale. Call this to confirm what a variable measures before citing it in a report.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">get_wave_metadata</div>
+        <h4>Wave Metadata</h4>
+        <p>Per-wave respondent counts, field dates, and platform/question coverage flags. Essential for methodology sections and for checking which questions were fielded in a given wave.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">generate_marginals_by_wave</div>
+        <h4>Variable Distribution Across Waves</h4>
+        <p>Full response distribution of one variable across all waves, optionally stratified by a demographic group. The primary tool for tracking how any attitude or behavior has shifted over time.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">generate_crosstab_by_wave</div>
+        <h4>Platform × Demographic Across Waves</h4>
+        <p>Adoption rates for one platform broken down by a demographic group, tracked wave by wave. Use this to see whether a demographic gap is widening, narrowing, or stable over time.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">summarize_pattern_by_wave</div>
+        <h4>Trend Pattern Summary</h4>
+        <p>Structured summary of multi-wave trends: for each demographic group, the direction and magnitude of change; for each pair of groups, whether their gap is stable, widening, narrowing, or reversed.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">generate_crosstab_multi</div>
+        <h4>Multi-Dimensional Crosstab</h4>
+        <p>Variable broken down by the intersection of two or more demographic dimensions simultaneously — e.g. TikTok adoption by gender × party. Replaces running a regression just to get cell estimates.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">get_ordinal_distribution_by_demographic</div>
+        <h4>Full Ordinal Distribution by Group</h4>
+        <p>Complete response distribution (% at each scale point) for an ordinal variable, broken down by demographic group. Unlike the crosstab mean, this shows you the full profile — e.g. % Strongly support vs. % Strongly oppose.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">get_categorical_crosstab</div>
+        <h4>Categorical Variable Crosstab</h4>
+        <p>Weighted % distribution of a nominal categorical variable (e.g. primary news source, GLP-1 status) broken down by a demographic group. Handles non-ordinal, multi-category response items.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">generate_pdf_report</div>
+        <h4>PDF Report Generation</h4>
+        <p>Assembles a publication-quality PDF with a title page, abstract, numbered tables, Pew-style charts, auto-generated methodology section, and a reproducibility appendix listing every tool call used. Returns a signed download URL.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">get_report_status</div>
+        <h4>Report Job Status</h4>
+        <p>Polls the status of an async PDF report job and returns the download URL when it's ready. Use after calling generate_pdf_report for large reports that take a few seconds to build.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">get_available_variables</div>
+        <h4>Variable Discovery</h4>
+        <p>Returns all available columns, their categories, and the wave range in the dataset. Claude calls this first to orient itself to the data structure.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">generate_marginals</div>
+        <h4>Single-Variable Distribution</h4>
+        <p>Population-weighted distribution of one variable — e.g., what share of respondents use each platform, or how PHQ-9 scores are distributed.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">generate_marginals_batch</div>
+        <h4>Batch Distributions</h4>
+        <p>Runs marginal distributions for multiple variables in parallel. Efficient for a snapshot of many platforms or survey items at once.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">generate_crosstab</div>
+        <h4>Platform × Demographic Crosstab</h4>
+        <p>Adoption rates for one platform broken down by one demographic variable in a given wave, with weighted percentages and sample sizes.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">generate_crosstab_filtered</div>
+        <h4>Filtered Crosstab</h4>
+        <p>Like generate_crosstab, but with additional demographic filters — e.g., TikTok usage by age, among women only.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">generate_crosstab_batch</div>
+        <h4>One Platform, Many Demographics</h4>
+        <p>Runs crosstabs for one platform across multiple demographic dimensions simultaneously. Ideal for building a complete demographic profile.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">get_platform_trends</div>
+        <h4>Adoption Trends Over Time</h4>
+        <p>Wave-by-wave adoption rates for a platform, optionally broken down by a demographic group, enabling time-series analysis.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">get_freq_trends</div>
+        <h4>Usage Frequency Trends</h4>
+        <p>Tracks mean usage frequency (1–6 ordinal) for a platform across waves — capturing not just whether people use a platform but how intensely.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">get_ordinal_distribution</div>
+        <h4>Ordinal Variable Distribution</h4>
+        <p>Full distribution of ordinal variables: usage frequency, trust scales (1–4), political ideology (1–7), and PHQ-9 item scores.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">get_ordinal_crosstab</div>
+        <h4>Mean Scores by Demographic</h4>
+        <p>Mean ordinal scores by demographic group — e.g., mean PHQ-9 total by age, or mean platform trust by party identification.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">get_platform_posting_summary</div>
+        <h4>Full Platform Summary</h4>
+        <p>All key metrics for one platform in a single call: adoption rate, usage frequency, trust score, and political posting behavior.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">run_ols_regression</div>
+        <h4>OLS Regression</h4>
+        <p>Population-weighted OLS regression with user-specified outcome, predictors, and reference categories. Returns coefficients, standard errors, t-statistics, p-values, and R².</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">run_logistic_regression</div>
+        <h4>Logistic Regression</h4>
+        <p>Population-weighted logistic regression for binary outcomes — platform adoption, clinical depression cutoff, etc. Returns odds ratios and 95% confidence intervals.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-fn">introduce_mcp</div>
+        <h4>Server Introduction</h4>
+        <p>Plain-English overview of the MCP server, available tools, and the dataset structure. A useful starting point when exploring the system.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SETUP -->
+<section class="section section-alt" id="setup">
+  <div class="container">
+    <div class="section-label">Setup</div>
+    <h2>Connect to Claude in four steps</h2>
+    <p class="section-intro">No installation or accounts required. The CHIP50 server is already running — you just need to connect Claude to it.</p>
+
+    <div style="max-width:720px;">
+
+      <div class="setup-step-block">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Open Claude Settings</div>
+            <div class="step-desc">In Claude, go to <strong>Settings → Connectors → Add custom connector</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="setup-step-block">
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Enter the connector details</div>
+            <div class="step-desc">Fill in the name and server URL as shown below, then save.</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+          <div style="display:grid;grid-template-columns:140px 1fr;border-bottom:1px solid var(--border);">
+            <div style="padding:12px 16px;background:var(--off-white);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);border-right:1px solid var(--border);">Name</div>
+            <div style="padding:12px 16px;font-family:'SF Mono','Fira Code',monospace;font-size:13px;color:var(--navy);">CHIP50 MCP</div>
+          </div>
+          <div style="display:grid;grid-template-columns:140px 1fr;">
+            <div style="padding:12px 16px;background:var(--off-white);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);border-right:1px solid var(--border);">Server URL</div>
+            <div style="padding:12px 16px;font-family:'SF Mono','Fira Code',monospace;font-size:12px;color:var(--navy);word-break:break-all;">https://social-media-demographics-mcp-dnbn5uv2jq-uc.a.run.app/mcp</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="setup-step-block">
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Authenticate with Google</div>
+            <div class="step-desc">Claude will redirect you to a Google sign-in page. Log in with your Google account. If you see an access request screen, click <strong>Request access</strong> — you will be notified once access is granted.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="setup-step-block">
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Start your analysis</div>
+            <div class="step-desc">After authentication, Claude redirects you back automatically. The CHIP50 connector will appear as active. Try this to verify:</div>
+          </div>
+        </div>
+        <pre><code>What variables are available in the CHIP50 dataset?</code></pre>
+      </div>
+
+      <div style="margin-top:8px;padding:16px 20px;background:var(--blue-light);border:1px solid var(--border);border-radius:var(--radius-lg);display:flex;gap:12px;align-items:flex-start;">
+        <div style="font-size:18px;flex-shrink:0;padding-top:1px;">ℹ️</div>
+        <div>
+          <p style="font-size:13px;color:var(--navy);font-weight:600;margin-bottom:3px;">Access is managed</p>
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.55;">The CHIP50 MCP server is a research resource. If your Google account isn't yet authorized, use the request access prompt at the authentication screen and you'll be notified when access is granted.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="https://www.chip50.org">chip50.org</a>
+    <span class="footer-divider">·</span>
+    <a href="https://github.com/nanocentury-ai/DDFchip50">GitHub Repository</a>
+    <span class="footer-divider">·</span>
+    <a href="https://github.com/nanocentury-ai/DDFchip50/blob/main/remote-mcp/QUICKSTART.md">Quickstart</a>
+    <span class="footer-divider">·</span>
+    <a href="https://github.com/nanocentury-ai/DDFchip50/blob/main/remote-mcp/README.md">Full Docs</a>
+    <span class="footer-divider">·</span>
+    <a href="https://github.com/nanocentury-ai/DDFchip50/issues">Issues</a>
+  </div>
+  <p>CHIP50 Social Media Survey · Nanocentury AI · MIT License</p>
+</footer>
+
+<script>
+  function showTab(tab, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>

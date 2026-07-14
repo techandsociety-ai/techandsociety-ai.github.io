@@ -3,73 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Depression and Social Media Use — CHIP50</title>
+<title>Does Social Media Use Drive Depression? — CHIP50</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 
-.chip50-header {
-  background: #091525;
-  border-bottom: 2px solid #2DC4B6;
-  padding: 14px 0;
-  position: sticky; top: 0; z-index: 100;
-}
-.chip50-header-inner {
-  max-width: 960px; margin: 0 auto; padding: 0 32px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.chip50-brand {
-  display: flex; align-items: center; gap: 12px;
-}
-.chip50-brand-text { line-height: 1.1; }
-.chip50-l1 {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 9px; font-weight: 500; letter-spacing: 0.22em;
-  text-transform: uppercase; color: #7A8FA8;
-}
-.chip50-l2 {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13px; font-weight: 700; letter-spacing: 0.16em;
-  text-transform: uppercase; color: #2DC4B6;
-}
-.chip50-draft-badge {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: #BF4E2C;
-  border: 1.5px solid #BF4E2C;
-  padding: 3px 10px; border-radius: 2px;
-}
-.chip50-draft-watermark {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%) rotate(-35deg);
-  font-size: 120px; font-weight: 900;
-  font-family: 'Inter', system-ui, sans-serif;
-  letter-spacing: 0.1em;
-  color: rgba(191, 78, 44, 0.07);
-  pointer-events: none;
-  z-index: 1000;
-  user-select: none;
-  white-space: nowrap;
-}
+.chip50-header{background:#091525;border-bottom:2px solid #2DC4B6;padding:14px 0;position:sticky;top:0;z-index:100;}
+.chip50-header-inner{max-width:960px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;}
+.chip50-brand{display:flex;align-items:center;gap:12px;}
+.chip50-brand-text{line-height:1.1;}
+.chip50-l1{font-family:'Inter',system-ui,sans-serif;font-size:9px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:#7A8FA8;}
+.chip50-l2{font-family:'Inter',system-ui,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#2DC4B6;}
+.chip50-draft-badge{font-family:'Inter',system-ui,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:#BF4E2C;border:1.5px solid #BF4E2C;padding:3px 10px;border-radius:2px;}
+.chip50-draft-watermark{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:120px;font-weight:900;font-family:'Inter',system-ui,sans-serif;letter-spacing:0.1em;color:rgba(191,78,44,0.07);pointer-events:none;z-index:1000;user-select:none;white-space:nowrap;}
 
-body { font-family: Georgia, 'Times New Roman', serif; color: #1a1a1a; background: #fdfdfd; margin: 0; }
-.report-body { max-width: 760px; margin: 0 auto; padding: 48px 32px 80px; }
-h1, h2, h3 { font-family: 'Inter', system-ui, sans-serif; }
-h2 { font-size: 1.25rem; font-weight: 600; margin-top: 2.2em; margin-bottom: 0.5em; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.3em; }
-h3 { font-size: 1.05rem; font-weight: 600; margin-top: 1.6em; }
-p { line-height: 1.72; margin: 0.85em 0; }
-table { border-collapse: collapse; width: 100%; margin: 1.5em 0; font-family: 'Inter', system-ui, sans-serif; font-size: 13px; }
-th { background: #f0f0f0; font-weight: 600; padding: 8px 10px; border: 1px solid #d0d0d0; text-align: left; }
-td { padding: 7px 10px; border: 1px solid #e0e0e0; }
-tr:nth-child(even) td { background: #fafafa; }
-a { color: #1a5276; }
-code { background: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-size: 0.9em; }
-blockquote { border-left: 3px solid #2DC4B6; margin: 1.5em 0; padding: 0.5em 1.2em; color: #555; background: #f9fffe; }
+body{font-family:Georgia,'Times New Roman',serif;color:#1a1a1a;background:#fdfdfd;margin:0;}
+.report-body{max-width:760px;margin:0 auto;padding:48px 32px 80px;}
+h1,h2,h3{font-family:'Inter',system-ui,sans-serif;}
+h2{font-size:1.25rem;font-weight:600;margin-top:2.2em;margin-bottom:0.5em;border-bottom:1px solid #e5e5e5;padding-bottom:0.3em;}
+h3{font-size:1.05rem;font-weight:600;margin-top:1.6em;}
+p{line-height:1.72;margin:0.85em 0;}
+table{border-collapse:collapse;width:100%;margin:1.5em 0;font-family:'Inter',system-ui,sans-serif;font-size:13px;}
+th{background:#f0f0f0;font-weight:600;padding:8px 10px;border:1px solid #d0d0d0;text-align:left;}
+td{padding:7px 10px;border:1px solid #e0e0e0;}
+tr:nth-child(even) td{background:#fafafa;}
+a{color:#1a5276;}
+code{background:#f4f4f4;padding:2px 5px;border-radius:3px;font-size:0.9em;}
+blockquote{border-left:3px solid #2DC4B6;margin:1.5em 0;padding:0.5em 1.2em;color:#555;background:#f9fffe;}
 </style>
 </head>
 <body>
-
 <div class="chip50-header">
   <div class="chip50-header-inner">
     <div class="chip50-brand">
@@ -92,7 +54,6 @@ blockquote { border-left: 3px solid #2DC4B6; margin: 1.5em 0; padding: 0.5em 1.2
     <div class="chip50-draft-badge">DRAFT</div>
   </div>
 </div>
-
 <div class="chip50-draft-watermark">DRAFT</div>
 <div class="report-body">
 <p><strong>CHIP50 BASIC REPORT</strong></p>

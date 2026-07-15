@@ -19,9 +19,27 @@
 body{font-family:Georgia,'Times New Roman',serif;color:#1a1a1a;background:#fdfdfd;margin:0;}
 .report-body{max-width:760px;margin:0 auto;padding:48px 32px 80px;}
 h1,h2,h3{font-family:'Inter',system-ui,sans-serif;}
+h1{font-size:2.2rem;font-weight:700;line-height:1.15;margin-bottom:0.4em;}
 h2{font-size:1.25rem;font-weight:600;margin-top:2.2em;margin-bottom:0.5em;border-bottom:1px solid #e5e5e5;padding-bottom:0.3em;}
 h3{font-size:1.05rem;font-weight:600;margin-top:1.6em;}
 p{line-height:1.72;margin:0.85em 0;}
+/* First <p><strong> is the report title in pandoc output */
+.report-body > p:first-child > strong:only-child{
+  display:block;
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:2rem;
+  font-weight:700;
+  line-height:1.15;
+  color:#1a1a1a;
+  margin-bottom:0.15em;
+}
+/* Second <p> is usually the italic dek */
+.report-body > p:nth-child(2){
+  font-size:1.15rem;
+  color:#444;
+  margin-top:0;
+  margin-bottom:1.6em;
+}
 table{border-collapse:collapse;width:100%;margin:1.5em 0;font-family:'Inter',system-ui,sans-serif;font-size:13px;}
 th{background:#f0f0f0;font-weight:600;padding:8px 10px;border:1px solid #d0d0d0;text-align:left;}
 td{padding:7px 10px;border:1px solid #e0e0e0;}

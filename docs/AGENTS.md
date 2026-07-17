@@ -2,9 +2,9 @@
 
 ## What this repo is
 
-A static GitHub Pages documentation site for the CHIP50 Social Media Survey MCP server. It lives at `https://nanocentury-ai.github.io/CHIP50-MCP-Docs/` and is a single self-contained file: `docs/index.html`.
+A static GitHub Pages documentation site for the CHIP50 Social Media Survey MCP server. It lives at `https://techandsociety.ai/` and is a single self-contained file: `docs/index.html`.
 
-The MCP server itself lives in a separate private repo (`nanocentury-ai/DDFchip50`, path `remote-mcp/`). This repo is only the public-facing docs.
+The MCP server itself lives in a separate repo (`techandsociety-ai/mcp-server`). This repo is only the public-facing docs.
 
 ## The MCP server
 

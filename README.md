@@ -53,15 +53,25 @@ don't redeploy the site.
 
 ## Working on the site locally
 
-The pages are plain static HTML with no build step. To preview:
+The pages are plain static HTML with no build step. For a live-reloading
+preview — edit a file in `docs/` and the browser refreshes itself — use the
+bundled dev server with [uv](https://docs.astral.sh/uv/):
 
 ```bash
-cd docs
-python3 -m http.server 8000
-# open http://localhost:8000
+uv run serve.py            # serves docs/ at http://localhost:8000
 ```
 
-Then edit the relevant `.html` file and reload.
+`serve.py` declares its one dependency (`livereload`) inline via
+[PEP 723](https://peps.python.org/pep-0723/), so `uv run` installs it into a
+cached ephemeral environment automatically — no venv or install step. Flags:
+`--port`, `--root`, `--host` (see `uv run serve.py --help`).
+
+No uv? `pip install livereload && python3 serve.py` works too. Or, for a
+zero-dependency preview (you reload the browser yourself):
+
+```bash
+cd docs && python3 -m http.server 8000
+```
 
 ## Deploying a change
 

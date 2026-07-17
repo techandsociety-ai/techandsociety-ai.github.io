@@ -1,70 +1,18 @@
-# Real survey data - NEVER COMMIT
-data/*.csv
-data/**/*.csv
-*.xlsx
-*.xls
-
-# Sensitive files
+# Secrets (safety net — nothing here should need them, but never commit them)
 .env
 .env.local
-credentials.json
+*credentials*.json
 service-account*.json
-*-credentials.json
-key.json
-*.json.key
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environments
-venv/
-ENV/
-env/
-lib/
-.venv/
-
-# UV
-uv.lock
-.python-version
-
-# IDEs
-.vscode/
-.idea/
+# OS / editor cruft
+.DS_Store
 *.swp
 *.swo
-.DS_Store
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
+.vscode/
+.idea/
 
 # Logs
 *.log
 
-# Keep synthetic data and structure
-!synthetic_data/*.csv
-!synthetic_data/*.py
-!data/readme.md
-chip50MCP.mcpb
-*.mcpb
-site/
-chip50-survey-mcp-v2.1_wave.mcpb.sha256
-*.mcpb
+# Local ticket drafts / scratchpad (not tracked)
+tickets/
